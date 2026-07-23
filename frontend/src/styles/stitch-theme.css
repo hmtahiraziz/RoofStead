@@ -1,0 +1,105 @@
+/* Design tokens from Stitch project 18354210524743888148 (exported HTML) */
+@theme {
+  --color-surface-container-lowest: #ffffff;
+  --color-on-secondary-fixed: #241a00;
+  --color-surface-container-low: #f4f4f2;
+  --color-secondary-fixed-dim: #e9c349;
+  --color-primary-fixed-dim: #a5d0b9;
+  --color-tertiary: #401b1b;
+  --color-on-surface: #1a1c1b;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #5a302f;
+  --color-surface-dim: #dadad8;
+  --color-primary-fixed: #c1ecd4;
+  --color-on-tertiary-fixed-variant: #673a39;
+  --color-on-primary-fixed: #002114;
+  --color-inverse-primary: #a5d0b9;
+  --color-secondary: #735c00;
+  --color-surface-variant: #e2e3e1;
+  --color-on-error-container: #93000a;
+  --color-error: #ba1a1a;
+  --color-background: #f9f9f7;
+  --color-surface-bright: #f9f9f7;
+  --color-primary: #012d1d;
+  --color-on-tertiary-container: #d29895;
+  --color-outline-variant: #c1c8c2;
+  --color-on-tertiary-fixed: #331111;
+  --color-inverse-on-surface: #f1f1ef;
+  --color-on-error: #ffffff;
+  --color-tertiary-fixed: #ffdad8;
+  --color-surface: #f9f9f7;
+  --color-inverse-surface: #2f3130;
+  --color-primary-container: #1b4332;
+  --color-on-secondary-container: #745c00;
+  --color-on-secondary-fixed-variant: #574500;
+  --color-outline: #717973;
+  --color-secondary-fixed: #ffe088;
+  --color-surface-container-high: #e8e8e6;
+  --color-on-primary-container: #86af99;
+  --color-on-surface-variant: #414844;
+  --color-surface-container-highest: #e2e3e1;
+  --color-error-container: #ffdad6;
+  --color-on-primary: #ffffff;
+  --color-surface-container: #eeeeec;
+  --color-secondary-container: #fed65b;
+  --color-tertiary-fixed-dim: #f5b7b4;
+  --color-on-secondary: #ffffff;
+  --color-surface-tint: #3f6653;
+  --color-on-background: #1a1c1b;
+  --color-on-primary-fixed-variant: #274e3d;
+
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+
+  --spacing-gutter: 24px;
+  --spacing-container-max: 1280px;
+  --spacing-unit: 8px;
+  --spacing-margin-mobile: 16px;
+  --spacing-margin-desktop: 64px;
+
+  --font-display-lg: "Source Serif 4", ui-serif, Georgia, serif;
+  --font-title-lg: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-headline-sm: "Source Serif 4", ui-serif, Georgia, serif;
+  --font-body-lg: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display-lg-mobile: "Source Serif 4", ui-serif, Georgia, serif;
+  --font-headline-md: "Source Serif 4", ui-serif, Georgia, serif;
+  --font-body-md: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-label-md: "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  --text-display-lg: 48px;
+  --text-display-lg--line-height: 56px;
+  --text-display-lg--letter-spacing: -0.02em;
+  --text-display-lg--font-weight: 600;
+
+  --text-title-lg: 20px;
+  --text-title-lg--line-height: 28px;
+  --text-title-lg--font-weight: 600;
+
+  --text-headline-sm: 24px;
+  --text-headline-sm--line-height: 32px;
+  --text-headline-sm--font-weight: 500;
+
+  --text-body-lg: 16px;
+  --text-body-lg--line-height: 24px;
+  --text-body-lg--font-weight: 400;
+
+  --text-display-lg-mobile: 32px;
+  --text-display-lg-mobile--line-height: 40px;
+  --text-display-lg-mobile--letter-spacing: -0.01em;
+  --text-display-lg-mobile--font-weight: 600;
+
+  --text-headline-md: 32px;
+  --text-headline-md--line-height: 40px;
+  --text-headline-md--font-weight: 500;
+
+  --text-body-md: 14px;
+  --text-body-md--line-height: 20px;
+  --text-body-md--font-weight: 400;
+
+  --text-label-md: 12px;
+  --text-label-md--line-height: 16px;
+  --text-label-md--letter-spacing: 0.05em;
+  --text-label-md--font-weight: 500;
+
+  --max-width-container-max: 1280px;
+}

@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Post a Listing | RoofStead</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container-lowest": "#ffffff",
+                    "on-secondary-fixed": "#241a00",
+                    "surface-container-low": "#f4f4f2",
+                    "secondary-fixed-dim": "#e9c349",
+                    "primary-fixed-dim": "#a5d0b9",
+                    "tertiary": "#401b1b",
+                    "on-surface": "#1a1c1b",
+                    "on-tertiary": "#ffffff",
+                    "tertiary-container": "#5a302f",
+                    "surface-dim": "#dadad8",
+                    "primary-fixed": "#c1ecd4",
+                    "on-tertiary-fixed-variant": "#673a39",
+                    "on-primary-fixed": "#002114",
+                    "inverse-primary": "#a5d0b9",
+                    "secondary": "#735c00",
+                    "surface-variant": "#e2e3e1",
+                    "on-error-container": "#93000a",
+                    "error": "#ba1a1a",
+                    "background": "#f9f9f7",
+                    "surface-bright": "#f9f9f7",
+                    "primary": "#012d1d",
+                    "on-tertiary-container": "#d29895",
+                    "outline-variant": "#c1c8c2",
+                    "on-tertiary-fixed": "#331111",
+                    "inverse-on-surface": "#f1f1ef",
+                    "on-error": "#ffffff",
+                    "tertiary-fixed": "#ffdad8",
+                    "surface": "#f9f9f7",
+                    "inverse-surface": "#2f3130",
+                    "primary-container": "#1b4332",
+                    "on-secondary-container": "#745c00",
+                    "on-secondary-fixed-variant": "#574500",
+                    "outline": "#717973",
+                    "secondary-fixed": "#ffe088",
+                    "surface-container-high": "#e8e8e6",
+                    "on-primary-container": "#86af99",
+                    "on-surface-variant": "#414844",
+                    "surface-container-highest": "#e2e3e1",
+                    "error-container": "#ffdad6",
+                    "on-primary": "#ffffff",
+                    "surface-container": "#eeeeec",
+                    "secondary-container": "#fed65b",
+                    "tertiary-fixed-dim": "#f5b7b4",
+                    "on-secondary": "#ffffff",
+                    "surface-tint": "#3f6653",
+                    "on-background": "#1a1c1b",
+                    "on-primary-fixed-variant": "#274e3d"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "24px",
+                    "container-max": "1280px",
+                    "unit": "8px",
+                    "margin-mobile": "16px",
+                    "margin-desktop": "64px"
+            },
+            "fontFamily": {
+                    "display-lg": ["\"Source Serif 4\""],
+                    "title-lg": ["Inter"],
+                    "headline-sm": ["\"Source Serif 4\""],
+                    "body-lg": ["Inter"],
+                    "headline-md": ["\"Source Serif 4\""],
+                    "body-md": ["Inter"],
+                    "label-md": ["Inter"]
+            },
+            "fontSize": {
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                    "title-lg": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "headline-sm": ["24px", {"lineHeight": "32px", "fontWeight": "500"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-md": ["32px", {"lineHeight": "40px", "fontWeight": "500"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .ambient-shadow {
+            box-shadow: 0px 4px 20px rgba(27, 67, 50, 0.04);
+        }
+        .focus-ring:focus {
+            outline: none;
+            border-color: #1b4332;
+            box-shadow: 0 0 0 2px rgba(27, 67, 50, 0.1);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .stepper-line {
+            height: 2px;
+            background: #E2E4E2;
+            flex-grow: 1;
+        }
+        .stepper-line.active {
+            background: #1b4332;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-lg">
+<!-- TopNavBar (JSON Managed) -->
+<header class="bg-surface border-b border-outline-variant shadow-sm sticky top-0 z-50">
+<nav class="flex justify-between items-center w-full px-margin-desktop py-4 max-w-container-max mx-auto">
+<div class="flex items-center gap-8">
+<img alt="RoofStead Logo" class="h-10 w-auto" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYLK3Y_heWwdbz8MnGk0ejaG8638fXGHl0kWPVjtf3D-pfvW-NYsv3qhHGza3MnnijtMUh8690-zzdvb_p2h0TLNlOK2NkY2QiPBS8HIJNMCeBoAq5qks0IaVLKG1JkuQ8t6WK06lzOLfVeBYxvI69vyCNwLCTuwa5qB_ObfdkmbBmoKAwc6AyMmXvAa0vT-NVQ4SI9Nd_9clt0tQLaveB4BE4XWAwL9GeiDmLIQjFivkVqxqmb3X7aw"/>
+<div class="hidden md:flex gap-6">
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#">Properties</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#">Market Trends</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#">Guides</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#">About</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="font-label-md text-label-md text-primary font-bold border-b-2 border-primary pb-1">List Property</button>
+<button class="font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-low px-4 py-2 rounded-lg transition-all">Sign In</button>
+</div>
+</nav>
+</header>
+<!-- Verification Pending Banner -->
+<section class="bg-tertiary-fixed text-on-tertiary-fixed py-3 px-margin-desktop">
+<div class="max-w-container-max mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-tertiary-container" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+<p class="font-label-md text-label-md">Your identity verification is currently <span class="font-bold">Pending</span>. You can still create drafts, but won't be able to publish until verified.</p>
+</div>
+<a class="font-label-md text-label-md text-tertiary font-bold underline hover:no-underline transition-all" href="#">Complete Verification →</a>
+</div>
+</section>
+<main class="max-w-4xl mx-auto px-6 py-12">
+<!-- Header -->
+<div class="text-center mb-12">
+<h1 class="font-display-lg text-display-lg text-primary mb-4">Post Your Listing</h1>
+<p class="text-on-surface-variant max-w-xl mx-auto">Welcome to RoofStead. Fill in the details below to reach thousands of qualified buyers and renters in our curated marketplace.</p>
+</div>
+<!-- Progress Stepper -->
+<div class="flex items-center mb-16 px-4">
+<div class="flex flex-col items-center gap-2">
+<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary flex items-center justify-center font-bold">1</div>
+<span class="font-label-md text-label-md text-primary">Details</span>
+</div>
+<div class="stepper-line mx-4"></div>
+<div class="flex flex-col items-center gap-2">
+<div class="w-10 h-10 rounded-full border-2 border-outline-variant text-on-surface-variant flex items-center justify-center font-bold">2</div>
+<span class="font-label-md text-label-md text-on-surface-variant">Review</span>
+</div>
+<div class="stepper-line mx-4"></div>
+<div class="flex flex-col items-center gap-2">
+<div class="w-10 h-10 rounded-full border-2 border-outline-variant text-on-surface-variant flex items-center justify-center font-bold">3</div>
+<span class="font-label-md text-label-md text-on-surface-variant">Publish</span>
+</div>
+</div>
+<div class="space-y-12">
+<!-- Step 1: Type Selector -->
+<section>
+<h2 class="font-headline-sm text-headline-sm text-primary mb-6">What type of listing is this?</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- For Sale Card -->
+<label class="cursor-pointer group">
+<input class="hidden peer" name="listing_type" type="radio" value="sale"/>
+<div class="h-full bg-surface-container-lowest border-2 border-transparent peer-checked:border-primary-container peer-checked:bg-primary-fixed p-8 rounded-xl ambient-shadow transition-all group-hover:scale-[1.01]">
+<div class="flex flex-col h-full">
+<span class="material-symbols-outlined text-4xl mb-4 text-primary" style="font-variation-settings: 'FILL' 1;">sell</span>
+<h3 class="font-title-lg text-title-lg mb-2">For Sale</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Best for homeowners looking to sell their primary residence or investment property permanently.</p>
+</div>
+</div>
+</label>
+<!-- For Rent Card -->
+<label class="cursor-pointer group">
+<input class="hidden peer" name="listing_type" type="radio" value="rent"/>
+<div class="h-full bg-surface-container-lowest border-2 border-transparent peer-checked:border-primary-container peer-checked:bg-primary-fixed p-8 rounded-xl ambient-shadow transition-all group-hover:scale-[1.01]">
+<div class="flex flex-col h-full">
+<span class="material-symbols-outlined text-4xl mb-4 text-primary" style="font-variation-settings: 'FILL' 1;">key</span>
+<h3 class="font-title-lg text-title-lg mb-2">For Rent</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Ideal for landlords looking for long-term tenants or seasonal short-term rentals.</p>
+</div>
+</div>
+</label>
+</div>
+</section>
+<!-- Listing Form -->
+<form class="space-y-8 bg-surface-container-lowest p-8 md:p-12 rounded-xl ambient-shadow border border-outline-variant">
+<!-- Basic Info -->
+<div class="grid grid-cols-1 gap-8">
+<h2 class="font-headline-sm text-headline-sm text-primary border-b border-outline-variant pb-4">Property Details</h2>
+<div class="space-y-2">
+<label class="font-label-md text-label-md text-on-surface-variant block">Listing Title</label>
+<input class="w-full bg-surface border-outline-variant rounded-lg p-3 focus-ring" placeholder="e.g. Modern Minimalist Loft in Downtown" type="text"/>
+</div>
+<div class="space-y-2">
+<label class="font-label-md text-label-md text-on-surface-variant block">Description</label>
+<textarea class="w-full bg-surface border-outline-variant rounded-lg p-3 focus-ring" placeholder="Describe the atmosphere, unique features, and neighborhood..." rows="4"></textarea>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="space-y-2">
+<label class="font-label-md text-label-md text-on-surface-variant block">Asking Price (USD)</label>
+<div class="relative">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">$</span>
+<input class="w-full bg-surface border-outline-variant rounded-lg p-3 pl-8 focus-ring" placeholder="500,000" type="number"/>
+</div>
+</div>
+<div class="space-y-2">
+<label class="font-label-md text-label-md text-on-surface-variant block">Full Address</label>
+<input class="w-full bg-surface border-outline-variant rounded-lg p-3 focus-ring" placeholder="123 Serenity Way, Portland, OR" type="text"/>
+</div>
+</div>
+</div>
+<!-- Amenities Chip Input (Simulated) -->
+<div class="space-y-4">
+<label class="font-label-md text-label-md text-on-surface-variant block">Amenities &amp; Features</label>
+<div class="flex flex-wrap gap-2">
+<span class="bg-surface-container-high px-4 py-2 rounded-full font-body-md text-body-md flex items-center gap-2">3 Bedrooms <button class="text-on-surface-variant hover:text-error" type="button"><span class="material-symbols-outlined text-sm">close</span></button></span>
+<span class="bg-surface-container-high px-4 py-2 rounded-full font-body-md text-body-md flex items-center gap-2">2 Bathrooms <button class="text-on-surface-variant hover:text-error" type="button"><span class="material-symbols-outlined text-sm">close</span></button></span>
+<span class="bg-surface-container-high px-4 py-2 rounded-full font-body-md text-body-md flex items-center gap-2">Pool <button class="text-on-surface-variant hover:text-error" type="button"><span class="material-symbols-outlined text-sm">close</span></button></span>
+<span class="bg-surface-container-high px-4 py-2 rounded-full font-body-md text-body-md flex items-center gap-2">Solar Ready <button class="text-on-surface-variant hover:text-error" type="button"><span class="material-symbols-outlined text-sm">close</span></button></span>
+<button class="border border-dashed border-outline text-primary px-4 py-2 rounded-full font-body-md text-body-md hover:bg-primary-fixed-dim transition-colors" type="button">+ Add More</button>
+</div>
+</div>
+<!-- Image Upload -->
+<div class="space-y-4">
+<label class="font-label-md text-label-md text-on-surface-variant block">Property Imagery</label>
+<div class="border-2 border-dashed border-outline-variant rounded-xl p-12 text-center bg-surface hover:bg-surface-container-low transition-all cursor-pointer group">
+<div class="flex flex-col items-center gap-4">
+<div class="w-16 h-16 rounded-full bg-primary-fixed flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-3xl">add_a_photo</span>
+</div>
+<div>
+<p class="font-title-lg text-title-lg text-primary">Drag and drop images here</p>
+<p class="font-body-md text-body-md text-on-surface-variant">Support for JPG, PNG and HEIC. High resolution 4K photos recommended.</p>
+</div>
+<button class="bg-primary text-on-primary px-6 py-3 rounded-lg font-label-md text-label-md hover:opacity-90 transition-all" type="button">Select Files</button>
+</div>
+</div>
+<!-- Image Grid Preview (Placeholder) -->
+<div class="grid grid-cols-4 gap-4 mt-6">
+<div class="aspect-square rounded-lg bg-cover bg-center border border-outline-variant" data-alt="A bright and airy modern kitchen featuring forest green cabinetry, marble countertops, and warm wood accents. The lighting is soft and natural, pouring in from large windows, creating a serene and premium interior design atmosphere." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuABotEuZM5PIZlWcjdufpHNp5JBC0uiaEU_1DOoQLQyFwtfUoU4_Dbb5thB_OPyIF62h_pFtiksw0ToMfJMnHU7HZfXrT_CYtvlkMFp31dF9c6UTJC0qWT2nOtDWLdSj6mbjFgRBLaeAFmDhBxBsFdYTNlTulFohvTXH8z5PZ-7MP8Hp8UuNfQmQecc9zrV62BevduMPSrlAF3Cg11JGihJLexCR5vd5kfJERTL-F0kc5vTIiHLr4el3g')"></div>
+<div class="aspect-square rounded-lg bg-cover bg-center border border-outline-variant" data-alt="A minimalist living room with high ceilings and expansive floor-to-ceiling windows overlooking a lush green garden. The space is furnished with high-end neutral furniture and subtle green accents, embodying modern architectural elegance." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBQxTJTJ9cD79TU2nc-E8wXstQNjw0b8GnCd4UOHqsY3ONdW3q1WCVCSxlr4GtefTIDJeA6HOOc1t4BBCskzXcCXQAHf_V7hNzwID24zZXtqqdYP3Oj7kf3ChlVY3gBTJni6h7hmRjqLUf7khyWDFaIMoYmDwAo7JukUQncf1yAahWDITdzHRoPyv6rTjqlCIRiPlv2rsWdRWariqtjzUbZdiMXbXIjBrGW3AelmGzGlVk3JBAEGwsoSQ')"></div>
+<div class="aspect-square rounded-lg border-2 border-dashed border-outline-variant flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined">image</span>
+</div>
+<div class="aspect-square rounded-lg border-2 border-dashed border-outline-variant flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined">image</span>
+</div>
+</div>
+</div>
+<!-- Sticky CTA Bottom -->
+<div class="pt-12 border-t border-outline-variant flex flex-col md:flex-row justify-between items-center gap-6">
+<p class="font-body-md text-body-md text-on-surface-variant text-center md:text-left">
+<span class="material-symbols-outlined text-sm align-middle">info</span> 
+                        By listing, you agree to our <a class="underline" href="#">Listing Policy</a>.
+                    </p>
+<div class="flex gap-4 w-full md:w-auto">
+<button class="flex-1 md:flex-none border border-primary text-primary px-8 py-3 rounded-lg font-label-md text-label-md hover:bg-primary-fixed transition-all" type="button">Save Draft</button>
+<button class="flex-1 md:flex-none bg-primary text-on-primary px-10 py-3 rounded-lg font-label-md text-label-md hover:opacity-90 transition-all shadow-lg active:scale-95" type="submit">Continue to Review</button>
+</div>
+</div>
+</form>
+</div>
+</main>
+<!-- Footer (JSON Managed) -->
+<footer class="bg-surface-container border-t border-outline-variant mt-24">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter px-margin-desktop py-12 max-w-container-max mx-auto">
+<div class="md:col-span-1">
+<h4 class="font-headline-sm text-headline-sm font-bold text-primary mb-4">RoofStead</h4>
+<p class="font-body-md text-body-md text-on-surface-variant">Elevating the residential experience through transparency and design.</p>
+</div>
+<div class="flex flex-col gap-3">
+<h5 class="font-label-md text-label-md text-primary font-bold uppercase tracking-wider">Marketplace</h5>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary underline decoration-2 underline-offset-4 transition-all" href="#">Browse Homes</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary underline decoration-2 underline-offset-4 transition-all" href="#">Mortgage Calculator</a>
+</div>
+<div class="flex flex-col gap-3">
+<h5 class="font-label-md text-label-md text-primary font-bold uppercase tracking-wider">Resources</h5>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary underline decoration-2 underline-offset-4 transition-all" href="#">Seller Resources</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary underline decoration-2 underline-offset-4 transition-all" href="#">Contact Support</a>
+</div>
+<div class="flex flex-col gap-3">
+<h5 class="font-label-md text-label-md text-primary font-bold uppercase tracking-wider">Legal</h5>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary underline decoration-2 underline-offset-4 transition-all" href="#">Privacy Policy</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary underline decoration-2 underline-offset-4 transition-all" href="#">Terms of Service</a>
+</div>
+</div>
+<div class="px-margin-desktop py-6 border-t border-outline-variant/30 text-center">
+<p class="font-label-md text-label-md text-on-surface-variant">© 2024 RoofStead Real Estate. All rights reserved. Licensed Brokerage.</p>
+</div>
+</footer>
+<script>
+        // Simple Interaction logic for form focus or chip addition
+        document.querySelectorAll('input, textarea').forEach(el => {
+            el.addEventListener('focus', () => {
+                el.parentElement.querySelector('label')?.classList.add('text-primary');
+            });
+            el.addEventListener('blur', () => {
+                el.parentElement.querySelector('label')?.classList.remove('text-primary');
+            });
+        });
+
+        // Toggle radio card styles manually if needed for better UX feel
+        const typeInputs = document.querySelectorAll('input[name="listing_type"]');
+        typeInputs.forEach(input => {
+            input.addEventListener('change', (e) => {
+                console.log(`Selected Listing Type: ${e.target.value}`);
+            });
+        });
+    </script>
+</body></html>

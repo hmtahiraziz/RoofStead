@@ -1,0 +1,77 @@
+.page {
+  max-width: var(--rs-max-width);
+  margin: 0 auto;
+  padding: 32px 20px 48px;
+}
+
+.page h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 8px;
+}
+
+.lead {
+  color: var(--rs-text-muted);
+  margin-bottom: 24px;
+  max-width: 56ch;
+}
+
+.panel {
+  background: var(--rs-bg-elevated);
+  border: 1px solid var(--rs-border);
+  border-radius: var(--rs-radius-md);
+  padding: 24px;
+  max-width: 480px;
+}
+
+.panelWide {
+  composes: panel;
+  max-width: none;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.btnPrimary,
+.btnGhost,
+.btnDanger {
+  display: inline-flex;
+  padding: 10px 16px;
+  border-radius: var(--rs-radius-pill);
+  font-size: 0.875rem;
+  font-weight: 600;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+
+.btnPrimary {
+  background: #1b4332;
+  color: #ffffff;
+}
+
+.btnGhost {
+  background: var(--rs-bg-elevated);
+  border-color: var(--rs-border);
+}
+
+.btnDanger {
+  background: transparent;
+  border-color: var(--rs-danger);
+  color: var(--rs-danger);
+}
+
+.list {
+  margin-top: 12px;
+  padding-left: 18px;
+  color: var(--rs-text-muted);
+  font-size: 0.9rem;
+}
+
+.list li {
+  margin-bottom: 6px;
+}

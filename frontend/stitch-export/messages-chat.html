@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Messages | RoofStead</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Serif+4:wght@500;600&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Source+Serif+4:wght@100..900&display=swap" rel="stylesheet"/>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #e2e4e2;
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #717973;
+    }
+  </style>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+                  "surface-container-lowest": "#ffffff",
+                  "on-secondary-fixed": "#241a00",
+                  "surface-container-low": "#f4f4f2",
+                  "secondary-fixed-dim": "#e9c349",
+                  "primary-fixed-dim": "#a5d0b9",
+                  "tertiary": "#401b1b",
+                  "on-surface": "#1a1c1b",
+                  "on-tertiary": "#ffffff",
+                  "tertiary-container": "#5a302f",
+                  "surface-dim": "#dadad8",
+                  "primary-fixed": "#c1ecd4",
+                  "on-tertiary-fixed-variant": "#673a39",
+                  "on-primary-fixed": "#002114",
+                  "inverse-primary": "#a5d0b9",
+                  "secondary": "#735c00",
+                  "surface-variant": "#e2e3e1",
+                  "on-error-container": "#93000a",
+                  "error": "#ba1a1a",
+                  "background": "#f9f9f7",
+                  "surface-bright": "#f9f9f7",
+                  "primary": "#012d1d",
+                  "on-tertiary-container": "#d29895",
+                  "outline-variant": "#c1c8c2",
+                  "on-tertiary-fixed": "#331111",
+                  "inverse-on-surface": "#f1f1ef",
+                  "on-error": "#ffffff",
+                  "tertiary-fixed": "#ffdad8",
+                  "surface": "#f9f9f7",
+                  "inverse-surface": "#2f3130",
+                  "primary-container": "#1b4332",
+                  "on-secondary-container": "#745c00",
+                  "on-secondary-fixed-variant": "#574500",
+                  "outline": "#717973",
+                  "secondary-fixed": "#ffe088",
+                  "surface-container-high": "#e8e8e6",
+                  "on-primary-container": "#86af99",
+                  "on-surface-variant": "#414844",
+                  "surface-container-highest": "#e2e3e1",
+                  "error-container": "#ffdad6",
+                  "on-primary": "#ffffff",
+                  "surface-container": "#eeeeec",
+                  "secondary-container": "#fed65b",
+                  "tertiary-fixed-dim": "#f5b7b4",
+                  "on-secondary": "#ffffff",
+                  "surface-tint": "#3f6653",
+                  "on-background": "#1a1c1b",
+                  "on-primary-fixed-variant": "#274e3d"
+          },
+          "borderRadius": {
+                  "DEFAULT": "0.25rem",
+                  "lg": "0.5rem",
+                  "xl": "0.75rem",
+                  "full": "9999px"
+          },
+          "spacing": {
+                  "gutter": "24px",
+                  "container-max": "1280px",
+                  "unit": "8px",
+                  "margin-mobile": "16px",
+                  "margin-desktop": "64px"
+          },
+          "fontFamily": {
+                  "display-lg": ["\"Source Serif 4\""],
+                  "title-lg": ["Inter"],
+                  "headline-sm": ["\"Source Serif 4\""],
+                  "body-lg": ["Inter"],
+                  "display-lg-mobile": ["\"Source Serif 4\""],
+                  "headline-md": ["\"Source Serif 4\""],
+                  "body-md": ["Inter"],
+                  "label-md": ["Inter"]
+          },
+          "fontSize": {
+                  "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                  "title-lg": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                  "headline-sm": ["24px", {"lineHeight": "32px", "fontWeight": "500"}],
+                  "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                  "display-lg-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                  "headline-md": ["32px", {"lineHeight": "40px", "fontWeight": "500"}],
+                  "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                  "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}]
+          }
+        },
+      },
+    }
+  </script>
+</head>
+<body class="bg-background text-on-surface min-h-screen flex flex-col font-body-md overflow-hidden">
+<!-- TopNavBar Navigation Shell -->
+<header class="bg-surface border-b border-outline-variant shadow-sm z-30">
+<div class="flex justify-between items-center w-full px-margin-desktop py-4 max-w-container-max mx-auto h-20">
+<!-- Logo and Brand -->
+<div class="flex items-center gap-8">
+<a class="flex items-center gap-3" href="#">
+<img alt="RoofStead" class="h-10 w-auto" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYLK3Y_heWwdbz8MnGk0ejaG8638fXGHl0kWPVjtf3D-pfvW-NYsv3qhHGza3MnnijtMUh8690-zzdvb_p2h0TLNlOK2NkY2QiPBS8HIJNMCeBoAq5qks0IaVLKG1JkuQ8t6WK06lzOLfVeBYxvI69vyCNwLCTuwa5qB_ObfdkmbBmoKAwc6AyMmXvAa0vT-NVQ4SI9Nd_9clt0tQLaveB4BE4XWAwL9GeiDmLIQjFivkVqxqmb3X7aw"/>
+</a>
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md" href="#">Properties</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md" href="#">Market Trends</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md" href="#">Guides</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md" href="#">About</a>
+</nav>
+</div>
+<!-- Trailing Actions -->
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-on-surface-variant p-2 hover:bg-surface-container-low rounded-full transition-all">search</button>
+<button class="material-symbols-outlined text-primary p-2 hover:bg-surface-container-low rounded-full transition-all relative">
+          mail
+          <span class="absolute top-2 right-2 block h-2 w-2 rounded-full bg-error ring-2 ring-surface"></span>
+</button>
+<div class="h-10 w-10 rounded-full overflow-hidden border border-outline-variant cursor-pointer">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a smiling real estate expert with a warm, approachable look. The lighting is soft and high-key against a minimalist studio background, matching the clean forest green and white brand aesthetic of RoofStead." src="https://lh3.googleusercontent.com/aida-public/AB6AXuARK9SpVi6xNWtKsNGVaiXzrVT19trfve6cVonLR2nNfQ-qbDt-5H22ggJ0zwEXWh3czQvHcdVX3-AM-SsgV2S0aZOVg51l1zd1qmAW1DGMp7BpnoPAeTCeM8AiK8_VG_o3SPYBclmjdPIhkEB3iKtCyAhIBaWxFDCdPvbz0zquNzQml1OP18EEbT-rPn0sfZujyUTMBApCs8lexhpwBJRWLeXbo6lFKb79L-ry1UjrCe_-ZxOWIYnKXA"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Messages Layout -->
+<main class="flex-1 flex overflow-hidden max-w-container-max mx-auto w-full px-margin-desktop md:pt-4 md:pb-8 gap-gutter h-[calc(100vh-80px)]">
+<!-- Left Sidebar: Conversation List -->
+<aside class="w-full md:w-80 lg:w-96 flex flex-col bg-surface border border-outline-variant rounded-xl overflow-hidden shadow-[0px_4px_20px_rgba(27,67,50,0.04)]">
+<div class="p-4 border-b border-outline-variant bg-surface-container-low flex justify-between items-center">
+<h2 class="font-headline-sm text-headline-sm text-primary">Messages</h2>
+<button class="material-symbols-outlined text-on-surface-variant">edit_square</button>
+</div>
+<!-- Search inside Sidebar -->
+<div class="p-4 border-b border-outline-variant">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-surface-container rounded-lg border-none focus:ring-2 focus:ring-primary/10 text-body-md font-body-md placeholder-on-surface-variant" placeholder="Search conversations" type="text"/>
+</div>
+</div>
+<!-- Conversations -->
+<div class="flex-1 overflow-y-auto">
+<!-- Active Conversation -->
+<div class="p-4 bg-primary-container/5 border-l-4 border-primary cursor-pointer transition-all">
+<div class="flex gap-3">
+<div class="relative flex-shrink-0">
+<img class="w-12 h-12 rounded-full object-cover" data-alt="Close up profile photo of a friendly woman with professional attire. Soft daylight studio lighting, clean and modern minimalist style, perfectly centered with a blurred green architectural background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCohq6Dr1BbFbjNmpT8vOPf3JimLdkB2Yz_C6RPwJvbYvgYNZ56Z_GMHnrsFVczNzFVq0Y2Sz8KIQurB_OUPpTlGgJq7-Ij5klbFGYDyAqISYcxaaQuqNUkdWWvyejVk7r-53HO2rFY0L2rESuJup0NtfzhEkjRK4o9z_gE_Xn1VDztJARwE4qBeAH_Fa46_5cGM84m3jHNro3Fto0WM2ciJP3TXIH_kRlJD70KPXSv9pTLkKRx8tFQ0w"/>
+<div class="absolute bottom-0 right-0 w-3 h-3 bg-primary border-2 border-surface rounded-full"></div>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-baseline mb-0.5">
+<span class="font-title-lg text-body-md text-primary truncate">Julianne Waters</span>
+<span class="text-[10px] text-on-surface-variant font-label-md">10:42 AM</span>
+</div>
+<p class="text-body-md text-on-surface font-medium truncate">Can we schedule a viewing for the Oakwood Villa?</p>
+<div class="mt-2 flex items-center gap-2 bg-white/50 p-1.5 rounded-lg border border-outline-variant/30">
+<img class="w-10 h-10 rounded object-cover" data-alt="A modern, high-end residential villa with floor-to-ceiling glass windows and lush green landscaping. Editorial architectural photography with warm, soft afternoon sunlight, illustrating luxury real estate." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZbLDjRtMB-pJlIuwki648Owj4EycAyahKPce0NpQTdp1uLRv5sObc_MKXZo5YnX16qFlDppJPj9i4PtTf18yV0L1fkljsgoVtc9b4GkoqsGjuMEGQga8OtwAAx0MJNCBlO8bJJxFqqQFCs61FmwCFiW4ZQfmeKWyyFJEHGubT3UlxH1vQgRwFkdP0N_ia7OFWyyOOMlzYKFa4Ygl_3U43_SuqLVHFsRXbKpJbW2E0gdfMjY-X-yV03Q"/>
+<span class="text-[11px] text-on-surface-variant font-medium truncate">Oakwood Villa • $1,250,000</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Conversation Item 2 -->
+<div class="p-4 hover:bg-surface-container-low cursor-pointer transition-all border-b border-outline-variant/30">
+<div class="flex gap-3">
+<div class="relative flex-shrink-0">
+<img class="w-12 h-12 rounded-full object-cover" data-alt="A sharp profile portrait of a male realtor in a navy blazer. High contrast, warm neutral lighting, professional editorial style with a soft-focus forest green background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAAp6mUdKP8nf5XAu4VekpYEBepoCza93NKnwycq3PKiLd0j8sOsBm9Y-C8g8DVjx5TS434DPhZcLDQH7snDKMHBslZ4cxI6daBEOr-peKrgy0nk2OjJ_K7qT4jf2Uvc47RilZBMapoAO5w7AYWTqSDJfE1HsX78tsPflfZzBH8dKx_Pif3lmP7QQ6xcXcYCK8rRWr_SEkJ4VAO5ZvkkkqQvnZ2uvQ8tSZeBgYfMnenDj9HFsY5I3UQMw"/>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-baseline mb-0.5">
+<span class="font-title-lg text-body-md text-on-surface truncate">Marcus Chen</span>
+<span class="text-[10px] text-on-surface-variant font-label-md">Yesterday</span>
+</div>
+<p class="text-body-md text-on-surface-variant truncate">The inspection report is ready for download.</p>
+<div class="mt-2 flex items-center gap-2 bg-white/50 p-1.5 rounded-lg border border-outline-variant/30">
+<img class="w-10 h-10 rounded object-cover" data-alt="Sleek minimalist apartment interior with a view of a city skyline at dusk. Professional interior design photography, clean lines, warm tones, airy atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJg3qSVuiHz00RQABmdU3_saYCplOjUqFRBXrtFs0nalZWE2jHv2s2XZaQC1XGLotjbKoPhOO5P4jkRvIRe-HrWbLlZIiF0CTq_8Xp5pTVRq_ibIP20XsxNqmZEfQDzW2SfvygUG42nL3PeePtoQbURriVtp7MWvgWy5Db0X1IqvkDYk1Sbq2-LFtjIaDKDa9JBOiNBwPJviD3Emhh2ZdbVue6HRApFp88fzDCVPFjrr0r3CtMT3SOjA"/>
+<span class="text-[11px] text-on-surface-variant font-medium truncate">Penthouse 4C • $890,000</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Conversation Item 3 -->
+<div class="p-4 hover:bg-surface-container-low cursor-pointer transition-all border-b border-outline-variant/30">
+<div class="flex gap-3">
+<div class="relative flex-shrink-0">
+<img class="w-12 h-12 rounded-full object-cover" data-alt="Portrait of an elderly couple, smiling warmly, dressed in elegant casual wear. Soft morning light, natural tones, background of a bright garden room, modern and serene." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCgYKRUOT7eKsRcjKXCSb8eXkRIq2Eml2FzCXhiheOhjEH329zuqqDIXStSPyTNwrQCZQJDc-L3TMJq6sBZipJQDlUjNYss_UFM7A15D5O4FjAopALvcT7pbtbJnTQzg6OsZwUR9TURhFviyg20UUwNBk7YXZZxw6hVNkb32tjccymBV20K4jbr4i4TBh6634CCrBg1c0MPVMzF0k73rWCN9XCUcLfd-yKDCFJSG4NEFzUpKD827GjOzw"/>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-baseline mb-0.5">
+<span class="font-title-lg text-body-md text-on-surface truncate">The Harrisons</span>
+<span class="text-[10px] text-on-surface-variant font-label-md">Monday</span>
+</div>
+<p class="text-body-md text-on-surface-variant truncate">Thank you for the guidance today!</p>
+</div>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Chat Window -->
+<section class="hidden md:flex flex-1 flex-col bg-surface border border-outline-variant rounded-xl overflow-hidden shadow-[0px_4px_20px_rgba(27,67,50,0.04)] relative">
+<!-- Chat Header -->
+<header class="p-4 border-b border-outline-variant bg-surface-container-low flex justify-between items-center h-20">
+<div class="flex items-center gap-3">
+<div class="relative">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="Close up profile photo of a friendly woman with professional attire. Soft daylight studio lighting, clean and modern minimalist style, perfectly centered with a blurred green architectural background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBx5YvyNASiIlyfulTWv702Fq2slMYdyKw0EY69g9U3gTu_qiet1Mr90F5PW7WESQSpDh0NdQNXUTasyLiR9kRTtf-4Z-UqiR-reBuHT4PtxmG0_4iXjCqz92MjPBIuHlUFwNH2DtjgQJ0a2WGKOizdABvU74jnFo0VCGQmK2dL3KnkQ9sIER_kJGPqzgTgKRwMZ2l4Btr9RkUXvqKFxNPTFWXcDknASDOPtxxu9rrs_xJ7blQWYwEpLw"/>
+<div class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-primary border-2 border-surface rounded-full"></div>
+</div>
+<div>
+<div class="flex items-center gap-1.5">
+<h3 class="font-title-lg text-body-lg text-primary">Julianne Waters</h3>
+<span class="flex items-center gap-0.5 px-1.5 py-0.5 bg-primary-container/10 rounded-full border border-primary-container/20">
+<span class="material-symbols-outlined text-[12px] text-primary" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span class="font-label-md text-[10px] text-primary uppercase tracking-wider">Verified Agent</span>
+</span>
+</div>
+<p class="text-xs text-on-surface-variant font-label-md">Active now • Typical response time: 10m</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="material-symbols-outlined text-on-surface-variant p-2 hover:bg-surface-container-high rounded-full transition-all">videocam</button>
+<button class="material-symbols-outlined text-on-surface-variant p-2 hover:bg-surface-container-high rounded-full transition-all">call</button>
+<button class="material-symbols-outlined text-on-surface-variant p-2 hover:bg-surface-container-high rounded-full transition-all">more_vert</button>
+</div>
+</header>
+<!-- Chat Canvas (Messages) -->
+<div class="flex-1 p-6 overflow-y-auto flex flex-col gap-6 bg-surface-bright" id="chat-canvas">
+<!-- Date Divider -->
+<div class="flex justify-center">
+<span class="px-3 py-1 bg-surface-container rounded-full text-[10px] font-label-md text-on-surface-variant uppercase tracking-widest">Today</span>
+</div>
+<!-- Received Message -->
+<div class="flex gap-3 max-w-[80%]">
+<img class="w-8 h-8 rounded-full object-cover self-end" data-alt="Close up profile photo of a friendly woman with professional attire. Soft daylight studio lighting, clean and modern minimalist style, perfectly centered with a blurred green architectural background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC5hTTWuNyVuhpZ0kMUIBF7r4JSqkWoqHEDn0AqsCUd26nX1dFwsOIJh9M7f-7DP-pVOIjs8eTcn6JKaVpyXGLIrGSkim0ttqHXLp-6V4Mpz1ioSU8ommwjyI1ztaqNMIy_UZHYR2K_c70sQKXyw8rPy0JmG4iPehjyPVT7nyCVmTFJwG6DR7-ClcLIFs4PcOk-VcNfqLo-ZgZus0DE6TMX--g1HOHEV73TbkU6w9MZjvC4rOF0iOAS3A"/>
+<div>
+<div class="p-4 bg-surface-container-high text-on-surface rounded-2xl rounded-bl-none text-body-md leading-relaxed">
+              Hello! I saw you were looking at the Oakwood Villa listing again this morning.
+            </div>
+<span class="text-[10px] text-on-surface-variant mt-1 block px-1">10:30 AM</span>
+</div>
+</div>
+<!-- Received Message (Follow-up) -->
+<div class="flex gap-3 max-w-[80%] -mt-4 ml-11">
+<div>
+<div class="p-4 bg-surface-container-high text-on-surface rounded-2xl rounded-bl-none text-body-md leading-relaxed">
+              It's one of our most popular listings. Can we schedule a viewing for the Oakwood Villa? I have slots open this Thursday afternoon or Friday morning.
+            </div>
+<span class="text-[10px] text-on-surface-variant mt-1 block px-1">10:31 AM</span>
+</div>
+</div>
+<!-- Sent Message -->
+<div class="flex flex-row-reverse gap-3 max-w-[80%] self-end">
+<div class="h-8 w-8 bg-primary rounded-full flex items-center justify-center self-end flex-shrink-0">
+<span class="text-[10px] text-white font-bold">ME</span>
+</div>
+<div class="flex flex-col items-end">
+<div class="p-4 bg-primary text-on-primary rounded-2xl rounded-br-none shadow-sm text-body-md leading-relaxed">
+              Hi Julianne, thanks for reaching out. Thursday at 3 PM would work perfectly for me. Does that time work for you?
+            </div>
+<div class="flex items-center gap-1 mt-1 px-1">
+<span class="text-[10px] text-on-surface-variant">10:40 AM</span>
+<span class="material-symbols-outlined text-[14px] text-primary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+</div>
+</div>
+<!-- Received Message (Typing Indicator State) -->
+<div class="flex gap-3 max-w-[80%]">
+<img class="w-8 h-8 rounded-full object-cover self-end" data-alt="Close up profile photo of a friendly woman with professional attire. Soft daylight studio lighting, clean and modern minimalist style, perfectly centered with a blurred green architectural background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBvRyOxdoLQATBQifaG7P_Af2deI6Yv_2BwXddysfeLNOjKoQtatCpwq9a8IuinJ-EtJ9HNXxO8o0YtpLef9CfeUPc0jr0y4GMbfKUD6N2yjNPcgR0gyABw632S2IykZVPGHupMF7EkWVJCW7ARaQ1IpjfSGdk-XjRptFL_zigs7Uxs0ZXDWRpIVowItatXg5sjV39FIzVq-c7hs-swmy_12JdW-7w0TMkL79IwNMsA1Zeed2iU3Akxyw"/>
+<div>
+<div class="p-4 bg-surface-container-high text-on-surface rounded-2xl rounded-bl-none text-body-md leading-relaxed flex gap-1">
+<span class="w-1.5 h-1.5 bg-on-surface-variant/40 rounded-full animate-bounce"></span>
+<span class="w-1.5 h-1.5 bg-on-surface-variant/40 rounded-full animate-bounce delay-100"></span>
+<span class="w-1.5 h-1.5 bg-on-surface-variant/40 rounded-full animate-bounce delay-200"></span>
+</div>
+</div>
+</div>
+</div>
+<!-- Property Sticky Context -->
+<div class="px-6 py-2 bg-surface-container-low border-t border-outline-variant/30 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="h-10 w-10 rounded overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A modern, high-end residential villa with floor-to-ceiling glass windows and lush green landscaping. Editorial architectural photography with warm, soft afternoon sunlight, illustrating luxury real estate." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCT2FZHJRf5Zijs8w0NwwcU_YlUIUz-tiW4qqm89xh4IJFBqr_iWV4SIKSGl86aRPSM_AxfF4acRe2zX-piTJC6lAxrmzyulJ0tK0eY9kvdoDXOvWBX-yQHlIglJeAF9uDoPNIFIULQUoeEJBcGlHSasmvoImt9MYQG3Gkc6OxDtYBDW6EkbP7UtW02GiVm5-a9-2VCvh4cJ0WIPFtfEsUVj2ZKNAuGRUqSL5RnjyJ9TFZjEKEfkd-cpA"/>
+</div>
+<div>
+<p class="text-[11px] font-bold text-primary uppercase tracking-wider">Oakwood Villa Viewing</p>
+<p class="text-xs text-on-surface-variant">1248 Oakwood Dr, Asheville • $1.25M</p>
+</div>
+</div>
+<button class="text-xs font-label-md text-primary hover:underline transition-all">View Details</button>
+</div>
+<!-- Message Input -->
+<footer class="p-4 bg-surface border-t border-outline-variant">
+<div class="flex items-end gap-3 bg-surface-container-low p-2 rounded-xl border border-outline-variant/30 focus-within:border-primary/30 transition-all">
+<div class="flex gap-1 p-1">
+<button class="material-symbols-outlined text-on-surface-variant p-1.5 hover:bg-surface-container-high rounded-full transition-all">add_circle</button>
+<button class="material-symbols-outlined text-on-surface-variant p-1.5 hover:bg-surface-container-high rounded-full transition-all">image</button>
+</div>
+<textarea class="flex-1 bg-transparent border-none focus:ring-0 text-body-md font-body-md py-2.5 resize-none placeholder-on-surface-variant" placeholder="Type your message..." rows="1"></textarea>
+<button class="flex items-center justify-center bg-primary-container text-white h-10 w-10 rounded-lg hover:shadow-lg active:scale-90 transition-all">
+<span class="material-symbols-outlined text-on-primary-container">send</span>
+</button>
+</div>
+<p class="text-[10px] text-on-surface-variant mt-2 text-center">Your data and communications are encrypted and secure.</p>
+</footer>
+</section>
+<!-- Context Info Pane (Right Desktop Only) -->
+<aside class="hidden lg:flex w-72 flex-col gap-gutter">
+<!-- Agent Profile Card -->
+<div class="bg-surface border border-outline-variant rounded-xl p-6 shadow-sm flex flex-col items-center text-center">
+<img class="w-20 h-20 rounded-full object-cover mb-4 ring-4 ring-primary/5" data-alt="Close up profile photo of a friendly woman with professional attire. Soft daylight studio lighting, clean and modern minimalist style, perfectly centered with a blurred green architectural background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBX7GCRF5XuyCjkEXVkmp8wB29jiYauNpoLIzyKHP4DFzTcNMhhdgqfj-EtSM63MTgY0Tbe4MQOi1ZTZ8dxeufRxdY9o3X2xuhKaTHVVh2u2boUVoYjpYIH5TiglIO_-OY8PVVMHLKaDE1YQTay2u_-TbeD3NZZzPnjJh0Qivw_omuI-XnjRwH0bag5h-pkPmlC2U4yPrsj9hxTl1v51uit3FR7enHTGPkN_qRr4VsK3EPiun3tRNXDvA"/>
+<h4 class="font-headline-sm text-title-lg text-primary mb-1">Julianne Waters</h4>
+<p class="text-body-md text-on-surface-variant mb-4">Elite Broker, RoofStead Platinum</p>
+<div class="flex gap-2 w-full">
+<button class="flex-1 py-2 px-3 border border-outline text-primary font-label-md rounded-lg hover:bg-surface-container-low transition-all">Profile</button>
+<button class="flex-1 py-2 px-3 bg-primary text-white font-label-md rounded-lg hover:bg-primary-container transition-all">Email</button>
+</div>
+</div>
+<!-- Quick Actions / Documents -->
+<div class="bg-surface border border-outline-variant rounded-xl p-4 shadow-sm flex-1">
+<h4 class="font-label-md text-primary uppercase tracking-widest mb-4">Shared Documents</h4>
+<div class="space-y-3">
+<div class="flex items-center gap-3 p-3 bg-surface-container-low rounded-lg cursor-pointer hover:bg-surface-container-high transition-all">
+<div class="w-10 h-10 bg-error-container/20 rounded flex items-center justify-center">
+<span class="material-symbols-outlined text-error">picture_as_pdf</span>
+</div>
+<div class="min-w-0">
+<p class="text-xs font-bold text-on-surface truncate">oakwood_villa_floorplan.pdf</p>
+<p class="text-[10px] text-on-surface-variant">2.4 MB • Yesterday</p>
+</div>
+</div>
+<div class="flex items-center gap-3 p-3 bg-surface-container-low rounded-lg cursor-pointer hover:bg-surface-container-high transition-all">
+<div class="w-10 h-10 bg-primary-container/10 rounded flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">description</span>
+</div>
+<div class="min-w-0">
+<p class="text-xs font-bold text-on-surface truncate">buying_guide_v2.docx</p>
+<p class="text-[10px] text-on-surface-variant">1.1 MB • Mon</p>
+</div>
+</div>
+</div>
+<button class="w-full mt-6 py-3 text-primary font-label-md border-t border-outline-variant flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm">add</span> Add Document
+        </button>
+</div>
+</aside>
+</main>
+<!-- Mobile Bottom Nav -->
+<nav class="md:hidden bg-surface border-t border-outline-variant py-2 px-6 flex justify-between items-center z-40">
+<a class="flex flex-col items-center gap-1 text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="text-[10px] font-label-md">Home</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">search</span>
+<span class="text-[10px] font-label-md">Explore</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">chat_bubble</span>
+<span class="text-[10px] font-label-md">Messages</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">favorite</span>
+<span class="text-[10px] font-label-md">Saved</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">account_circle</span>
+<span class="text-[10px] font-label-md">Profile</span>
+</a>
+</nav>
+<script>
+    // Simple micro-interaction for the textarea auto-expand (visual only)
+    const textarea = document.querySelector('textarea');
+    textarea.addEventListener('input', function() {
+      this.style.height = 'auto';
+      this.style.height = (this.scrollHeight) + 'px';
+    });
+
+    // Chat scroll to bottom on load
+    const chatCanvas = document.getElementById('chat-canvas');
+    chatCanvas.scrollTop = chatCanvas.scrollHeight;
+  </script>
+</body></html>

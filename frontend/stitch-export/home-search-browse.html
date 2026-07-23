@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RoofStead | Premium Real Estate Marketplace</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Source+Serif+4:opsz,wght@8..60,400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .fill-icon {
+            font-variation-settings: 'FILL' 1;
+        }
+        body {
+            background-color: #f9f9f7;
+            -webkit-font-smoothing: antialiased;
+        }
+        .card-shadow {
+            box-shadow: 0px 4px 20px rgba(27, 67, 50, 0.04);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-container-lowest": "#ffffff",
+                      "on-secondary-fixed": "#241a00",
+                      "surface-container-low": "#f4f4f2",
+                      "secondary-fixed-dim": "#e9c349",
+                      "primary-fixed-dim": "#a5d0b9",
+                      "tertiary": "#401b1b",
+                      "on-surface": "#1a1c1b",
+                      "on-tertiary": "#ffffff",
+                      "tertiary-container": "#5a302f",
+                      "surface-dim": "#dadad8",
+                      "primary-fixed": "#c1ecd4",
+                      "on-tertiary-fixed-variant": "#673a39",
+                      "on-primary-fixed": "#002114",
+                      "inverse-primary": "#a5d0b9",
+                      "secondary": "#735c00",
+                      "surface-variant": "#e2e3e1",
+                      "on-error-container": "#93000a",
+                      "error": "#ba1a1a",
+                      "background": "#f9f9f7",
+                      "surface-bright": "#f9f9f7",
+                      "primary": "#012d1d",
+                      "on-tertiary-container": "#d29895",
+                      "outline-variant": "#c1c8c2",
+                      "on-tertiary-fixed": "#331111",
+                      "inverse-on-surface": "#f1f1ef",
+                      "on-error": "#ffffff",
+                      "tertiary-fixed": "#ffdad8",
+                      "surface": "#f9f9f7",
+                      "inverse-surface": "#2f3130",
+                      "primary-container": "#1b4332",
+                      "on-secondary-container": "#745c00",
+                      "on-secondary-fixed-variant": "#574500",
+                      "outline": "#717973",
+                      "secondary-fixed": "#ffe088",
+                      "surface-container-high": "#e8e8e6",
+                      "on-primary-container": "#86af99",
+                      "on-surface-variant": "#414844",
+                      "surface-container-highest": "#e2e3e1",
+                      "error-container": "#ffdad6",
+                      "on-primary": "#ffffff",
+                      "surface-container": "#eeeeec",
+                      "secondary-container": "#fed65b",
+                      "tertiary-fixed-dim": "#f5b7b4",
+                      "on-secondary": "#ffffff",
+                      "surface-tint": "#3f6653",
+                      "on-background": "#1a1c1b",
+                      "on-primary-fixed-variant": "#274e3d"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "gutter": "24px",
+                      "container-max": "1280px",
+                      "unit": "8px",
+                      "margin-mobile": "16px",
+                      "margin-desktop": "64px"
+              },
+              "fontFamily": {
+                      "display-lg": ["Source Serif 4"],
+                      "title-lg": ["Inter"],
+                      "headline-sm": ["Source Serif 4"],
+                      "body-lg": ["Inter"],
+                      "display-lg-mobile": ["Source Serif 4"],
+                      "headline-md": ["Source Serif 4"],
+                      "body-md": ["Inter"],
+                      "label-md": ["Inter"]
+              },
+              "fontSize": {
+                      "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                      "title-lg": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                      "headline-sm": ["24px", {"lineHeight": "32px", "fontWeight": "500"}],
+                      "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "display-lg-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "headline-md": ["32px", {"lineHeight": "40px", "fontWeight": "500"}],
+                      "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}]
+              }
+            },
+          },
+        }
+      </script>
+</head>
+<body class="font-body-lg text-on-surface">
+<!-- Top Navigation Bar -->
+<header class="bg-surface sticky top-0 z-50 shadow-sm transition-all duration-200">
+<div class="flex justify-between items-center w-full px-margin-desktop py-4 max-w-container-max mx-auto">
+<div class="flex items-center gap-8">
+<a class="flex items-center gap-2" href="#">
+<img alt="RoofStead Logo" class="h-10 w-auto" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYLK3Y_heWwdbz8MnGk0ejaG8638fXGHl0kWPVjtf3D-pfvW-NYsv3qhHGza3MnnijtMUh8690-zzdvb_p2h0TLNlOK2NkY2QiPBS8HIJNMCeBoAq5qks0IaVLKG1JkuQ8t6WK06lzOLfVeBYxvI69vyCNwLCTuwa5qB_ObfdkmbBmoKAwc6AyMmXvAa0vT-NVQ4SI9Nd_9clt0tQLaveB4BE4XWAwL9GeiDmLIQjFivkVqxqmb3X7aw"/>
+</a>
+<!-- Search Bar -->
+<div class="hidden md:flex relative items-center bg-surface-container-low rounded-full px-4 py-2 border border-outline-variant focus-within:border-primary-container transition-all w-80">
+<span class="material-symbols-outlined text-on-surface-variant text-xl mr-2">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-body-md w-full placeholder-on-surface-variant" placeholder="Search properties..." type="text"/>
+</div>
+</div>
+<!-- Navigation Links -->
+<nav class="hidden lg:flex items-center gap-8">
+<a class="font-label-md text-label-md text-primary border-b-2 border-primary pb-1" href="#">Properties</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#">Market Trends</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#">Guides</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#">About</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="hidden md:block font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors px-4 py-2">Sign In</button>
+<button class="bg-primary-container text-on-primary text-label-md font-label-md px-6 py-3 rounded-lg hover:bg-primary transition-all active:scale-95">List Property</button>
+</div>
+</div>
+</header>
+<main class="max-w-container-max mx-auto px-margin-desktop py-12">
+<!-- Filter Section -->
+<section class="mb-12">
+<div class="bg-surface-container-lowest p-6 rounded-xl card-shadow border border-outline-variant flex flex-wrap lg:flex-nowrap items-center gap-gutter">
+<!-- Toggle Rent/Sale -->
+<div class="flex bg-surface-container-low p-1 rounded-lg border border-outline-variant">
+<button class="px-6 py-2 bg-primary-container text-on-primary rounded-md text-label-md font-label-md shadow-sm">Buy</button>
+<button class="px-6 py-2 text-on-surface-variant hover:text-primary rounded-md text-label-md font-label-md transition-colors">Rent</button>
+</div>
+<div class="h-8 w-px bg-outline-variant hidden lg:block"></div>
+<!-- Price Slider (Simplified for UI) -->
+<div class="flex-1 min-w-[200px]">
+<div class="flex justify-between mb-2">
+<span class="text-label-md font-label-md text-on-surface-variant">Price Range</span>
+<span class="text-label-md font-label-md text-primary">$400k - $2.5M</span>
+</div>
+<div class="relative w-full h-2 bg-surface-container-high rounded-full">
+<div class="absolute left-1/4 right-1/4 h-full bg-primary-container rounded-full"></div>
+<div class="absolute left-1/4 top-1/2 -translate-y-1/2 w-4 h-4 bg-white border-2 border-primary-container rounded-full shadow-md"></div>
+<div class="absolute right-1/4 top-1/2 -translate-y-1/2 w-4 h-4 bg-white border-2 border-primary-container rounded-full shadow-md"></div>
+</div>
+</div>
+<div class="h-8 w-px bg-outline-variant hidden lg:block"></div>
+<!-- Bedrooms Chips -->
+<div class="flex items-center gap-3">
+<span class="text-label-md font-label-md text-on-surface-variant mr-1">Beds</span>
+<button class="w-10 h-10 flex items-center justify-center border border-outline-variant rounded-lg text-label-md hover:bg-primary-container hover:text-white hover:border-primary-container transition-all">1</button>
+<button class="w-10 h-10 flex items-center justify-center border border-outline-variant rounded-lg text-label-md hover:bg-primary-container hover:text-white hover:border-primary-container transition-all">2</button>
+<button class="w-10 h-10 flex items-center justify-center bg-primary-container text-on-primary border border-primary-container rounded-lg text-label-md">3+</button>
+</div>
+<div class="h-8 w-px bg-outline-variant hidden lg:block"></div>
+<!-- All Filters -->
+<button class="flex items-center gap-2 px-6 py-3 border border-outline-variant rounded-lg text-label-md font-label-md hover:bg-surface-container-low transition-all">
+<span class="material-symbols-outlined text-xl">tune</span>
+                    All Filters
+                </button>
+</div>
+</section>
+<!-- Listings Grid -->
+<section>
+<div class="flex justify-between items-end mb-8">
+<div>
+<h1 class="font-headline-md text-headline-md text-primary mb-2">Properties in Palo Alto</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Showing 2,450 curated residential listings</p>
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="text-label-md font-label-md">Sort by:</span>
+<button class="flex items-center gap-1 font-label-md text-label-md text-primary">Newest <span class="material-symbols-outlined text-lg">keyboard_arrow_down</span></button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
+<!-- Listing Card 1 -->
+<article class="group bg-white rounded-2xl overflow-hidden card-shadow transition-transform hover:-translate-y-1 duration-300">
+<div class="relative aspect-[4/3] overflow-hidden">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="A luxury modern residential architecture property with floor-to-ceiling glass windows and lush green landscaping. The setting is sunset with warm golden hour light reflecting off the pool. Minimalist forest green accents and high-end materials characterize the exterior design. Professional architectural photography style with a calm, editorial aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAW37NXGx4yuOFbPH_F7VOSEEac6ljSNv8Biuv7683TmwaeGtDthopXQQVPz9vXBGI8VoMvbSZcQbjCrvP5YVDUidxrgJmKbVgThxIVQte8i6hpiOwSM0Jq2BkrAsmzMiX-CZIWKw_tOxOx0-BE0iIQMK51etWKV7zRDxOBqIyjlILlx7MV_nNtiAVa9Zyck_UomQWCAVeOn3nctsfNqmahjzsLUSlGgvv8q5amjO77QdXVsOLV61Na6w"/>
+<div class="absolute top-4 left-4 flex gap-2">
+<span class="bg-primary-container text-on-primary text-label-md font-label-md px-3 py-1 rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-sm fill-icon" style="font-variation-settings: 'FILL' 1;">verified</span>
+                                Verified
+                            </span>
+<span class="bg-white/90 backdrop-blur-md text-primary text-label-md font-label-md px-3 py-1 rounded-full">For Sale</span>
+</div>
+<button class="absolute top-4 right-4 w-10 h-10 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center text-primary hover:text-red-500 transition-colors">
+<span class="material-symbols-outlined">favorite</span>
+</button>
+</div>
+<div class="p-6">
+<div class="flex justify-between items-start mb-3">
+<h2 class="font-headline-sm text-headline-sm text-primary">Glass Pavilion Estate</h2>
+<p class="font-title-lg text-title-lg text-primary">$4,850,000</p>
+</div>
+<p class="text-body-md text-on-surface-variant flex items-center gap-1 mb-6">
+<span class="material-symbols-outlined text-lg">location_on</span>
+                            Old Palo Alto, CA
+                        </p>
+<div class="flex items-center justify-between pt-6 border-t border-outline-variant">
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-xl">bed</span>
+<span class="text-label-md font-label-md">5</span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-xl">bathtub</span>
+<span class="text-label-md font-label-md">4</span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-xl">square_foot</span>
+<span class="text-label-md font-label-md">4,200 sqft</span>
+</div>
+</div>
+</div>
+</div>
+</article>
+<!-- Listing Card 2 -->
+<article class="group bg-white rounded-2xl overflow-hidden card-shadow transition-transform hover:-translate-y-1 duration-300">
+<div class="relative aspect-[4/3] overflow-hidden">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="A serene mid-century modern interior of a spacious living room featuring high vaulted ceilings, large windows looking into a pine forest, and warm oak wood flooring. The furniture is minimalist and elegant with neutral tones. Natural soft light fills the space, creating a cozy and prestigious atmosphere. High-quality photography for a luxury real estate magazine." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAeXUgKt2P-UpyL3MXunzug90d6RkYfTbtGuE44KluwM0p-go0O3DPlSBxWr9-Q2taXqyw2eINZmoYc7x0DH1pXKX0UyqNnpmoNgYwauQ5m0UVlqzwoGvdZ9hNxDt7DR4TNp5kmfV-Hc-fIxHcJX7hqmRh5RrRrqx5J5pqr4raMXHmpXMRcwax2Lc1GlL_xxjTy5zkQPgOeXuLMHUwicMBB0PbP-c1IKbkvrZvKDYBOEUp1zoGmyQCJIw"/>
+<div class="absolute top-4 left-4 flex gap-2">
+<span class="bg-primary-container text-on-primary text-label-md font-label-md px-3 py-1 rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-sm fill-icon" style="font-variation-settings: 'FILL' 1;">verified</span>
+                                Verified
+                            </span>
+<span class="bg-white/90 backdrop-blur-md text-primary text-label-md font-label-md px-3 py-1 rounded-full">For Rent</span>
+</div>
+<button class="absolute top-4 right-4 w-10 h-10 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center text-primary hover:text-red-500 transition-colors">
+<span class="material-symbols-outlined">favorite</span>
+</button>
+</div>
+<div class="p-6">
+<div class="flex justify-between items-start mb-3">
+<h2 class="font-headline-sm text-headline-sm text-primary">Pinecrest Residence</h2>
+<p class="font-title-lg text-title-lg text-primary">$12,500<span class="text-body-md font-normal">/mo</span></p>
+</div>
+<p class="text-body-md text-on-surface-variant flex items-center gap-1 mb-6">
+<span class="material-symbols-outlined text-lg">location_on</span>
+                            University South, CA
+                        </p>
+<div class="flex items-center justify-between pt-6 border-t border-outline-variant">
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-xl">bed</span>
+<span class="text-label-md font-label-md">3</span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-xl">bathtub</span>
+<span class="text-label-md font-label-md">2.5</span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-xl">square_foot</span>
+<span class="text-label-md font-label-md">2,850 sqft</span>
+</div>
+</div>
+</div>
+</div>
+</article>
+<!-- Listing Card 3 -->
+<article class="group bg-white rounded-2xl overflow-hidden card-shadow transition-transform hover:-translate-y-1 duration-300">
+<div class="relative aspect-[4/3] overflow-hidden">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="A sleek contemporary kitchen with dark marble countertops, forest green cabinetry, and high-end brass hardware. Soft morning light streams through a window, highlighting the clean lines and minimalist layout. The space is uncluttered and sophisticated, embodyng the RoofStead brand identity of transparency and reliability. Ultra-realistic 8k render." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDPNsWzmDjdGKkfIRFa6PE5jQybMZqskqUMF2IsOUOA9EhQ9UR0a-cAG8ZkM_wTyIpA4cx4V81GlYO0yp4HvfunL5D0xI2PGJwyoQ-t16J8ykFhhvQVe-ZH4SMhWqp5wU9gCPXR4UbGeES78bIL7-SbEwMVpJQq6U9LugPQG1Egf-xQbnu8b2pLErk7xdQuwo6pWsTcxxBzQp4ba8LUtiogdpUZjvYoVnwBhcbQJkUW7GB4bRzLEFAYpg"/>
+<div class="absolute top-4 left-4 flex gap-2">
+<span class="bg-primary-container text-on-primary text-label-md font-label-md px-3 py-1 rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-sm fill-icon" style="font-variation-settings: 'FILL' 1;">verified</span>
+                                Verified
+                            </span>
+<span class="bg-white/90 backdrop-blur-md text-primary text-label-md font-label-md px-3 py-1 rounded-full">For Sale</span>
+</div>
+<button class="absolute top-4 right-4 w-10 h-10 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center text-primary hover:text-red-500 transition-colors">
+<span class="material-symbols-outlined">favorite</span>
+</button>
+</div>
+<div class="p-6">
+<div class="flex justify-between items-start mb-3">
+<h2 class="font-headline-sm text-headline-sm text-primary">The Obsidian Penthouse</h2>
+<p class="font-title-lg text-title-lg text-primary">$2,100,000</p>
+</div>
+<p class="text-body-md text-on-surface-variant flex items-center gap-1 mb-6">
+<span class="material-symbols-outlined text-lg">location_on</span>
+                            Downtown Palo Alto, CA
+                        </p>
+<div class="flex items-center justify-between pt-6 border-t border-outline-variant">
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-xl">bed</span>
+<span class="text-label-md font-label-md">2</span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-xl">bathtub</span>
+<span class="text-label-md font-label-md">2</span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-xl">square_foot</span>
+<span class="text-label-md font-label-md">1,900 sqft</span>
+</div>
+</div>
+</div>
+</div>
+</article>
+<!-- Listing Card 4 -->
+<article class="group bg-white rounded-2xl overflow-hidden card-shadow transition-transform hover:-translate-y-1 duration-300">
+<div class="relative aspect-[4/3] overflow-hidden">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="A panoramic view of an outdoor terrace overlooking a metropolitan skyline at dusk. The terrace features minimalist loungers, a small fire pit, and ambient floor lighting in soft warm tones. The sky is a deep twilight blue. Professional architectural photography focusing on space and depth. High-end residential vibe." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZXCHF4Rpdx3ofSBBFa6caCei9BeWUq3nH_BcYEC80jwF42cP7SXrtrfr17DkZydSqfCXSxbrsYoMfVDQdDArRMYEo41dDdjnwcBcf2fbsVZ1vuJZfd0nyTcQIgapEj7gtRc1KikgNWSvl72iAJLY7_AGWYpcubex-JJldZurqx47U4YmULyYbVYF64DHmdW-DyF5LMkc3__X6QYtuSXYEpav29-_5Rsj_u-xF7UHCOPu77gHVcKfIdw"/>
+<div class="absolute top-4 left-4 flex gap-2">
+<span class="bg-primary-container text-on-primary text-label-md font-label-md px-3 py-1 rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-sm fill-icon" style="font-variation-settings: 'FILL' 1;">verified</span>
+                                Verified
+                            </span>
+<span class="bg-white/90 backdrop-blur-md text-primary text-label-md font-label-md px-3 py-1 rounded-full">For Sale</span>
+</div>
+<button class="absolute top-4 right-4 w-10 h-10 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center text-primary hover:text-red-500 transition-colors">
+<span class="material-symbols-outlined">favorite</span>
+</button>
+</div>
+<div class="p-6">
+<div class="flex justify-between items-start mb-3">
+<h2 class="font-headline-sm text-headline-sm text-primary">Skyline Lofts</h2>
+<p class="font-title-lg text-title-lg text-primary">$3,200,000</p>
+</div>
+<p class="text-body-md text-on-surface-variant flex items-center gap-1 mb-6">
+<span class="material-symbols-outlined text-lg">location_on</span>
+                            South Palo Alto, CA
+                        </p>
+<div class="flex items-center justify-between pt-6 border-t border-outline-variant">
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-xl">bed</span>
+<span class="text-label-md font-label-md">4</span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-xl">bathtub</span>
+<span class="text-label-md font-label-md">3.5</span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-xl">square_foot</span>
+<span class="text-label-md font-label-md">3,400 sqft</span>
+</div>
+</div>
+</div>
+</div>
+</article>
+<!-- Listing Card 5 -->
+<article class="group bg-white rounded-2xl overflow-hidden card-shadow transition-transform hover:-translate-y-1 duration-300">
+<div class="relative aspect-[4/3] overflow-hidden">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="The master bedroom of a luxury home featuring large windows with garden views. Soft white linen bedding, a dark wood minimalist bed frame, and neutral textured walls. The room is flooded with natural daylight. The overall mood is peaceful and clean. High-end property listing photo." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA7JNFxH5rJi8G_R6SsyPpFdD-UPo9fWmA_dKJpykC349b7ghvFH-4jjkZ6g-lA9aFAhrrBlnpJxe0hzqFZyHpWD5di1KK67wnlQpjhfAYax88et2a2DmLCnanoRI71b20UVvyBwINyZQUtfL32sH3UbB7L8EnIHVElhJsqVvjt8o9FoajZBtkzaZm4_6Lk1gabIOzt-GaYUKDDOJze-tymKew4VLTDaUFKSbV4uy_wOKYLB-loXSvl8w"/>
+<div class="absolute top-4 left-4 flex gap-2">
+<span class="bg-primary-container text-on-primary text-label-md font-label-md px-3 py-1 rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-sm fill-icon" style="font-variation-settings: 'FILL' 1;">verified</span>
+                                Verified
+                            </span>
+<span class="bg-white/90 backdrop-blur-md text-primary text-label-md font-label-md px-3 py-1 rounded-full">For Sale</span>
+</div>
+<button class="absolute top-4 right-4 w-10 h-10 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center text-primary hover:text-red-500 transition-colors">
+<span class="material-symbols-outlined">favorite</span>
+</button>
+</div>
+<div class="p-6">
+<div class="flex justify-between items-start mb-3">
+<h2 class="font-headline-sm text-headline-sm text-primary">Greenwood Manor</h2>
+<p class="font-title-lg text-title-lg text-primary">$1,850,000</p>
+</div>
+<p class="text-body-md text-on-surface-variant flex items-center gap-1 mb-6">
+<span class="material-symbols-outlined text-lg">location_on</span>
+                            Crescent Park, CA
+                        </p>
+<div class="flex items-center justify-between pt-6 border-t border-outline-variant">
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-xl">bed</span>
+<span class="text-label-md font-label-md">3</span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-xl">bathtub</span>
+<span class="text-label-md font-label-md">2</span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-xl">square_foot</span>
+<span class="text-label-md font-label-md">2,100 sqft</span>
+</div>
+</div>
+</div>
+</div>
+</article>
+<!-- Listing Card 6 -->
+<article class="group bg-white rounded-2xl overflow-hidden card-shadow transition-transform hover:-translate-y-1 duration-300">
+<div class="relative aspect-[4/3] overflow-hidden">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="A contemporary home library with floor-to-ceiling bookshelves in a dark walnut finish. A velvet green reading chair sits in a pool of soft lamp light. The architectural details are sharp and modern. The atmosphere is quiet, intellectual, and high-end. Editorial architectural photography style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDpey0MdwqPTkmixWMnMJoMq3Nf60a3xDVyuPpHqBvW6ObmsXVjSRPMWo-dS8dJgstMZ_qlqHt-9iAcH4lx5gxy62i54DICP8T1GB8tRiHIhIzEeyG3RT5f4kmAa0np9JaIBAEZk9au4-_HMT6PoDWNN1bIMwjUhd65_Acj0pwGwol8TGD6aBEThU-BAe-L2XLIhBo1Oamr5RNCxanxzXFq36UFtLEnAAMdw50fdAyrjS732R7wXQ24sg"/>
+<div class="absolute top-4 left-4 flex gap-2">
+<span class="bg-primary-container text-on-primary text-label-md font-label-md px-3 py-1 rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-sm fill-icon" style="font-variation-settings: 'FILL' 1;">verified</span>
+                                Verified
+                            </span>
+<span class="bg-white/90 backdrop-blur-md text-primary text-label-md font-label-md px-3 py-1 rounded-full">For Sale</span>
+</div>
+<button class="absolute top-4 right-4 w-10 h-10 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center text-primary hover:text-red-500 transition-colors">
+<span class="material-symbols-outlined">favorite</span>
+</button>
+</div>
+<div class="p-6">
+<div class="flex justify-between items-start mb-3">
+<h2 class="font-headline-sm text-headline-sm text-primary">Library Mews</h2>
+<p class="font-title-lg text-title-lg text-primary">$2,400,000</p>
+</div>
+<p class="text-body-md text-on-surface-variant flex items-center gap-1 mb-6">
+<span class="material-symbols-outlined text-lg">location_on</span>
+                            Midtown, CA
+                        </p>
+<div class="flex items-center justify-between pt-6 border-t border-outline-variant">
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-xl">bed</span>
+<span class="text-label-md font-label-md">3</span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-xl">bathtub</span>
+<span class="text-label-md font-label-md">3</span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-xl">square_foot</span>
+<span class="text-label-md font-label-md">2,600 sqft</span>
+</div>
+</div>
+</div>
+</div>
+</article>
+</div>
+<!-- Pagination -->
+<div class="flex justify-center items-center gap-2 mt-16">
+<button class="w-10 h-10 flex items-center justify-center rounded-lg border border-outline-variant hover:bg-surface-container-low transition-all">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg bg-primary-container text-on-primary">1</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-surface-container-low">2</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-surface-container-low">3</button>
+<span class="px-2">...</span>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-surface-container-low">12</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg border border-outline-variant hover:bg-surface-container-low transition-all">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container border-t border-outline-variant mt-24">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter px-margin-desktop py-12 max-w-container-max mx-auto">
+<div class="col-span-1 md:col-span-1">
+<img alt="RoofStead Logo" class="h-8 w-auto mb-6" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYLK3Y_heWwdbz8MnGk0ejaG8638fXGHl0kWPVjtf3D-pfvW-NYsv3qhHGza3MnnijtMUh8690-zzdvb_p2h0TLNlOK2NkY2QiPBS8HIJNMCeBoAq5qks0IaVLKG1JkuQ8t6WK06lzOLfVeBYxvI69vyCNwLCTuwa5qB_ObfdkmbBmoKAwc6AyMmXvAa0vT-NVQ4SI9Nd_9clt0tQLaveB4BE4XWAwL9GeiDmLIQjFivkVqxqmb3X7aw"/>
+<p class="text-body-md text-on-surface-variant mb-6">Curating the finest residential properties with transparency and expert guidance.</p>
+<div class="flex gap-4">
+<a class="text-primary hover:scale-110 transition-transform" href="#"><span class="material-symbols-outlined">public</span></a>
+<a class="text-primary hover:scale-110 transition-transform" href="#"><span class="material-symbols-outlined">mail</span></a>
+</div>
+</div>
+<div>
+<h4 class="font-title-lg text-title-lg text-primary mb-6">Marketplace</h4>
+<ul class="space-y-3">
+<li><a class="text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Browse Homes</a></li>
+<li><a class="text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Rentals</a></li>
+<li><a class="text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Neighborhoods</a></li>
+<li><a class="text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Mortgage Calculator</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-title-lg text-title-lg text-primary mb-6">Resources</h4>
+<ul class="space-y-3">
+<li><a class="text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Seller Resources</a></li>
+<li><a class="text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Buyer Guide</a></li>
+<li><a class="text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Legal Documents</a></li>
+<li><a class="text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Contact Support</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-title-lg text-title-lg text-primary mb-6">Legal</h4>
+<ul class="space-y-3">
+<li><a class="text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Privacy Policy</a></li>
+<li><a class="text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Terms of Service</a></li>
+<li><a class="text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Fair Housing</a></li>
+</ul>
+</div>
+</div>
+<div class="border-t border-outline-variant py-8 px-margin-desktop text-center">
+<p class="text-label-md font-label-md text-on-surface-variant">© 2024 RoofStead Real Estate. All rights reserved. Licensed Brokerage.</p>
+</div>
+</footer>
+<script>
+        // Simple micro-interactions
+        document.querySelectorAll('article').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-8px)';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0)';
+            });
+        });
+
+        // Search bar focus effect
+        const searchInput = document.querySelector('input[type="text"]');
+        const searchContainer = searchInput.parentElement;
+        searchInput.addEventListener('focus', () => {
+            searchContainer.classList.add('shadow-md');
+        });
+        searchInput.addEventListener('blur', () => {
+            searchContainer.classList.remove('shadow-md');
+        });
+    </script>
+</body></html>

@@ -1,0 +1,71 @@
+.form {
+  background: var(--rs-bg-elevated);
+  border: 1px solid var(--rs-border);
+  border-radius: var(--rs-radius-md);
+  padding: 24px;
+  max-width: 720px;
+}
+
+.typeRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.typeCard {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px;
+  border: 2px solid var(--rs-border);
+  border-radius: var(--rs-radius-md);
+  cursor: pointer;
+}
+
+.typeCard:has(input:checked) {
+  border-color: var(--rs-teal);
+  background: var(--rs-teal-soft);
+}
+
+.typeCard input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.typeCard span {
+  font-weight: 700;
+}
+
+.typeCard small {
+  color: var(--rs-text-muted);
+  font-size: 0.8125rem;
+}
+
+.grid {
+  display: grid;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+@media (min-width: 640px) {
+  .grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.grid label {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.grid input,
+.grid select {
+  width: 100%;
+  padding: 9px 11px;
+  border-radius: var(--rs-radius-sm);
+  border: 1px solid var(--rs-border);
+}

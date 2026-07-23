@@ -1,0 +1,51 @@
+.layout {
+  display: grid;
+  gap: 28px;
+}
+
+@media (min-width: 900px) {
+  .layout {
+    grid-template-columns: 1.2fr 1fr;
+  }
+}
+
+.gallery {
+  border-radius: var(--rs-radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--rs-border);
+}
+
+.heroImage {
+  aspect-ratio: 4 / 3;
+  background: linear-gradient(160deg, #d8cfc0 0%, #ebe6dc 40%, #c5d4d0 100%);
+  min-height: 280px;
+}
+
+.content h1 {
+  font-size: 1.65rem;
+  font-weight: 700;
+  margin: 8px 0;
+}
+
+.price {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--rs-teal);
+}
+
+.verified {
+  display: inline-block;
+  margin: 12px 0;
+  padding: 4px 12px;
+  border-radius: var(--rs-radius-pill);
+  background: rgba(42, 125, 98, 0.1);
+  color: var(--rs-success);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.description {
+  color: var(--rs-text-muted);
+  margin: 16px 0;
+  line-height: 1.6;
+}

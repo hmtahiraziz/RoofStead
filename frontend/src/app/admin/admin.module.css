@@ -1,0 +1,28 @@
+.grid {
+  display: grid;
+  gap: 20px;
+}
+
+@media (min-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.card {
+  background: var(--rs-bg-elevated);
+  border: 1px solid var(--rs-border);
+  border-radius: var(--rs-radius-md);
+  padding: 20px;
+}
+
+.card h2 {
+  font-size: 1.05rem;
+  margin-bottom: 8px;
+  color: var(--rs-teal);
+}
+
+.card p {
+  font-size: 0.875rem;
+  color: var(--rs-text-muted);
+}

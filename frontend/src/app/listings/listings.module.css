@@ -1,0 +1,85 @@
+.page {
+  max-width: var(--rs-max-width);
+  margin: 0 auto;
+  padding: 32px 20px 48px;
+}
+
+.page h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 8px;
+}
+
+.lead {
+  color: var(--rs-text-muted);
+  margin-bottom: 28px;
+  max-width: 52ch;
+}
+
+.layout {
+  display: grid;
+  gap: 24px;
+}
+
+@media (min-width: 960px) {
+  .layout {
+    grid-template-columns: 280px 1fr;
+    align-items: start;
+  }
+}
+
+.filters {
+  background: var(--rs-bg-elevated);
+  border: 1px solid var(--rs-border);
+  border-radius: var(--rs-radius-md);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.filters h2 {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--rs-text-muted);
+}
+
+.field label {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.field input,
+.field select {
+  width: 100%;
+  padding: 9px 11px;
+  border-radius: var(--rs-radius-sm);
+  border: 1px solid var(--rs-border);
+  background: var(--rs-bg-elevated);
+}
+
+.grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+
+.submit {
+  margin-top: 8px;
+  width: 100%;
+  padding: 10px 14px;
+  border: none;
+  border-radius: var(--rs-radius-pill);
+  background: linear-gradient(135deg, var(--rs-brand-deep), var(--rs-teal));
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.submit:hover {
+  filter: brightness(1.05);
+}

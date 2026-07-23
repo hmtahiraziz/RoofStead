@@ -1,0 +1,88 @@
+.card {
+  background: var(--rs-bg-elevated);
+  border: 1px solid var(--rs-border);
+  border-radius: var(--rs-radius-md);
+  overflow: hidden;
+  box-shadow: var(--rs-shadow-sm);
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.card:hover {
+  box-shadow: var(--rs-shadow-md);
+  transform: translateY(-2px);
+}
+
+.media {
+  display: block;
+  position: relative;
+  aspect-ratio: 4 / 3;
+  background: var(--rs-bg-muted);
+}
+
+.mediaPlaceholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(145deg, #e0f2fe 0%, #f1f5f9 45%, #fce7f3 100%);
+}
+
+.badges {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.badgeRent,
+.badgeSale,
+.badgeVerified {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: var(--rs-radius-pill);
+  letter-spacing: 0.02em;
+}
+
+.badgeRent {
+  background: linear-gradient(135deg, var(--rs-brand-deep), var(--rs-teal));
+  color: white;
+}
+
+.badgeSale {
+  background: var(--rs-accent);
+  color: var(--rs-text-inverse);
+}
+
+.badgeVerified {
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--rs-success);
+  border: 1px solid rgba(42, 125, 98, 0.25);
+}
+
+.body {
+  padding: 16px;
+}
+
+.price {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--rs-brand-deep);
+  margin-bottom: 4px;
+}
+
+.title {
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.35;
+  margin-bottom: 6px;
+}
+
+.title a:hover {
+  color: var(--rs-accent);
+}
+
+.meta {
+  font-size: 0.8125rem;
+  color: var(--rs-text-muted);
+}

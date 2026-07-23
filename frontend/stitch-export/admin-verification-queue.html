@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RoofStead Admin - Verification Queue</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Source+Serif+4:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed": "#241a00",
+                        "surface-container-low": "#f4f4f2",
+                        "secondary-fixed-dim": "#e9c349",
+                        "primary-fixed-dim": "#a5d0b9",
+                        "tertiary": "#401b1b",
+                        "on-surface": "#1a1c1b",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-container": "#5a302f",
+                        "surface-dim": "#dadad8",
+                        "primary-fixed": "#c1ecd4",
+                        "on-tertiary-fixed-variant": "#673a39",
+                        "on-primary-fixed": "#002114",
+                        "inverse-primary": "#a5d0b9",
+                        "secondary": "#735c00",
+                        "surface-variant": "#e2e3e1",
+                        "on-error-container": "#93000a",
+                        "error": "#ba1a1a",
+                        "background": "#f9f9f7",
+                        "surface-bright": "#f9f9f7",
+                        "primary": "#012d1d",
+                        "on-tertiary-container": "#d29895",
+                        "outline-variant": "#c1c8c2",
+                        "on-tertiary-fixed": "#331111",
+                        "inverse-on-surface": "#f1f1ef",
+                        "on-error": "#ffffff",
+                        "tertiary-fixed": "#ffdad8",
+                        "surface": "#f9f9f7",
+                        "inverse-surface": "#2f3130",
+                        "primary-container": "#1b4332",
+                        "on-secondary-container": "#745c00",
+                        "on-secondary-fixed-variant": "#574500",
+                        "outline": "#717973",
+                        "secondary-fixed": "#ffe088",
+                        "surface-container-high": "#e8e8e6",
+                        "on-primary-container": "#86af99",
+                        "on-surface-variant": "#414844",
+                        "surface-container-highest": "#e2e3e1",
+                        "error-container": "#ffdad6",
+                        "on-primary": "#ffffff",
+                        "surface-container": "#eeeeec",
+                        "secondary-container": "#fed65b",
+                        "tertiary-fixed-dim": "#f5b7b4",
+                        "on-secondary": "#ffffff",
+                        "surface-tint": "#3f6653",
+                        "on-background": "#1a1c1b",
+                        "on-primary-fixed-variant": "#274e3d"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "container-max": "1280px",
+                        "unit": "8px",
+                        "margin-mobile": "16px",
+                        "margin-desktop": "64px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Source Serif 4"],
+                        "title-lg": ["Inter"],
+                        "headline-sm": ["Source Serif 4"],
+                        "body-lg": ["Inter"],
+                        "headline-md": ["Source Serif 4"],
+                        "body-md": ["Inter"],
+                        "label-md": ["Inter"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #F9F9F7;
+            font-family: 'Inter', sans-serif;
+        }
+        .sidebar-active {
+            background-color: #f4f4f2;
+            color: #012d1d;
+            font-weight: 600;
+            border-right: 3px solid #012d1d;
+        }
+        .data-table-row:hover {
+            background-color: #fcfcfb;
+        }
+    </style>
+</head>
+<body class="text-on-surface flex min-h-screen">
+<!-- Sidebar Navigation -->
+<aside class="w-64 bg-surface border-r border-outline-variant flex flex-col fixed h-full z-20">
+<div class="p-6 border-b border-outline-variant">
+<img alt="RoofStead Admin" class="h-10 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYLK3Y_heWwdbz8MnGk0ejaG8638fXGHl0kWPVjtf3D-pfvW-NYsv3qhHGza3MnnijtMUh8690-zzdvb_p2h0TLNlOK2NkY2QiPBS8HIJNMCeBoAq5qks0IaVLKG1JkuQ8t6WK06lzOLfVeBYxvI69vyCNwLCTuwa5qB_ObfdkmbBmoKAwc6AyMmXvAa0vT-NVQ4SI9Nd_9clt0tQLaveB4BE4XWAwL9GeiDmLIQjFivkVqxqmb3X7aw"/>
+<p class="mt-2 text-on-surface-variant font-label-md text-label-md tracking-widest">INTERNAL ADMIN</p>
+</div>
+<nav class="flex-1 py-4">
+<ul class="space-y-1">
+<li>
+<a class="flex items-center px-6 py-3 text-on-surface-variant hover:bg-surface-container-low transition-colors group" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]">dashboard</span>
+<span class="font-body-md text-body-md">Dashboard</span>
+</a>
+</li>
+<li>
+<a class="flex items-center px-6 py-3 text-on-surface-variant hover:bg-surface-container-low transition-colors group" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]">group</span>
+<span class="font-body-md text-body-md">Users</span>
+</a>
+</li>
+<li>
+<a class="flex items-center px-6 py-3 sidebar-active" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+<span class="font-body-md text-body-md">Verification Queue</span>
+</a>
+</li>
+<li>
+<a class="flex items-center px-6 py-3 text-on-surface-variant hover:bg-surface-container-low transition-colors group" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]">list_alt</span>
+<span class="font-body-md text-body-md">All Listings</span>
+</a>
+</li>
+</ul>
+</nav>
+<div class="p-6 border-t border-outline-variant">
+<div class="flex items-center space-x-3 mb-4">
+<div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container font-bold text-xs">
+                    JD
+                </div>
+<div>
+<p class="font-label-md text-label-md text-on-surface">Jane Doe</p>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-wider">Super Admin</p>
+</div>
+</div>
+<button class="w-full flex items-center justify-center py-2 px-4 border border-outline-variant rounded hover:bg-surface-container-low transition-colors text-body-md font-body-md">
+<span class="material-symbols-outlined text-sm mr-2">logout</span> Sign Out
+            </button>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 ml-64 p-margin-desktop">
+<!-- Header -->
+<header class="flex justify-between items-end mb-8 border-b border-outline-variant pb-6">
+<div>
+<h1 class="font-headline-md text-headline-md text-primary">Verification Queue</h1>
+<p class="text-on-surface-variant font-body-md text-body-md mt-1">Review pending seller applications to ensure platform trust and safety.</p>
+</div>
+<div class="flex space-x-3">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-lg">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface border border-outline-variant rounded-lg text-body-md focus:ring-2 focus:ring-primary focus:border-primary w-64 transition-all" placeholder="Search sellers..." type="text"/>
+</div>
+<button class="flex items-center px-4 py-2 border border-outline-variant rounded-lg bg-surface text-on-surface-variant hover:bg-surface-container-low transition-all">
+<span class="material-symbols-outlined mr-2 text-lg">filter_list</span>
+<span class="font-label-md text-label-md">Filter</span>
+</button>
+</div>
+</header>
+<!-- Stats Overview -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter mb-8">
+<div class="bg-surface p-6 rounded-xl border border-outline-variant shadow-sm">
+<p class="text-on-surface-variant font-label-md text-label-md mb-1 uppercase tracking-wider">Pending Tasks</p>
+<p class="font-display-lg text-display-lg text-primary">24</p>
+<div class="flex items-center mt-2 text-secondary text-sm">
+<span class="material-symbols-outlined text-xs mr-1">trending_up</span>
+<span>12% from yesterday</span>
+</div>
+</div>
+<div class="bg-surface p-6 rounded-xl border border-outline-variant shadow-sm">
+<p class="text-on-surface-variant font-label-md text-label-md mb-1 uppercase tracking-wider">Avg. Response Time</p>
+<p class="font-display-lg text-display-lg text-primary">4.2h</p>
+<div class="flex items-center mt-2 text-on-surface-variant text-sm">
+<span class="material-symbols-outlined text-xs mr-1">timer</span>
+<span>Target: &lt; 6h</span>
+</div>
+</div>
+<div class="bg-surface p-6 rounded-xl border border-outline-variant shadow-sm">
+<p class="text-on-surface-variant font-label-md text-label-md mb-1 uppercase tracking-wider">Approved Today</p>
+<p class="font-display-lg text-display-lg text-primary">158</p>
+<div class="flex items-center mt-2 text-primary-container text-sm">
+<span class="material-symbols-outlined text-xs mr-1">check_circle</span>
+<span>94% Success rate</span>
+</div>
+</div>
+</div>
+<!-- Verification Queue Table -->
+<div class="bg-surface rounded-xl border border-outline-variant shadow-sm overflow-hidden">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant">
+<th class="px-6 py-4 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider w-1/4">Seller Information</th>
+<th class="px-6 py-4 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">ID Document</th>
+<th class="px-6 py-4 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Live Selfie</th>
+<th class="px-6 py-4 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Submitted</th>
+<th class="px-6 py-4 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<!-- Row 1 -->
+<tr class="data-table-row transition-colors">
+<td class="px-6 py-6">
+<div class="flex items-center">
+<div class="w-10 h-10 rounded-full bg-surface-container-high mr-4 overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a middle-aged man with a friendly expression, wearing a clean white dress shirt. The lighting is bright and corporate, matching a clean admin dashboard aesthetic with soft shadows. The background is a neutral, out-of-focus office setting in warm-neutral tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA1Ddyl4IDLxqLJsTeheBgLt9G7qBCA7SBpBqxH3xwVl_00ERJfXZhQKXvakENyXgUIleKUGd95GMNot84Ln7PTVLhxteXhLIy2XrAAXPkTCj_iUrproa8VdrEsf8BMiUTdGmNyA9dOxpmdtedSYZEItjh3_lFpta4drMCmJo310x6OR7nmYzAtPoVAOPoP0buc9hhWOKU0hGyyuxI5iaUfZIky7WRBBwJoV8R7yb4QDGlEOjWYNSS2DQ"/>
+</div>
+<div>
+<p class="font-title-lg text-title-lg text-on-surface">Arthur Sterling</p>
+<p class="text-on-surface-variant font-body-md text-body-md">arthur.s@domain.com</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-6">
+<div class="w-32 h-20 bg-surface-container rounded-lg border border-outline-variant overflow-hidden cursor-zoom-in group relative">
+<img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all" data-alt="A high-resolution scan of a modern government-issued identification card. The card features clear text, a small portrait photo, and holographic security elements. It is placed flat on a clean, light surface with professional overhead lighting, emphasizing a formal verification context for a real estate platform." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC2PgAeZlBscKOd9An5i8792jj8Nkvs2QNCmrSNea7RFAuKk32nIwD8i072O8CW9BLzUyIJ5graDtQPBCeE33hN29vLG7l1QHHfuaLY94y_YuYB7Ad9asb7gV2TpmOE-EcMaKJfRUHBZj4-MlxFRs_T7SSLvSPfIB7us0tQ4rfgwPUEAqN5SWeofiJzgFdN1oQ39C5zUCcBH9IghWbBj19H2qDXQcJUXxodSYIE6PMZOexfDqGh8qL6vw"/>
+<div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-white">zoom_in</span>
+</div>
+</div>
+</td>
+<td class="px-6 py-6">
+<div class="w-20 h-20 rounded-lg border border-outline-variant overflow-hidden bg-surface-container group relative cursor-zoom-in">
+<img class="w-full h-full object-cover" data-alt="A clear, front-facing selfie of a man captured in a domestic setting with bright daylight. The subject is holding up a handwritten note with today's date, following identity verification protocols. The image is sharp, well-lit, and fits a high-trust administrative interface design." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC61s7gsa1bJxeZPqtGNsUGMY6zN2jDOx_AxiGloiZQJ_MabFs2galn41IH8tW-Go2P1b8On7B6C_PqVZk99cOOF0T5UqXnu8MUT0PJVszaxcRohygNNnicXcgsJq7tAl5ic7Ek08MbBcyinysR3oSrQ5XV5soXDkCQ-G4FdBPg53lvqjmqSO-yGb_j-2sGMnW8zjJHgpgcVB0w_kg3GTajN2_zqKfqXt3SmiynKE_XVgi0h1k1Yo9ddA"/>
+<div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-white">zoom_in</span>
+</div>
+</div>
+</td>
+<td class="px-6 py-6">
+<p class="font-body-md text-body-md text-on-surface">Oct 12, 2024</p>
+<p class="text-on-surface-variant font-label-md text-label-md">10:45 AM</p>
+</td>
+<td class="px-6 py-6 text-right">
+<div class="flex justify-end space-x-2">
+<button class="px-4 py-2 border border-outline text-on-surface-variant font-label-md text-label-md rounded hover:bg-error-container hover:text-on-error-container hover:border-transparent transition-all active:scale-95">Reject</button>
+<button class="px-4 py-2 bg-primary-container text-on-primary-container font-label-md text-label-md rounded hover:brightness-110 shadow-sm transition-all active:scale-95">Approve</button>
+</div>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="data-table-row transition-colors">
+<td class="px-6 py-6">
+<div class="flex items-center">
+<div class="w-10 h-10 rounded-full bg-surface-container-high mr-4 overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="A professional portrait of a woman in her 30s with professional attire, set against a soft, light-colored background. The image has high-end editorial quality, typical of a luxury real estate platform's internal tool. Lighting is natural and even, highlighting her features clearly for identification purposes." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAvs7keaSLc-lIso6v-4tbGDnuU7vBCYmy6JQk0l2Yxh-mffTAi8FcjjzADpPWsQnyP_QYBRPKdnpqygOLE5hYvevFyuZf4L7Ebjnvz16ZfkS6e1ZHfncUgehKpphfrmJ_QN2mC1A-j6HxrkBnxMYyd03WZPXACNCwFF0i1d2nEaAm6oq02EcVzQkdK51_3JUwn1Tf8KKewmACaXQT7NcvV_PWLZuqVd0qxXOSAilS_XcUpa__nz7Ln_Q"/>
+</div>
+<div>
+<p class="font-title-lg text-title-lg text-on-surface">Elena Rodriguez</p>
+<p class="text-on-surface-variant font-body-md text-body-md">elena.rod@webmail.com</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-6">
+<div class="w-32 h-20 bg-surface-container rounded-lg border border-outline-variant overflow-hidden cursor-zoom-in group relative">
+<img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all" data-alt="A photograph of a modern passport's main bio-data page. The page contains a color portrait, various machine-readable zones, and official seals. It is well-lit from the side, creating a slight three-dimensional effect and highlighting security watermarks, positioned for an administrative review process." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAUpq5f2m22ikjur8R8iS0-qPZMrUx-iN-M3Hd1p4_W47PWYEDWILGCX3h_EfsY7e5QYMhN42UhbgCH1K7P0odrrDg3VZATi1-6W1ZkkqWaXJAEykuUb0HyJilAnZlMzdIndsXamPlXi5S0lQ5m6aWEZ3pNXyH1RpJexGGOgGtAjcbYseyeIUqdMF9TNmd_ycnEQlCDO4FVRJe7GTSMWmM3S1ROIEz3hDGmLySqncFXpc0m6J4nmHo2AA"/>
+<div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-white">zoom_in</span>
+</div>
+</div>
+</td>
+<td class="px-6 py-6">
+<div class="w-20 h-20 rounded-lg border border-outline-variant overflow-hidden bg-surface-container group relative cursor-zoom-in">
+<img class="w-full h-full object-cover" data-alt="A smartphone selfie of a woman smiling slightly, taken in a bright indoor room. The background shows a minimalist living space with soft neutral colors. The image is crisp and serves as a secondary verification step for a secure online housing marketplace, adhering to a functional UI style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBhQ4QixmUwwzCusN1NeIv_HklkVM8MDxAYBgbbddkUcl8It1zhIEq5SBTcFg0ODrkvyCOxZgrdpdR8f8wT4Y4awFscF7gRq9gNOijd8hWOiiP348D82iJm5bGIk5dlO300w9vkiI5fvAU2i8YjqjFqS2OnbDaC4oizRRjDzJAepuPR-JsUFre858Uer3OJ8DXuPO5XhlPAc1d3bY-H6UKw1oMAuTtw6UaWfv0qjv8yjY7s4QzILizwNg"/>
+<div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-white">zoom_in</span>
+</div>
+</div>
+</td>
+<td class="px-6 py-6">
+<p class="font-body-md text-body-md text-on-surface">Oct 12, 2024</p>
+<p class="text-on-surface-variant font-label-md text-label-md">09:12 AM</p>
+</td>
+<td class="px-6 py-6 text-right">
+<div class="flex justify-end space-x-2">
+<button class="px-4 py-2 border border-outline text-on-surface-variant font-label-md text-label-md rounded hover:bg-error-container hover:text-on-error-container hover:border-transparent transition-all active:scale-95">Reject</button>
+<button class="px-4 py-2 bg-primary-container text-on-primary-container font-label-md text-label-md rounded hover:brightness-110 shadow-sm transition-all active:scale-95">Approve</button>
+</div>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="data-table-row transition-colors">
+<td class="px-6 py-6">
+<div class="flex items-center">
+<div class="w-10 h-10 rounded-full bg-surface-container-high mr-4 overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="A crisp, modern photograph of an elderly man with silver hair and a sharp navy blazer. The setting is clean and high-key, suitable for a professional identity card. The image communicates reliability and transparency, fitting the core values of the RoofStead real estate brand identity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBOse7aNOOWSTnqUAecrCHdLqaIeKfdbOhfONEa43EqPenmWUEUjgomP3CEODgAL_Ci4SsJ8V7umIbXp7pFXEkrZYUttlWsb22cwf-hJFxCt-g9tLudshDT8tQW-FkIRIL9nju0MWQdS54hh1SD16erLq7IQ_1TawjjiS55pnswaIUcTbpV7dTDAN_qXzShXuggCnqCxYOBskflheZwlGKT8JSGXuCpMQjVgQL_2T69MS1jU0vT7D_Heg"/>
+</div>
+<div>
+<p class="font-title-lg text-title-lg text-on-surface">Marcus Thorne</p>
+<p class="text-on-surface-variant font-body-md text-body-md">m.thorne@luxuryhomes.net</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-6">
+<div class="w-32 h-20 bg-surface-container rounded-lg border border-outline-variant overflow-hidden cursor-zoom-in group relative">
+<img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all" data-alt="A clear photo of a driver's license lying on a wooden desk. The focus is sharp on the text and portrait, with a shallow depth of field blurring the surrounding desk. The lighting is soft and diffuse, intended to represent an authentic user submission in a verification workflow." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDFWGsVGV3D0H7FwiI36wkI6uuujss9_oEiOX5Yqc6HKpUzMIsc4m6mefsCputmQ7jo2LlOIaVu94PVCerIpxbwDiSmyxoHsdbomHDTOcMAeSeWpfbNihgs_-ULYuicjW8JYdtYZGyRLo8KD2PnqppgiaBgNKlEswUVQTM_K20LDGx66627A8L8TPdWzZOnZC9kSLx3W8wIlx8NOLHYf-UxonjnqSIAquA8OPnroJLED3mt3lvIiFP3tg"/>
+<div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-white">zoom_in</span>
+</div>
+</div>
+</td>
+<td class="px-6 py-6">
+<div class="w-20 h-20 rounded-lg border border-outline-variant overflow-hidden bg-surface-container group relative cursor-zoom-in">
+<img class="w-full h-full object-cover" data-alt="A well-lit selfie of a mature man with a calm expression. The photo is taken at eye level in an office environment with neutral wall colors. The image is intended for biometric verification on a secure property management dashboard, emphasizing functional and reliable aesthetic standards." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD_W2XJ1Mujudxa7GapNzA2QvOqZLK62zglVrc-bne5r4mhB5OQDNtJNRL_11gxRFtXAsODwyO04NLCT0ioS4l1Jo8S738VSn-iEtbGn97Ir6OqbAgYMpezUigSdqFswL5qIBgUMGPqB1r3Vp7iEJTLWiBH13VAKSSvxGicapEys8fqdZ9YHwG2ECRFNu25J7tNzTQdapq3SrXzEAFuGv4ip-9VXGLE0GLWZWT5bwYdGd74VLRcEQTsug"/>
+<div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-white">zoom_in</span>
+</div>
+</div>
+</td>
+<td class="px-6 py-6">
+<p class="font-body-md text-body-md text-on-surface">Oct 11, 2024</p>
+<p class="text-on-surface-variant font-label-md text-label-md">11:58 PM</p>
+</td>
+<td class="px-6 py-6 text-right">
+<div class="flex justify-end space-x-2">
+<button class="px-4 py-2 border border-outline text-on-surface-variant font-label-md text-label-md rounded hover:bg-error-container hover:text-on-error-container hover:border-transparent transition-all active:scale-95">Reject</button>
+<button class="px-4 py-2 bg-primary-container text-on-primary-container font-label-md text-label-md rounded hover:brightness-110 shadow-sm transition-all active:scale-95">Approve</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<!-- Pagination -->
+<div class="bg-surface px-6 py-4 flex items-center justify-between border-t border-outline-variant">
+<p class="text-on-surface-variant font-body-md text-body-md">Showing <span class="font-bold text-on-surface">1</span> to <span class="font-bold text-on-surface">10</span> of <span class="font-bold text-on-surface">24</span> entries</p>
+<div class="flex space-x-2">
+<button class="px-3 py-1 border border-outline-variant rounded hover:bg-surface-container-low disabled:opacity-50 transition-all" disabled="">
+<span class="material-symbols-outlined text-sm">chevron_left</span>
+</button>
+<button class="px-3 py-1 bg-primary text-on-primary rounded font-label-md text-label-md">1</button>
+<button class="px-3 py-1 border border-outline-variant rounded hover:bg-surface-container-low font-label-md text-label-md">2</button>
+<button class="px-3 py-1 border border-outline-variant rounded hover:bg-surface-container-low font-label-md text-label-md">3</button>
+<button class="px-3 py-1 border border-outline-variant rounded hover:bg-surface-container-low transition-all">
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Footer Note -->
+<footer class="mt-12 text-center text-on-surface-variant font-body-md text-body-md opacity-60">
+            © 2024 RoofStead Internal Systems. Internal Use Only.
+        </footer>
+</main>
+<!-- Modal Mockup Overlay (Hidden) -->
+<div class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300" id="rejection-modal">
+<div class="bg-surface p-8 rounded-xl max-w-md w-full shadow-2xl scale-95 transition-transform duration-300">
+<h3 class="font-headline-sm text-headline-sm text-error mb-4">Reject Application</h3>
+<p class="text-on-surface-variant font-body-md text-body-md mb-4">Please provide a reason for rejecting Arthur Sterling's application. This will be sent to the user.</p>
+<textarea class="w-full h-32 border border-outline-variant rounded-lg p-3 font-body-md text-body-md focus:ring-2 focus:ring-error focus:border-error mb-6" placeholder="Document image quality too low..."></textarea>
+<div class="flex justify-end space-x-4">
+<button class="px-6 py-2 text-on-surface-variant font-label-md text-label-md hover:bg-surface-container-low rounded transition-all" onclick="toggleModal()">Cancel</button>
+<button class="px-6 py-2 bg-error text-on-error font-label-md text-label-md rounded hover:brightness-110 shadow-sm transition-all">Confirm Rejection</button>
+</div>
+</div>
+</div>
+<script>
+        function toggleModal() {
+            const modal = document.getElementById('rejection-modal');
+            const inner = modal.querySelector('div');
+            if (modal.classList.contains('opacity-0')) {
+                modal.classList.remove('opacity-0', 'pointer-events-none');
+                inner.classList.remove('scale-95');
+                inner.classList.add('scale-100');
+            } else {
+                modal.classList.add('opacity-0', 'pointer-events-none');
+                inner.classList.remove('scale-100');
+                inner.classList.add('scale-95');
+            }
+        }
+
+        // Attach listeners to reject buttons
+        document.querySelectorAll('button').forEach(btn => {
+            if (btn.innerText.includes('Reject')) {
+                btn.addEventListener('click', toggleModal);
+            }
+        });
+    </script>
+</body></html>

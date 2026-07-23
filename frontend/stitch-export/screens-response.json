@@ -1,0 +1,157 @@
+﻿{
+    "id":  1,
+    "jsonrpc":  "2.0",
+    "result":  {
+                   "content":  [
+                                   {
+                                       "text":  "{\"screens\":[{\"name\":\"projects/18354210524743888148/screens/3957f2c8474449faa1458efce2926460\",\"title\":\"Seller Verification\",\"screenshot\":{\"name\":\"projects/18354210524743888148/screens/3957f2c8474449faa1458efce2926460/fileEntries/screenshot\",\"downloadUrl\":\"https://lh3.googleusercontent.com/aida/AP1WRLvO2rnN3VEjOrGlXYfSi7bTO9iVCqLqVs1NJN59qaZ4FuS1UQEte8wmo2ym6k078u1xeOGcsaVQtfNQ_xIh4qYRsFrVsXIiQQDAgPqdABg8SJpl-sie1PmuObn248vqr5v3LyJAZK_t_bo-rScGOOakV_QxPmYTLKPgf-_jiq_yWybRC6i1IKl70BTmiewiQZF1q7zlvoDnBeXngfFHbZxXoZI5Ne1ZCdcRQh1kY-xHxuMD_7_ohFNda-iv\"},\"htmlCode\":{\"name\":\"projects/18354210524743888148/screens/3957f2c8474449faa1458efce2926460/fileEntries/html\",\"downloadUrl\":\"https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzAwMDY1NzQ3NDg4MmViMzEwOTY4OWQ3OTE0MTZlZmY3EgsSBxDGq9iejxMYAZIBJAoKcHJvamVjdF9pZBIWQhQxODM1NDIxMDUyNDc0Mzg4ODE0OA\u0026filename=\u0026opi=89354086\",\"mimeType\":\"text/html\"},\"width\":\"2560\",\"height\":\"3614\",\"deviceType\":\"DESKTOP\"},{\"name\":\"projects/18354210524743888148/screens/27ef59e48d2d4c71aa88f32f1a3ed278\",\"title\":\"Logo\",\"screenshot\":{\"name\":\"projects/18354210524743888148/screens/27ef59e48d2d4c71aa88f32f1a3ed278/fileEntries/screenshot\",\"downloadUrl\":\"https://lh3.googleusercontent.com/aida/AP1WRLuIjE7buq_BAmEOhPwuDKZX8iAY22-6zfMeqXcSHIVJCHg6IlEsII1Y115tx4e42P0B81HRZUburHaGRxXx9i8J7tFk0TfqEFFzez620Hu2cRkudP5hg45akXCT9QqOHINJ3ReG3yXhZGCWRg2ELGsr8onvkmn5te7-ncP4NBdeRE5Zzfc9uVZaTy0YaZz_7sIcZxLXPU25MMkgEQaE1v-T4mjZNGItjk40FglN6t2NyrQ90-1TBBjerUsx\"},\"htmlCode\":{},\"width\":\"1024\",\"height\":\"1024\"},{\"name\":\"projects/18354210524743888148/screens/3accb3eb416c4addad7035d3ffa73b8f\",\"title\":\"Sign Up\",\"screenshot\":{\"name\":\"projects/18354210524743888148/screens/3accb3eb416c4addad7035d3ffa73b8f/fileEntries/screenshot\",\"downloadUrl\":\"https://lh3.googleusercontent.com/aida/AP1WRLupnq72yT9hR18SzXUu8MK76kJSeHrDyh6NnraBCIavPQFJmaluyx9pMlwWSS7K1mexPij00OHdIOws1KKSy9lQ7oFpUu-2RpU3jp8yHgD9ESLQE9kJcAHWYmwfId4bVlcHmL2_hQICzA9vQabn8EHgbnsOC-5BFTnjrftCgpM5AmxghHLinrbJJUws0PUt8DL-qExg0p9HH2eZCP_r5N4CqJPQHgUXoKQw-xN4GCCrVMUlR4IKZe0nyuEA\"},\"htmlCode\":{\"name\":\"projects/18354210524743888148/screens/3accb3eb416c4addad7035d3ffa73b8f/fileEntries/html\",\"downloadUrl\":\"https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzAwMDY1NzQ3NGI0NGQxOWMwNWYxMTljMmZjMThlMDE0EgsSBxDGq9iejxMYAZIBJAoKcHJvamVjdF9pZBIWQhQxODM1NDIxMDUyNDc0Mzg4ODE0OA\u0026filename=\u0026opi=89354086\",\"mimeType\":\"text/html\"},\"width\":\"2560\",\"height\":\"2096\",\"deviceType\":\"DESKTOP\"},{\"name\":\"projects/18354210524743888148/screens/e970a07c5c654b049ffe970c8a345bc4\",\"title\":\"Home Search \u0026 Browse\",\"screenshot\":{\"name\":\"projects/18354210524743888148/screens/e970a07c5c654b049ffe970c8a345bc4/fileEntries/screenshot\",\"downloadUrl\":\"https://lh3.googleusercontent.com/aida/AP1WRLsYIeXAay2SlJcqV7rJWeMiVqqh15Rn3OtIFx1_Lcck31BSR3hktgUnnBPeCoWCj07_9N6RUYzjsqJLzQ6eYV_q2ebP9v-SIwMq9lpQSYfs9f2vtBCLwxjB_5CMVmEnD6P0q0Yrit4w0FBvf_8QaQnQkviSreVsKp5kJZXj77fTqBlF99sPoDh7534MexPuZ4Q1DNpdxTxSBWPG5Gd_sSdFR7F48cL_uHgbX-igdHwwB2Za-Z83EtUYWcn4\"},\"htmlCode\":{\"name\":\"projects/18354210524743888148/screens/e970a07c5c654b049ffe970c8a345bc4/fileEntries/html\",\"downloadUrl\":\"https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzAwMDY1NzQ3NDk3ZjAyMjEwNDc5ZjE0NmQzMDlkODk2EgsSBxDGq9iejxMYAZIBJAoKcHJvamVjdF9pZBIWQhQxODM1NDIxMDUyNDc0Mzg4ODE0OA\u0026filename=\u0026opi=89354086\",\"mimeType\":\"text/html\"},\"width\":\"2560\",\"height\":\"3996\",\"deviceType\":\"DESKTOP\"},{\"name\":\"projects/18354210524743888148/screens/d8efbeb31291478da12d210321de432f\",\"title\":\"Messages \u0026 Chat\",\"screenshot\":{\"name\":\"projects/18354210524743888148/screens/d8efbeb31291478da12d210321de432f/fileEntries/screenshot\",\"downloadUrl\":\"https://lh3.googleusercontent.com/aida/AP1WRLt1psJlkK2icMNgVuiFbvgQuBotHa3tBkNv4vpOQJ5rcjnFQQ5GoYXPqJOnxO3kpj4eeG8M-NE6wHhIIjiobYjVBn0YwZQWDF18AEO_Qu6KAwfnnPtTuvp0KD5tjzoQtRooBvFtcs2ThJwJPlotSubl6t_IA6x2G3XlwI5Xv7ZPxodMY6HigbJnxlAKMenz0rS3Mwe9005ARVg4bLZJeyYdMQ2gdAooznvqToBf6zr4ClAZ7K3TMF1ZcUE\"},\"htmlCode\":{\"name\":\"projects/18354210524743888148/screens/d8efbeb31291478da12d210321de432f/fileEntries/html\",\"downloadUrl\":\"https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzAwMDY1NzQ3NGNkZWI0OWIwMjNiZDk3ZTA5MzBlZDVlEgsSBxDGq9iejxMYAZIBJAoKcHJvamVjdF9pZBIWQhQxODM1NDIxMDUyNDc0Mzg4ODE0OA\u0026filename=\u0026opi=89354086\",\"mimeType\":\"text/html\"},\"width\":\"2560\",\"height\":\"2048\",\"deviceType\":\"DESKTOP\"},{\"name\":\"projects/18354210524743888148/screens/4564f8d60aed4282a92bbbd860010aa2\",\"title\":\"User Profile\",\"screenshot\":{\"name\":\"projects/18354210524743888148/screens/4564f8d60aed4282a92bbbd860010aa2/fileEntries/screenshot\",\"downloadUrl\":\"https://lh3.googleusercontent.com/aida/AP1WRLtpJEYWdnm-Btpb95f9_UXKTg9HAMEzKGD-3CR5bvmh3S8JX1ExBPAJgb4daz0jWolm28X37KF-ZUOYk91hJqVeIoGbflYCnlxgbKu641DJC9RI3j00j_akqDtdz0wAKgNUe3iPAh-S9Ud0UHk-0EGXgRCK0_UUqpKYQbghYj5SctlvTGzHf03RaDR3MQkcFwNSz8fDb2kPp1q8kdJmVL2AcFO2xUiMDNa5RCs_kZ049vQky4b3uJfWy0t1\"},\"htmlCode\":{\"name\":\"projects/18354210524743888148/screens/4564f8d60aed4282a92bbbd860010aa2/fileEntries/html\",\"downloadUrl\":\"https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzAwMDY1NzQ3NGJmOWUyZWUwMjJkNjgxODkxMjY3ZDRjEgsSBxDGq9iejxMYAZIBJAoKcHJvamVjdF9pZBIWQhQxODM1NDIxMDUyNDc0Mzg4ODE0OA\u0026filename=\u0026opi=89354086\",\"mimeType\":\"text/html\"},\"width\":\"2560\",\"height\":\"3254\",\"deviceType\":\"DESKTOP\"},{\"name\":\"projects/18354210524743888148/screens/93eea5799aed44c4b7588fd9f0bfa1ab\",\"title\":\"Property Details\",\"screenshot\":{\"name\":\"projects/18354210524743888148/screens/93eea5799aed44c4b7588fd9f0bfa1ab/fileEntries/screenshot\",\"downloadUrl\":\"https://lh3.googleusercontent.com/aida/AP1WRLsfiPzGTxcMKhNFsseJo4t156FZ9D7996GGwvAPvh0Q67kkgPFcqeNZd7M9F5IcYVEQgToYcKVVa18zLVaYBz-bqwNkyatJPeinnosAaBD2DbEm-zX-whuI5fvKfsgsDU_VsXiOHCGUqZnGrA7otfVAE6ez4WR47UGS0D5QR4s-cAVXrBDURDeX55V3n5GGqXvqyx2624_YYcmBCJqxqOTAUN1xS3u-dLXXv7HgAuzBWx8y4uB9KlKmnN2n\"},\"htmlCode\":{\"name\":\"projects/18354210524743888148/screens/93eea5799aed44c4b7588fd9f0bfa1ab/fileEntries/html\",\"downloadUrl\":\"https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzAwMDY1NzQ3NDhhYjcwOWMwMjNiZDg0Y2U2MmRjYWU2EgsSBxDGq9iejxMYAZIBJAoKcHJvamVjdF9pZBIWQhQxODM1NDIxMDUyNDc0Mzg4ODE0OA\u0026filename=\u0026opi=89354086\",\"mimeType\":\"text/html\"},\"width\":\"2560\",\"height\":\"3440\",\"deviceType\":\"DESKTOP\"},{\"name\":\"projects/18354210524743888148/screens/6735cab766824258a4168e86a9516403\",\"title\":\"Admin Verification Queue\",\"screenshot\":{\"name\":\"projects/18354210524743888148/screens/6735cab766824258a4168e86a9516403/fileEntries/screenshot\",\"downloadUrl\":\"https://lh3.googleusercontent.com/aida/AP1WRLv8nzEUUi8lTVJYLhgcM38gamB2qkJPmD36DaWzNpcW479yH-OH_SRn35HEBDxuKt4pG-qZHZ7OgLqO8VtUlA_6xG-i7TAOu-Kf-l_lqZvVeVQePYqZgkbZ9Hrgv8qyajzF0h-Dryb8jXLK0qcYNesygOXwNbNHAgHGhYouoRJnVjxCM9_oYBlZlqMjpJamr-aRj-m-bHrrL6BK1l7um66PAuNFrd1Tqy5xnREL5sYSEsDRxwj7JY7PIvaa\"},\"htmlCode\":{\"name\":\"projects/18354210524743888148/screens/6735cab766824258a4168e86a9516403/fileEntries/html\",\"downloadUrl\":\"https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzAwMDY1NzQ3NDkxNTNhYTIwNGU3NDViOTUwMTcyZTFjEgsSBxDGq9iejxMYAZIBJAoKcHJvamVjdF9pZBIWQhQxODM1NDIxMDUyNDc0Mzg4ODE0OA\u0026filename=\u0026opi=89354086\",\"mimeType\":\"text/html\"},\"width\":\"2560\",\"height\":\"2048\",\"deviceType\":\"DESKTOP\"},{\"name\":\"projects/18354210524743888148/screens/39aabd06fa304b01b5377cd37306bfd8\",\"title\":\"Post a Listing\",\"screenshot\":{\"name\":\"projects/18354210524743888148/screens/39aabd06fa304b01b5377cd37306bfd8/fileEntries/screenshot\",\"downloadUrl\":\"https://lh3.googleusercontent.com/aida/AP1WRLvmsffkTGr8ZP6bdgrJXivCg9Vx2Bn9JnMyW1zIi9wBSlxqfH6r9ZlAJhEQ_4F8xNSjSaej5Iy7iWH6-0qV2phU-9Gj8UdHkOp5kxcFUXyoBfDSna59pVsW5QLOJpzlBB-yGebPeta9szKBhkyHKFpbb8WC5keGE8rtEktgw3dPTjQwKNZgagsneLohX3hlwBr5CUvlKJz-pQwIo6lktsQKgxl3wwDjsaW6hcDUJvQQ7VkvX082hlNFGanO\"},\"htmlCode\":{\"name\":\"projects/18354210524743888148/screens/39aabd06fa304b01b5377cd37306bfd8/fileEntries/html\",\"downloadUrl\":\"https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzAwMDY1NzQ3NGMyNDgyMjIwNDc5ZjE0NmQzMDlkODk2EgsSBxDGq9iejxMYAZIBJAoKcHJvamVjdF9pZBIWQhQxODM1NDIxMDUyNDc0Mzg4ODE0OA\u0026filename=\u0026opi=89354086\",\"mimeType\":\"text/html\"},\"width\":\"2560\",\"height\":\"4942\",\"deviceType\":\"DESKTOP\"}]}",
+                                       "type":  "text"
+                                   }
+                               ],
+                   "structuredContent":  {
+                                             "screens":  [
+                                                             {
+                                                                 "deviceType":  "DESKTOP",
+                                                                 "height":  "3614",
+                                                                 "htmlCode":  {
+                                                                                  "downloadUrl":  "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzAwMDY1NzQ3NDg4MmViMzEwOTY4OWQ3OTE0MTZlZmY3EgsSBxDGq9iejxMYAZIBJAoKcHJvamVjdF9pZBIWQhQxODM1NDIxMDUyNDc0Mzg4ODE0OA\u0026filename=\u0026opi=89354086",
+                                                                                  "mimeType":  "text/html",
+                                                                                  "name":  "projects/18354210524743888148/screens/3957f2c8474449faa1458efce2926460/fileEntries/html"
+                                                                              },
+                                                                 "name":  "projects/18354210524743888148/screens/3957f2c8474449faa1458efce2926460",
+                                                                 "screenshot":  {
+                                                                                    "downloadUrl":  "https://lh3.googleusercontent.com/aida/AP1WRLvO2rnN3VEjOrGlXYfSi7bTO9iVCqLqVs1NJN59qaZ4FuS1UQEte8wmo2ym6k078u1xeOGcsaVQtfNQ_xIh4qYRsFrVsXIiQQDAgPqdABg8SJpl-sie1PmuObn248vqr5v3LyJAZK_t_bo-rScGOOakV_QxPmYTLKPgf-_jiq_yWybRC6i1IKl70BTmiewiQZF1q7zlvoDnBeXngfFHbZxXoZI5Ne1ZCdcRQh1kY-xHxuMD_7_ohFNda-iv",
+                                                                                    "name":  "projects/18354210524743888148/screens/3957f2c8474449faa1458efce2926460/fileEntries/screenshot"
+                                                                                },
+                                                                 "title":  "Seller Verification",
+                                                                 "width":  "2560"
+                                                             },
+                                                             {
+                                                                 "height":  "1024",
+                                                                 "htmlCode":  {
+
+                                                                              },
+                                                                 "name":  "projects/18354210524743888148/screens/27ef59e48d2d4c71aa88f32f1a3ed278",
+                                                                 "screenshot":  {
+                                                                                    "downloadUrl":  "https://lh3.googleusercontent.com/aida/AP1WRLuIjE7buq_BAmEOhPwuDKZX8iAY22-6zfMeqXcSHIVJCHg6IlEsII1Y115tx4e42P0B81HRZUburHaGRxXx9i8J7tFk0TfqEFFzez620Hu2cRkudP5hg45akXCT9QqOHINJ3ReG3yXhZGCWRg2ELGsr8onvkmn5te7-ncP4NBdeRE5Zzfc9uVZaTy0YaZz_7sIcZxLXPU25MMkgEQaE1v-T4mjZNGItjk40FglN6t2NyrQ90-1TBBjerUsx",
+                                                                                    "name":  "projects/18354210524743888148/screens/27ef59e48d2d4c71aa88f32f1a3ed278/fileEntries/screenshot"
+                                                                                },
+                                                                 "title":  "Logo",
+                                                                 "width":  "1024"
+                                                             },
+                                                             {
+                                                                 "deviceType":  "DESKTOP",
+                                                                 "height":  "2096",
+                                                                 "htmlCode":  {
+                                                                                  "downloadUrl":  "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzAwMDY1NzQ3NGI0NGQxOWMwNWYxMTljMmZjMThlMDE0EgsSBxDGq9iejxMYAZIBJAoKcHJvamVjdF9pZBIWQhQxODM1NDIxMDUyNDc0Mzg4ODE0OA\u0026filename=\u0026opi=89354086",
+                                                                                  "mimeType":  "text/html",
+                                                                                  "name":  "projects/18354210524743888148/screens/3accb3eb416c4addad7035d3ffa73b8f/fileEntries/html"
+                                                                              },
+                                                                 "name":  "projects/18354210524743888148/screens/3accb3eb416c4addad7035d3ffa73b8f",
+                                                                 "screenshot":  {
+                                                                                    "downloadUrl":  "https://lh3.googleusercontent.com/aida/AP1WRLupnq72yT9hR18SzXUu8MK76kJSeHrDyh6NnraBCIavPQFJmaluyx9pMlwWSS7K1mexPij00OHdIOws1KKSy9lQ7oFpUu-2RpU3jp8yHgD9ESLQE9kJcAHWYmwfId4bVlcHmL2_hQICzA9vQabn8EHgbnsOC-5BFTnjrftCgpM5AmxghHLinrbJJUws0PUt8DL-qExg0p9HH2eZCP_r5N4CqJPQHgUXoKQw-xN4GCCrVMUlR4IKZe0nyuEA",
+                                                                                    "name":  "projects/18354210524743888148/screens/3accb3eb416c4addad7035d3ffa73b8f/fileEntries/screenshot"
+                                                                                },
+                                                                 "title":  "Sign Up",
+                                                                 "width":  "2560"
+                                                             },
+                                                             {
+                                                                 "deviceType":  "DESKTOP",
+                                                                 "height":  "3996",
+                                                                 "htmlCode":  {
+                                                                                  "downloadUrl":  "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzAwMDY1NzQ3NDk3ZjAyMjEwNDc5ZjE0NmQzMDlkODk2EgsSBxDGq9iejxMYAZIBJAoKcHJvamVjdF9pZBIWQhQxODM1NDIxMDUyNDc0Mzg4ODE0OA\u0026filename=\u0026opi=89354086",
+                                                                                  "mimeType":  "text/html",
+                                                                                  "name":  "projects/18354210524743888148/screens/e970a07c5c654b049ffe970c8a345bc4/fileEntries/html"
+                                                                              },
+                                                                 "name":  "projects/18354210524743888148/screens/e970a07c5c654b049ffe970c8a345bc4",
+                                                                 "screenshot":  {
+                                                                                    "downloadUrl":  "https://lh3.googleusercontent.com/aida/AP1WRLsYIeXAay2SlJcqV7rJWeMiVqqh15Rn3OtIFx1_Lcck31BSR3hktgUnnBPeCoWCj07_9N6RUYzjsqJLzQ6eYV_q2ebP9v-SIwMq9lpQSYfs9f2vtBCLwxjB_5CMVmEnD6P0q0Yrit4w0FBvf_8QaQnQkviSreVsKp5kJZXj77fTqBlF99sPoDh7534MexPuZ4Q1DNpdxTxSBWPG5Gd_sSdFR7F48cL_uHgbX-igdHwwB2Za-Z83EtUYWcn4",
+                                                                                    "name":  "projects/18354210524743888148/screens/e970a07c5c654b049ffe970c8a345bc4/fileEntries/screenshot"
+                                                                                },
+                                                                 "title":  "Home Search \u0026 Browse",
+                                                                 "width":  "2560"
+                                                             },
+                                                             {
+                                                                 "deviceType":  "DESKTOP",
+                                                                 "height":  "2048",
+                                                                 "htmlCode":  {
+                                                                                  "downloadUrl":  "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzAwMDY1NzQ3NGNkZWI0OWIwMjNiZDk3ZTA5MzBlZDVlEgsSBxDGq9iejxMYAZIBJAoKcHJvamVjdF9pZBIWQhQxODM1NDIxMDUyNDc0Mzg4ODE0OA\u0026filename=\u0026opi=89354086",
+                                                                                  "mimeType":  "text/html",
+                                                                                  "name":  "projects/18354210524743888148/screens/d8efbeb31291478da12d210321de432f/fileEntries/html"
+                                                                              },
+                                                                 "name":  "projects/18354210524743888148/screens/d8efbeb31291478da12d210321de432f",
+                                                                 "screenshot":  {
+                                                                                    "downloadUrl":  "https://lh3.googleusercontent.com/aida/AP1WRLt1psJlkK2icMNgVuiFbvgQuBotHa3tBkNv4vpOQJ5rcjnFQQ5GoYXPqJOnxO3kpj4eeG8M-NE6wHhIIjiobYjVBn0YwZQWDF18AEO_Qu6KAwfnnPtTuvp0KD5tjzoQtRooBvFtcs2ThJwJPlotSubl6t_IA6x2G3XlwI5Xv7ZPxodMY6HigbJnxlAKMenz0rS3Mwe9005ARVg4bLZJeyYdMQ2gdAooznvqToBf6zr4ClAZ7K3TMF1ZcUE",
+                                                                                    "name":  "projects/18354210524743888148/screens/d8efbeb31291478da12d210321de432f/fileEntries/screenshot"
+                                                                                },
+                                                                 "title":  "Messages \u0026 Chat",
+                                                                 "width":  "2560"
+                                                             },
+                                                             {
+                                                                 "deviceType":  "DESKTOP",
+                                                                 "height":  "3254",
+                                                                 "htmlCode":  {
+                                                                                  "downloadUrl":  "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzAwMDY1NzQ3NGJmOWUyZWUwMjJkNjgxODkxMjY3ZDRjEgsSBxDGq9iejxMYAZIBJAoKcHJvamVjdF9pZBIWQhQxODM1NDIxMDUyNDc0Mzg4ODE0OA\u0026filename=\u0026opi=89354086",
+                                                                                  "mimeType":  "text/html",
+                                                                                  "name":  "projects/18354210524743888148/screens/4564f8d60aed4282a92bbbd860010aa2/fileEntries/html"
+                                                                              },
+                                                                 "name":  "projects/18354210524743888148/screens/4564f8d60aed4282a92bbbd860010aa2",
+                                                                 "screenshot":  {
+                                                                                    "downloadUrl":  "https://lh3.googleusercontent.com/aida/AP1WRLtpJEYWdnm-Btpb95f9_UXKTg9HAMEzKGD-3CR5bvmh3S8JX1ExBPAJgb4daz0jWolm28X37KF-ZUOYk91hJqVeIoGbflYCnlxgbKu641DJC9RI3j00j_akqDtdz0wAKgNUe3iPAh-S9Ud0UHk-0EGXgRCK0_UUqpKYQbghYj5SctlvTGzHf03RaDR3MQkcFwNSz8fDb2kPp1q8kdJmVL2AcFO2xUiMDNa5RCs_kZ049vQky4b3uJfWy0t1",
+                                                                                    "name":  "projects/18354210524743888148/screens/4564f8d60aed4282a92bbbd860010aa2/fileEntries/screenshot"
+                                                                                },
+                                                                 "title":  "User Profile",
+                                                                 "width":  "2560"
+                                                             },
+                                                             {
+                                                                 "deviceType":  "DESKTOP",
+                                                                 "height":  "3440",
+                                                                 "htmlCode":  {
+                                                                                  "downloadUrl":  "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzAwMDY1NzQ3NDhhYjcwOWMwMjNiZDg0Y2U2MmRjYWU2EgsSBxDGq9iejxMYAZIBJAoKcHJvamVjdF9pZBIWQhQxODM1NDIxMDUyNDc0Mzg4ODE0OA\u0026filename=\u0026opi=89354086",
+                                                                                  "mimeType":  "text/html",
+                                                                                  "name":  "projects/18354210524743888148/screens/93eea5799aed44c4b7588fd9f0bfa1ab/fileEntries/html"
+                                                                              },
+                                                                 "name":  "projects/18354210524743888148/screens/93eea5799aed44c4b7588fd9f0bfa1ab",
+                                                                 "screenshot":  {
+                                                                                    "downloadUrl":  "https://lh3.googleusercontent.com/aida/AP1WRLsfiPzGTxcMKhNFsseJo4t156FZ9D7996GGwvAPvh0Q67kkgPFcqeNZd7M9F5IcYVEQgToYcKVVa18zLVaYBz-bqwNkyatJPeinnosAaBD2DbEm-zX-whuI5fvKfsgsDU_VsXiOHCGUqZnGrA7otfVAE6ez4WR47UGS0D5QR4s-cAVXrBDURDeX55V3n5GGqXvqyx2624_YYcmBCJqxqOTAUN1xS3u-dLXXv7HgAuzBWx8y4uB9KlKmnN2n",
+                                                                                    "name":  "projects/18354210524743888148/screens/93eea5799aed44c4b7588fd9f0bfa1ab/fileEntries/screenshot"
+                                                                                },
+                                                                 "title":  "Property Details",
+                                                                 "width":  "2560"
+                                                             },
+                                                             {
+                                                                 "deviceType":  "DESKTOP",
+                                                                 "height":  "2048",
+                                                                 "htmlCode":  {
+                                                                                  "downloadUrl":  "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzAwMDY1NzQ3NDkxNTNhYTIwNGU3NDViOTUwMTcyZTFjEgsSBxDGq9iejxMYAZIBJAoKcHJvamVjdF9pZBIWQhQxODM1NDIxMDUyNDc0Mzg4ODE0OA\u0026filename=\u0026opi=89354086",
+                                                                                  "mimeType":  "text/html",
+                                                                                  "name":  "projects/18354210524743888148/screens/6735cab766824258a4168e86a9516403/fileEntries/html"
+                                                                              },
+                                                                 "name":  "projects/18354210524743888148/screens/6735cab766824258a4168e86a9516403",
+                                                                 "screenshot":  {
+                                                                                    "downloadUrl":  "https://lh3.googleusercontent.com/aida/AP1WRLv8nzEUUi8lTVJYLhgcM38gamB2qkJPmD36DaWzNpcW479yH-OH_SRn35HEBDxuKt4pG-qZHZ7OgLqO8VtUlA_6xG-i7TAOu-Kf-l_lqZvVeVQePYqZgkbZ9Hrgv8qyajzF0h-Dryb8jXLK0qcYNesygOXwNbNHAgHGhYouoRJnVjxCM9_oYBlZlqMjpJamr-aRj-m-bHrrL6BK1l7um66PAuNFrd1Tqy5xnREL5sYSEsDRxwj7JY7PIvaa",
+                                                                                    "name":  "projects/18354210524743888148/screens/6735cab766824258a4168e86a9516403/fileEntries/screenshot"
+                                                                                },
+                                                                 "title":  "Admin Verification Queue",
+                                                                 "width":  "2560"
+                                                             },
+                                                             {
+                                                                 "deviceType":  "DESKTOP",
+                                                                 "height":  "4942",
+                                                                 "htmlCode":  {
+                                                                                  "downloadUrl":  "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzAwMDY1NzQ3NGMyNDgyMjIwNDc5ZjE0NmQzMDlkODk2EgsSBxDGq9iejxMYAZIBJAoKcHJvamVjdF9pZBIWQhQxODM1NDIxMDUyNDc0Mzg4ODE0OA\u0026filename=\u0026opi=89354086",
+                                                                                  "mimeType":  "text/html",
+                                                                                  "name":  "projects/18354210524743888148/screens/39aabd06fa304b01b5377cd37306bfd8/fileEntries/html"
+                                                                              },
+                                                                 "name":  "projects/18354210524743888148/screens/39aabd06fa304b01b5377cd37306bfd8",
+                                                                 "screenshot":  {
+                                                                                    "downloadUrl":  "https://lh3.googleusercontent.com/aida/AP1WRLvmsffkTGr8ZP6bdgrJXivCg9Vx2Bn9JnMyW1zIi9wBSlxqfH6r9ZlAJhEQ_4F8xNSjSaej5Iy7iWH6-0qV2phU-9Gj8UdHkOp5kxcFUXyoBfDSna59pVsW5QLOJpzlBB-yGebPeta9szKBhkyHKFpbb8WC5keGE8rtEktgw3dPTjQwKNZgagsneLohX3hlwBr5CUvlKJz-pQwIo6lktsQKgxl3wwDjsaW6hcDUJvQQ7VkvX082hlNFGanO",
+                                                                                    "name":  "projects/18354210524743888148/screens/39aabd06fa304b01b5377cd37306bfd8/fileEntries/screenshot"
+                                                                                },
+                                                                 "title":  "Post a Listing",
+                                                                 "width":  "2560"
+                                                             }
+                                                         ]
+                                         }
+               }
+}

@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Seller Verification | RoofStead</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container-lowest": "#ffffff",
+                    "on-secondary-fixed": "#241a00",
+                    "surface-container-low": "#f4f4f2",
+                    "secondary-fixed-dim": "#e9c349",
+                    "primary-fixed-dim": "#a5d0b9",
+                    "tertiary": "#401b1b",
+                    "on-surface": "#1a1c1b",
+                    "on-tertiary": "#ffffff",
+                    "tertiary-container": "#5a302f",
+                    "surface-dim": "#dadad8",
+                    "primary-fixed": "#c1ecd4",
+                    "on-tertiary-fixed-variant": "#673a39",
+                    "on-primary-fixed": "#002114",
+                    "inverse-primary": "#a5d0b9",
+                    "secondary": "#735c00",
+                    "surface-variant": "#e2e3e1",
+                    "on-error-container": "#93000a",
+                    "error": "#ba1a1a",
+                    "background": "#f9f9f7",
+                    "surface-bright": "#f9f9f7",
+                    "primary": "#012d1d",
+                    "on-tertiary-container": "#d29895",
+                    "outline-variant": "#c1c8c2",
+                    "on-tertiary-fixed": "#331111",
+                    "inverse-on-surface": "#f1f1ef",
+                    "on-error": "#ffffff",
+                    "tertiary-fixed": "#ffdad8",
+                    "surface": "#f9f9f7",
+                    "inverse-surface": "#2f3130",
+                    "primary-container": "#1b4332",
+                    "on-secondary-container": "#745c00",
+                    "on-secondary-fixed-variant": "#574500",
+                    "outline": "#717973",
+                    "secondary-fixed": "#ffe088",
+                    "surface-container-high": "#e8e8e6",
+                    "on-primary-container": "#86af99",
+                    "on-surface-variant": "#414844",
+                    "surface-container-highest": "#e2e3e1",
+                    "error-container": "#ffdad6",
+                    "on-primary": "#ffffff",
+                    "surface-container": "#eeeeec",
+                    "secondary-container": "#fed65b",
+                    "tertiary-fixed-dim": "#f5b7b4",
+                    "on-secondary": "#ffffff",
+                    "surface-tint": "#3f6653",
+                    "on-background": "#1a1c1b",
+                    "on-primary-fixed-variant": "#274e3d"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "24px",
+                    "container-max": "1280px",
+                    "unit": "8px",
+                    "margin-mobile": "16px",
+                    "margin-desktop": "64px"
+            },
+            "fontFamily": {
+                    "display-lg": ["Source Serif 4"],
+                    "title-lg": ["Inter"],
+                    "headline-sm": ["Source Serif 4"],
+                    "body-lg": ["Inter"],
+                    "display-lg-mobile": ["Source Serif 4"],
+                    "headline-md": ["Source Serif 4"],
+                    "body-md": ["Inter"],
+                    "label-md": ["Inter"]
+            },
+            "fontSize": {
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                    "title-lg": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "headline-sm": ["24px", {"lineHeight": "32px", "fontWeight": "500"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "display-lg-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "headline-md": ["32px", {"lineHeight": "40px", "fontWeight": "500"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { background-color: #F9F9F7; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .card-shadow {
+            box-shadow: 0px 4px 20px rgba(27, 67, 50, 0.04);
+        }
+        .step-active::after {
+            content: '';
+            position: absolute;
+            bottom: -16px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #1B4332;
+        }
+    </style>
+</head>
+<body class="font-body-lg text-on-surface">
+<!-- Top Navigation Bar -->
+<header class="bg-surface border-b border-outline-variant sticky top-0 z-50">
+<div class="flex justify-between items-center w-full px-margin-desktop py-4 max-w-container-max mx-auto">
+<div class="flex items-center gap-4">
+<img alt="RoofStead Logo" class="h-10 w-auto" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYLK3Y_heWwdbz8MnGk0ejaG8638fXGHl0kWPVjtf3D-pfvW-NYsv3qhHGza3MnnijtMUh8690-zzdvb_p2h0TLNlOK2NkY2QiPBS8HIJNMCeBoAq5qks0IaVLKG1JkuQ8t6WK06lzOLfVeBYxvI69vyCNwLCTuwa5qB_ObfdkmbBmoKAwc6AyMmXvAa0vT-NVQ4SI9Nd_9clt0tQLaveB4BE4XWAwL9GeiDmLIQjFivkVqxqmb3X7aw"/>
+<span class="font-display-lg text-[24px] font-semibold text-primary">RoofStead</span>
+</div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#">Properties</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#">Market Trends</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#">Guides</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#">About</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="px-6 py-2 rounded-lg border border-primary text-primary font-label-md hover:bg-primary-fixed transition-all active:scale-95">Sign In</button>
+<button class="px-6 py-2 rounded-lg bg-primary text-on-primary font-label-md hover:opacity-90 transition-all active:scale-95 shadow-sm">List Property</button>
+</div>
+</div>
+</header>
+<main class="max-w-container-max mx-auto px-margin-desktop py-12">
+<!-- Verification Header & Progress -->
+<section class="mb-12">
+<div class="max-w-3xl mx-auto text-center mb-10">
+<h1 class="font-display-lg text-display-lg text-primary mb-4">Complete Your Seller Profile</h1>
+<p class="font-body-lg text-on-surface-variant">We verify our sellers to maintain the highest level of trust and security in our marketplace. This process takes less than 2 minutes.</p>
+</div>
+<!-- Progress Bar -->
+<div class="max-w-2xl mx-auto relative flex justify-between items-center px-4">
+<div class="absolute top-1/2 left-0 w-full h-[1px] bg-outline-variant -z-10"></div>
+<div class="flex flex-col items-center gap-2 bg-surface px-2">
+<div class="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface-variant">Identity Check</span>
+</div>
+<div class="flex flex-col items-center gap-2 bg-surface px-2 relative step-active">
+<div class="w-10 h-10 rounded-full border-2 border-primary bg-primary text-on-primary flex items-center justify-center font-bold">
+                        2
+                    </div>
+<span class="font-label-md text-label-md text-primary font-bold">Document Upload</span>
+</div>
+<div class="flex flex-col items-center gap-2 bg-surface px-2">
+<div class="w-10 h-10 rounded-full border-2 border-outline-variant bg-surface-container-low text-on-surface-variant flex items-center justify-center font-bold">
+                        3
+                    </div>
+<span class="font-label-md text-label-md text-on-surface-variant">Review</span>
+</div>
+</div>
+</section>
+<!-- Main Content Area -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-start">
+<!-- Left Side: Form & Uploads -->
+<div class="lg:col-span-8 space-y-8">
+<!-- Document Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<!-- Upload ID Card -->
+<div class="bg-surface-container-lowest p-8 rounded-xl card-shadow border border-[#E2E4E2] group cursor-pointer hover:border-primary transition-all duration-300">
+<div class="w-14 h-14 rounded-full bg-surface-container-low text-primary flex items-center justify-center mb-6 group-hover:bg-primary-fixed transition-colors">
+<span class="material-symbols-outlined text-[32px]">badge</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-2">Upload ID Card</h3>
+<p class="font-body-md text-on-surface-variant mb-6">Government-issued Passport, Driving License, or National ID.</p>
+<button class="flex items-center gap-2 text-primary font-label-md group-hover:gap-3 transition-all">
+<span>Browse files</span>
+<span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+<!-- Selfie Camera -->
+<div class="bg-surface-container-lowest p-8 rounded-xl card-shadow border border-[#E2E4E2] group cursor-pointer hover:border-primary transition-all duration-300">
+<div class="w-14 h-14 rounded-full bg-surface-container-low text-primary flex items-center justify-center mb-6 group-hover:bg-primary-fixed transition-colors">
+<span class="material-symbols-outlined text-[32px]">camera_alt</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-2">Take Live Photo</h3>
+<p class="font-body-md text-on-surface-variant mb-6">Use your camera for a quick liveness check to confirm identity.</p>
+<button class="flex items-center gap-2 text-primary font-label-md group-hover:gap-3 transition-all">
+<span>Open Camera</span>
+<span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Form Card -->
+<div class="bg-surface-container-lowest p-10 rounded-xl card-shadow border border-[#E2E4E2]">
+<div class="flex items-center gap-3 mb-8">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">security</span>
+<h2 class="font-headline-sm text-headline-sm">Personal Information</h2>
+</div>
+<form class="space-y-6">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="flex flex-col gap-2">
+<label class="font-label-md text-label-md text-on-surface-variant" for="full_name">Full Legal Name</label>
+<input class="h-12 px-4 rounded-lg border border-outline-variant focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary bg-surface-bright transition-all font-body-md" id="full_name" placeholder="As it appears on your ID" type="text"/>
+</div>
+<div class="flex flex-col gap-2">
+<label class="font-label-md text-label-md text-on-surface-variant" for="id_number">ID Number</label>
+<input class="h-12 px-4 rounded-lg border border-outline-variant focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary bg-surface-bright transition-all font-body-md" id="id_number" placeholder="Enter your ID or Passport number" type="text"/>
+</div>
+</div>
+<div class="flex items-start gap-3 p-4 bg-surface-container-low rounded-lg">
+<span class="material-symbols-outlined text-primary text-[20px]">info</span>
+<p class="font-body-md text-on-surface-variant">Your information is encrypted and never shared with third parties. Verification data is purged after processing.</p>
+</div>
+<div class="pt-4 flex justify-end gap-4">
+<button class="px-8 py-3 rounded-lg border border-outline text-on-surface-variant font-label-md hover:bg-surface-container-low transition-all" type="button">Back</button>
+<button class="px-10 py-3 rounded-lg bg-primary text-on-primary font-label-md hover:opacity-90 transition-all shadow-sm" type="submit">Submit for Review</button>
+</div>
+</form>
+</div>
+</div>
+<!-- Right Side: Sidebar Benefits -->
+<aside class="lg:col-span-4 space-y-6">
+<div class="bg-primary text-on-primary p-8 rounded-xl shadow-xl">
+<h3 class="font-headline-sm text-headline-sm mb-6">Why get Verified?</h3>
+<ul class="space-y-6">
+<li class="flex gap-4">
+<div class="w-8 h-8 rounded-full bg-primary-container flex-shrink-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+<div>
+<h4 class="font-label-md text-[14px] font-bold mb-1">Badge of Trust</h4>
+<p class="text-[13px] opacity-80 leading-relaxed">Gain the "Verified Seller" badge to let buyers know you are a legitimate property owner.</p>
+</div>
+</li>
+<li class="flex gap-4">
+<div class="w-8 h-8 rounded-full bg-primary-container flex-shrink-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">trending_up</span>
+</div>
+<div>
+<h4 class="font-label-md text-[14px] font-bold mb-1">3x Faster Sales</h4>
+<p class="text-[13px] opacity-80 leading-relaxed">Verified listings receive higher visibility in search results and capture more high-intent leads.</p>
+</div>
+</li>
+<li class="flex gap-4">
+<div class="w-8 h-8 rounded-full bg-primary-container flex-shrink-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">lock</span>
+</div>
+<div>
+<h4 class="font-label-md text-[14px] font-bold mb-1">Premium Security</h4>
+<p class="text-[13px] opacity-80 leading-relaxed">Access to advanced encryption for contract negotiations and secure escrow payments.</p>
+</div>
+</li>
+</ul>
+<div class="mt-8 pt-8 border-t border-primary-container">
+<div class="flex items-center justify-between mb-4">
+<span class="font-body-md font-medium">Verification Status</span>
+<span class="px-2 py-1 rounded bg-secondary-container text-on-secondary-container font-label-md text-[10px] uppercase tracking-wider">Pending</span>
+</div>
+<div class="w-full h-1.5 bg-primary-container rounded-full overflow-hidden">
+<div class="w-[66%] h-full bg-on-primary-container"></div>
+</div>
+</div>
+</div>
+<!-- Testimonial / Credibility Card -->
+<div class="bg-surface-container-lowest p-6 rounded-xl card-shadow border border-[#E2E4E2]">
+<div class="w-full h-48 bg-cover bg-center rounded-lg mb-4" data-alt="A professional portrait of a smiling female real estate broker in a modern, sunlit glass office. She is wearing a dark forest green blazer and holding a digital tablet. The background is softly blurred with lush office greenery and premium wooden furniture. The atmosphere is professional, warm, and highly credible." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuA0nf-LpQJUVBtOXyarAVtjIsi0luUJScWDdwWzGm6atCVasMKyG_AQaQKH0AxDVMSDpr-4LcliwfV4i6ll2NGS-P1NorN0k3wzoJdST1H-4cKa00gOg4TXJuckiKDU7OmXC-wpNPBhWg5UnGn-ldc1CN0w2YA2__Mrwr_IQMBE6CDeRbHOFw7qU9IiRtD-zJRHHf_VuwCrParuyB1RuOo6gcyhWi1OouSNMTUnocu6WDtC8dsqx_KhlA')"></div>
+<p class="font-body-md text-on-surface-variant italic mb-4">"The verification process on RoofStead gave me and my buyers peace of mind. It's the gold standard for transparency."</p>
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center font-bold text-primary">SC</div>
+<div>
+<p class="font-label-md text-on-surface font-bold">Sarah Chen</p>
+<p class="font-label-md text-[10px] text-on-surface-variant uppercase">Elite Seller since 2022</p>
+</div>
+</div>
+</div>
+</aside>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container border-t border-outline-variant mt-24">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter px-margin-desktop py-12 max-w-container-max mx-auto">
+<div class="col-span-1 md:col-span-1">
+<div class="flex items-center gap-2 mb-4">
+<img alt="RoofStead Logo" class="h-6 w-auto" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYLK3Y_heWwdbz8MnGk0ejaG8638fXGHl0kWPVjtf3D-pfvW-NYsv3qhHGza3MnnijtMUh8690-zzdvb_p2h0TLNlOK2NkY2QiPBS8HIJNMCeBoAq5qks0IaVLKG1JkuQ8t6WK06lzOLfVeBYxvI69vyCNwLCTuwa5qB_ObfdkmbBmoKAwc6AyMmXvAa0vT-NVQ4SI9Nd_9clt0tQLaveB4BE4XWAwL9GeiDmLIQjFivkVqxqmb3X7aw"/>
+<span class="font-headline-sm text-headline-sm font-bold text-primary">RoofStead</span>
+</div>
+<p class="font-body-md text-on-surface-variant mb-6">Redefining modern home ownership through transparency, security, and premium service.</p>
+</div>
+<div>
+<h4 class="font-label-md text-on-surface font-bold mb-4">Marketplace</h4>
+<ul class="space-y-3">
+<li><a class="font-body-md text-on-surface-variant hover:text-primary transition-all" href="#">Browse Homes</a></li>
+<li><a class="font-body-md text-on-surface-variant hover:text-primary transition-all" href="#">Mortgage Calculator</a></li>
+<li><a class="font-body-md text-on-surface-variant hover:text-primary transition-all" href="#">Seller Resources</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-label-md text-on-surface font-bold mb-4">Company</h4>
+<ul class="space-y-3">
+<li><a class="font-body-md text-on-surface-variant hover:text-primary transition-all" href="#">Privacy Policy</a></li>
+<li><a class="font-body-md text-on-surface-variant hover:text-primary transition-all" href="#">Terms of Service</a></li>
+<li><a class="font-body-md text-on-surface-variant hover:text-primary transition-all" href="#">Contact Support</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-label-md text-on-surface font-bold mb-4">Contact</h4>
+<p class="font-body-md text-on-surface-variant">1200 Market Street<br/>San Francisco, CA 94103</p>
+<p class="font-body-md text-on-surface-variant mt-2">support@roofstead.com</p>
+</div>
+</div>
+<div class="px-margin-desktop py-6 max-w-container-max mx-auto border-t border-outline-variant">
+<p class="font-label-md text-center md:text-left text-on-surface-variant opacity-70">© 2024 RoofStead Real Estate. All rights reserved. Licensed Brokerage.</p>
+</div>
+</footer>
+<script>
+        // Micro-interactions for form focus
+        const inputs = document.querySelectorAll('input');
+        inputs.forEach(input => {
+            input.addEventListener('focus', () => {
+                input.parentElement.querySelector('label').classList.add('text-primary');
+            });
+            input.addEventListener('blur', () => {
+                input.parentElement.querySelector('label').classList.remove('text-primary');
+            });
+        });
+
+        // Simple animation on load
+        window.addEventListener('DOMContentLoaded', () => {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.5s ease-in-out';
+            setTimeout(() => {
+                document.body.style.opacity = '1';
+            }, 100);
+        });
+    </script>
+</body></html>

@@ -1,0 +1,73 @@
+[
+  {
+    "id": "3957f2c8474449faa1458efce2926460",
+    "title": "Seller Verification",
+    "slug": "seller-verification",
+    "width": "2560",
+    "height": "3614",
+    "htmlFile": "seller-verification.html"
+  },
+  {
+    "id": "27ef59e48d2d4c71aa88f32f1a3ed278",
+    "title": "Logo",
+    "slug": "logo",
+    "width": "1024",
+    "height": "1024"
+  },
+  {
+    "id": "3accb3eb416c4addad7035d3ffa73b8f",
+    "title": "Sign Up",
+    "slug": "sign-up",
+    "width": "2560",
+    "height": "2096",
+    "htmlFile": "sign-up.html"
+  },
+  {
+    "id": "e970a07c5c654b049ffe970c8a345bc4",
+    "title": "Home Search & Browse",
+    "slug": "home-search-browse",
+    "width": "2560",
+    "height": "3996",
+    "htmlFile": "home-search-browse.html"
+  },
+  {
+    "id": "d8efbeb31291478da12d210321de432f",
+    "title": "Messages & Chat",
+    "slug": "messages-chat",
+    "width": "2560",
+    "height": "2048",
+    "htmlFile": "messages-chat.html"
+  },
+  {
+    "id": "4564f8d60aed4282a92bbbd860010aa2",
+    "title": "User Profile",
+    "slug": "user-profile",
+    "width": "2560",
+    "height": "3254",
+    "htmlFile": "user-profile.html"
+  },
+  {
+    "id": "93eea5799aed44c4b7588fd9f0bfa1ab",
+    "title": "Property Details",
+    "slug": "property-details",
+    "width": "2560",
+    "height": "3440",
+    "htmlFile": "property-details.html"
+  },
+  {
+    "id": "6735cab766824258a4168e86a9516403",
+    "title": "Admin Verification Queue",
+    "slug": "admin-verification-queue",
+    "width": "2560",
+    "height": "2048",
+    "htmlFile": "admin-verification-queue.html"
+  },
+  {
+    "id": "39aabd06fa304b01b5377cd37306bfd8",
+    "title": "Post a Listing",
+    "slug": "post-a-listing",
+    "width": "2560",
+    "height": "4942",
+    "htmlFile": "post-a-listing.html"
+  }
+]

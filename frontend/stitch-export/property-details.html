@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Modern Architectural Masterpiece | RoofStead</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Source+Serif+4:opsz,wght@8..60,400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed": "#241a00",
+                        "surface-container-low": "#f4f4f2",
+                        "secondary-fixed-dim": "#e9c349",
+                        "primary-fixed-dim": "#a5d0b9",
+                        "tertiary": "#401b1b",
+                        "on-surface": "#1a1c1b",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-container": "#5a302f",
+                        "surface-dim": "#dadad8",
+                        "primary-fixed": "#c1ecd4",
+                        "on-tertiary-fixed-variant": "#673a39",
+                        "on-primary-fixed": "#002114",
+                        "inverse-primary": "#a5d0b9",
+                        "secondary": "#735c00",
+                        "surface-variant": "#e2e3e1",
+                        "on-error-container": "#93000a",
+                        "error": "#ba1a1a",
+                        "background": "#f9f9f7",
+                        "surface-bright": "#f9f9f7",
+                        "primary": "#012d1d",
+                        "on-tertiary-container": "#d29895",
+                        "outline-variant": "#c1c8c2",
+                        "on-tertiary-fixed": "#331111",
+                        "inverse-on-surface": "#f1f1ef",
+                        "on-error": "#ffffff",
+                        "tertiary-fixed": "#ffdad8",
+                        "surface": "#f9f9f7",
+                        "inverse-surface": "#2f3130",
+                        "primary-container": "#1b4332",
+                        "on-secondary-container": "#745c00",
+                        "on-secondary-fixed-variant": "#574500",
+                        "outline": "#717973",
+                        "secondary-fixed": "#ffe088",
+                        "surface-container-high": "#e8e8e6",
+                        "on-primary-container": "#86af99",
+                        "on-surface-variant": "#414844",
+                        "surface-container-highest": "#e2e3e1",
+                        "error-container": "#ffdad6",
+                        "on-primary": "#ffffff",
+                        "surface-container": "#eeeeec",
+                        "secondary-container": "#fed65b",
+                        "tertiary-fixed-dim": "#f5b7b4",
+                        "on-secondary": "#ffffff",
+                        "surface-tint": "#3f6653",
+                        "on-background": "#1a1c1b",
+                        "on-primary-fixed-variant": "#274e3d"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "container-max": "1280px",
+                        "unit": "8px",
+                        "margin-mobile": "16px",
+                        "margin-desktop": "64px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["\"Source Serif 4\""],
+                        "title-lg": ["Inter"],
+                        "headline-sm": ["\"Source Serif 4\""],
+                        "body-lg": ["Inter"],
+                        "display-lg-mobile": ["\"Source Serif 4\""],
+                        "headline-md": ["\"Source Serif 4\""],
+                        "body-md": ["Inter"],
+                        "label-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "title-lg": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "headline-sm": ["24px", { "lineHeight": "32px", "fontWeight": "500" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "display-lg-mobile": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "headline-md": ["32px", { "lineHeight": "40px", "fontWeight": "500" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500" }]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #f9f9f7;
+            color: #1a1c1b;
+        }
+        .ambient-shadow {
+            box-shadow: 0px 4px 20px rgba(27, 67, 50, 0.04);
+        }
+        .gallery-gradient {
+            background: linear-gradient(to bottom, rgba(0,0,0,0) 60%, rgba(0,0,0,0.4) 100%);
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="antialiased">
+<!-- Header / TopNavBar -->
+<header class="bg-surface dark:bg-surface-dim border-b border-outline-variant dark:border-outline shadow-sm dark:shadow-none sticky top-0 z-50">
+<div class="flex justify-between items-center w-full px-margin-desktop py-4 max-w-container-max mx-auto">
+<div class="flex items-center gap-8">
+<img alt="RoofStead Logo" class="h-10 w-auto" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYLK3Y_heWwdbz8MnGk0ejaG8638fXGHl0kWPVjtf3D-pfvW-NYsv3qhHGza3MnnijtMUh8690-zzdvb_p2h0TLNlOK2NkY2QiPBS8HIJNMCeBoAq5qks0IaVLKG1JkuQ8t6WK06lzOLfVeBYxvI69vyCNwLCTuwa5qB_ObfdkmbBmoKAwc6AyMmXvAa0vT-NVQ4SI9Nd_9clt0tQLaveB4BE4XWAwL9GeiDmLIQjFivkVqxqmb3X7aw"/>
+<nav class="hidden md:flex gap-6">
+<a class="font-label-md text-label-md text-primary dark:text-primary-fixed border-b-2 border-primary dark:border-primary-fixed pb-1" href="#">Properties</a>
+<a class="font-label-md text-label-md text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed transition-colors" href="#">Market Trends</a>
+<a class="font-label-md text-label-md text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed transition-colors" href="#">Guides</a>
+<a class="font-label-md text-label-md text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed transition-colors" href="#">About</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="font-label-md text-label-md px-4 py-2 text-primary hover:bg-surface-container-low transition-all rounded-lg">Sign In</button>
+<button class="font-label-md text-label-md px-6 py-3 bg-primary-container text-on-primary-container rounded-lg hover:opacity-90 active:scale-95 transition-all">List Property</button>
+</div>
+</div>
+</header>
+<main class="max-w-[1440px] mx-auto overflow-hidden">
+<!-- Hero Gallery -->
+<section class="relative w-full aspect-[21/9] md:aspect-[21/7] overflow-hidden group">
+<div class="flex h-full w-full overflow-x-auto no-scrollbar snap-x snap-mandatory">
+<div class="flex-none w-full h-full snap-start relative">
+<img class="w-full h-full object-cover" data-alt="A cinematic, wide-angle photograph of a modern architectural masterpiece residence at dusk. The home features vast floor-to-ceiling glass walls, warm interior lighting glowing against a deep forest green landscape, and clean concrete lines. The sky is a soft twilight purple, and the overall atmosphere is one of serene luxury and architectural transparency in a high-end light-mode aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDTRw8kQOX6cBWN-5yXDUYNjmwmSie57FErd1pycFtRTz8THuHTqDTM5Crv6ihafv3uoTDbP50VOaWfVHk2nGQhP9GMWlywzcyurvG4IdNDkrjEV6buHSQHcRRqMdOtqvYrFTPD03Ml9mRHnshG-Hvts-c0sJ9iOkuddrzQGeAP719uSdD5MlP2uOmTlYQvZLY4IBlgbmuDQUHfh9I8jRas2hGeDseL5HUwp-qFS1B9Ds5baaVLa4dfmw"/>
+<div class="absolute inset-0 gallery-gradient"></div>
+</div>
+</div>
+<div class="absolute bottom-6 left-margin-desktop flex gap-2">
+<button class="p-2 bg-white/20 backdrop-blur-md rounded-full text-white hover:bg-white/40 transition-all">
+<span class="material-symbols-outlined">grid_view</span>
+</button>
+<button class="p-2 bg-white/20 backdrop-blur-md rounded-full text-white hover:bg-white/40 transition-all">
+<span class="material-symbols-outlined">play_circle</span>
+</button>
+</div>
+<div class="absolute bottom-6 right-margin-desktop flex gap-2">
+<button class="px-4 py-2 bg-white text-primary font-label-md text-label-md rounded-lg shadow-lg flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">photo_camera</span>
+                    See all 24 photos
+                </button>
+</div>
+</section>
+<!-- Listing Content -->
+<div class="px-margin-desktop py-12 grid grid-cols-1 lg:grid-cols-12 gap-gutter max-w-container-max mx-auto">
+<!-- Left Column: Details -->
+<div class="lg:col-span-8 space-y-10">
+<!-- Header Info -->
+<div class="space-y-4">
+<div class="flex items-center gap-3">
+<span class="px-3 py-1 bg-primary-container text-white font-label-md text-label-md rounded-full uppercase tracking-wider">For Sale</span>
+<div class="flex items-center text-primary font-label-md text-label-md font-bold">
+<span class="material-symbols-outlined text-[16px] mr-1" style="font-variation-settings: 'FILL' 1;">verified</span>
+                            Verified Listing
+                        </div>
+</div>
+<h1 class="font-headline-md text-headline-md text-on-surface">Modern Architectural Masterpiece</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">location_on</span>
+                        1248 Vista Ridge Road, West Hollywood, CA 90069
+                    </p>
+<div class="font-display-lg text-display-lg text-primary mt-4">$3,500,000</div>
+</div>
+<!-- Key Stats -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 p-6 bg-white rounded-xl ambient-shadow border border-outline-variant/30">
+<div class="flex flex-col border-r border-outline-variant last:border-0 pr-4">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest">Beds</span>
+<span class="font-title-lg text-title-lg text-primary flex items-center gap-2">
+<span class="material-symbols-outlined">bed</span> 4
+                        </span>
+</div>
+<div class="flex flex-col border-r border-outline-variant last:border-0 px-4">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest">Baths</span>
+<span class="font-title-lg text-title-lg text-primary flex items-center gap-2">
+<span class="material-symbols-outlined">bathtub</span> 3
+                        </span>
+</div>
+<div class="flex flex-col border-r border-outline-variant last:border-0 px-4">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest">Sq Ft</span>
+<span class="font-title-lg text-title-lg text-primary flex items-center gap-2">
+<span class="material-symbols-outlined">square_foot</span> 3,200
+                        </span>
+</div>
+<div class="flex flex-col pl-4">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest">Type</span>
+<span class="font-title-lg text-title-lg text-primary flex items-center gap-2">
+<span class="material-symbols-outlined">home</span> Single Family
+                        </span>
+</div>
+</div>
+<!-- About -->
+<div class="space-y-6">
+<h2 class="font-headline-sm text-headline-sm text-on-surface border-b border-outline-variant pb-4">About this property</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant leading-relaxed">
+                        Experience the pinnacle of modern luxury in this newly completed architectural masterpiece. Designed with a philosophy of transparency and flow, this residence seamlessly integrates indoor and outdoor living. The expansive main level features double-height ceilings and automated glass pocket doors that vanish into the walls, leading to a private infinity-edge pool and zero-maintenance gardens.
+                    </p>
+<p class="font-body-lg text-body-lg text-on-surface-variant leading-relaxed">
+                        The chef's kitchen is equipped with custom white oak cabinetry and premium integrated appliances. Upstairs, the master suite offers a sanctuary of calm with a private terrace overlooking the canyon, a spa-like bath with a monolithic stone tub, and an expansive walk-in boutique closet.
+                    </p>
+</div>
+<!-- Amenities -->
+<div class="space-y-6">
+<h2 class="font-headline-sm text-headline-sm text-on-surface border-b border-outline-variant pb-4">Amenities</h2>
+<div class="flex flex-wrap gap-3">
+<span class="px-4 py-2 bg-surface-container-low text-on-surface-variant font-body-md text-body-md rounded-full flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]">pool</span> Pool
+                        </span>
+<span class="px-4 py-2 bg-surface-container-low text-on-surface-variant font-body-md text-body-md rounded-full flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]">fitness_center</span> Gym
+                        </span>
+<span class="px-4 py-2 bg-surface-container-low text-on-surface-variant font-body-md text-body-md rounded-full flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]">stream_apps</span> Smart Home
+                        </span>
+<span class="px-4 py-2 bg-surface-container-low text-on-surface-variant font-body-md text-body-md rounded-full flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]">garage</span> 3 Car Garage
+                        </span>
+<span class="px-4 py-2 bg-surface-container-low text-on-surface-variant font-body-md text-body-md rounded-full flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]">wine_bar</span> Wine Cellar
+                        </span>
+<span class="px-4 py-2 bg-surface-container-low text-on-surface-variant font-body-md text-body-md rounded-full flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]">solar_power</span> Solar Panels
+                        </span>
+<span class="px-4 py-2 bg-surface-container-low text-on-surface-variant font-body-md text-body-md rounded-full flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]">security</span> 24/7 Security
+                        </span>
+</div>
+</div>
+</div>
+<!-- Right Column: Seller Card -->
+<div class="lg:col-span-4">
+<div class="sticky top-28 space-y-6">
+<div class="bg-white rounded-2xl p-8 ambient-shadow border border-outline-variant/30 flex flex-col items-center text-center">
+<div class="relative mb-6">
+<div class="w-24 h-24 rounded-full overflow-hidden border-4 border-surface-container-low">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a premium real estate agent, a middle-aged man with a friendly yet professional expression. He is wearing a tailored charcoal suit and a crisp white shirt. The background is a soft, blurred modern interior with warm wooden accents and bright, natural light, matching the RoofStead brand's sophisticated and reliable identity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZ5Mb_kgKY4XpanbSJQskjA2qWbuI0J4HKlDw67tK92CEVuUeuq1zo1buv22m4mxluKT2SzbKZYQjwFimnwF0eeLbcyilFk0XpGLn3xpLwr33OO1XKg0J8ZFqxwvXOGQqYTCmrshinq3uML2E61zT1lflU7WLmCaEwQhRw43_ZRRR77W-yzIa6cxwPflbfGQczhLfi5bLvLvBS8qe3rOwp6ICOlQziQpAZgO5P3p9XDkkJ3Agtjn1_zA"/>
+</div>
+<div class="absolute bottom-0 right-0 bg-primary-container text-white rounded-full p-1 border-2 border-white">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">shield</span>
+</div>
+</div>
+<div class="space-y-1 mb-6">
+<h3 class="font-title-lg text-title-lg text-on-surface">Julian Sterling</h3>
+<div class="flex items-center justify-center gap-1 text-primary font-label-md text-label-md">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+                                Verified Premier Broker
+                            </div>
+<p class="font-label-md text-label-md text-on-surface-variant uppercase mt-2">Sterling &amp; Associates Real Estate</p>
+</div>
+<div class="w-full space-y-3">
+<button class="w-full py-4 bg-primary text-white rounded-xl font-title-lg text-title-lg hover:opacity-95 transition-all shadow-md active:scale-95">
+                                Contact Seller
+                            </button>
+<button class="w-full py-4 bg-transparent border border-primary text-primary rounded-xl font-title-lg text-title-lg hover:bg-primary/5 transition-all active:scale-95">
+                                Schedule a Tour
+                            </button>
+</div>
+<div class="mt-8 pt-8 border-t border-outline-variant w-full flex justify-between">
+<div class="text-left">
+<p class="font-label-md text-label-md text-on-surface-variant">Response Time</p>
+<p class="font-body-md text-body-md text-on-surface font-semibold">&lt; 1 hour</p>
+</div>
+<div class="text-right">
+<p class="font-label-md text-label-md text-on-surface-variant">Listings</p>
+<p class="font-body-md text-body-md text-on-surface font-semibold">12 Active</p>
+</div>
+</div>
+</div>
+<!-- Market Insights Mini-Card -->
+<div class="bg-surface-container-lowest rounded-2xl p-6 border border-outline-variant/30">
+<h4 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest mb-4">Market Insight</h4>
+<div class="flex items-end gap-2 mb-2">
+<span class="font-headline-sm text-headline-sm text-primary">+4.2%</span>
+<span class="font-label-md text-label-md text-on-surface-variant pb-1">Area growth this year</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant">West Hollywood continues to show strong appreciation for architecturally unique properties.</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container dark:bg-surface-container-highest border-t border-outline-variant">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter px-margin-desktop py-12 max-w-container-max mx-auto">
+<div class="space-y-4">
+<span class="font-headline-sm text-headline-sm font-bold text-primary dark:text-primary-fixed">RoofStead</span>
+<p class="font-body-md text-body-md text-on-surface-variant">The definitive platform for high-end residential real estate, built on trust and transparency.</p>
+</div>
+<div>
+<h4 class="font-label-md text-label-md font-bold text-primary mb-4 uppercase tracking-widest">Discover</h4>
+<ul class="space-y-2">
+<li><a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-all underline-offset-4 hover:underline" href="#">Browse Homes</a></li>
+<li><a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-all underline-offset-4 hover:underline" href="#">Market Trends</a></li>
+<li><a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-all underline-offset-4 hover:underline" href="#">Seller Resources</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-label-md text-label-md font-bold text-primary mb-4 uppercase tracking-widest">Resources</h4>
+<ul class="space-y-2">
+<li><a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-all underline-offset-4 hover:underline" href="#">Mortgage Calculator</a></li>
+<li><a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-all underline-offset-4 hover:underline" href="#">Privacy Policy</a></li>
+<li><a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-all underline-offset-4 hover:underline" href="#">Terms of Service</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-label-md text-label-md font-bold text-primary mb-4 uppercase tracking-widest">Contact</h4>
+<ul class="space-y-2">
+<li><a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-all underline-offset-4 hover:underline" href="#">Contact Support</a></li>
+<li><a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-all underline-offset-4 hover:underline" href="#">Media Inquiries</a></li>
+</ul>
+</div>
+</div>
+<div class="px-margin-desktop py-6 border-t border-outline-variant/30 flex justify-center">
+<p class="font-label-md text-label-md text-on-surface-variant text-center">
+                © 2024 RoofStead Real Estate. All rights reserved. Licensed Brokerage.
+            </p>
+</div>
+</footer>
+<script>
+        // Simple micro-interactions
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('mousedown', () => {
+                button.style.transform = 'scale(0.98)';
+            });
+            button.addEventListener('mouseup', () => {
+                button.style.transform = 'scale(1)';
+            });
+            button.addEventListener('mouseleave', () => {
+                button.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+</body></html>

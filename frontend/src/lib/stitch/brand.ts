@@ -1,0 +1,10 @@
+/** Shared assets from Stitch export (Home Search & Browse screen) */
+export const STITCH_LOGO_SRC =
+  "https://lh3.googleusercontent.com/aida-public/AB6AXuBYLK3Y_heWwdbz8MnGk0ejaG8638fXGHl0kWPVjtf3D-pfvW-NYsv3qhHGza3MnnijtMUh8690-zzdvb_p2h0TLNlOK2NkY2QiPBS8HIJNMCeBoAq5qks0IaVLKG1JkuQ8t6WK06lzOLfVeBYxvI69vyCNwLCTuwa5qB_ObfdkmbBmoKAwc6AyMmXvAa0vT-NVQ4SI9Nd_9clt0tQLaveB4BE4XWAwL9GeiDmLIQjFivkVqxqmb3X7aw";
+
+/** Stitch User Profile export — default avatar placeholders */
+export const STITCH_PROFILE_AVATAR_LARGE =
+  "https://lh3.googleusercontent.com/aida-public/AB6AXuBPa_L8soQ9BfnXI0jGxv-_waGjVg8vtrzhKKc4m1TcdlHbfosCP5b_3EVPI714PJ7B48hEpMbf_54UGPbQSUwYau_oDdvFJkrLSG4XRBVGBhXdksKLjEj8-YoR86g3JymiMRy8RwtSLXPylHNRbMNqpbOYEBTSg5Mi-MyiSnxAjVGvoIvdzy8nR5x_2tyg8Qv7KFqLDOrJl6SY4BLkJfRf5ueFbOyIYmH4nqFbFKo-XATtmJ1tgV2OKw";
+
+export const STITCH_PROFILE_AVATAR_SMALL =
+  "https://lh3.googleusercontent.com/aida-public/AB6AXuC4Wg5BKLpmU3If-aERFzQQ4Q6Hnbp0dyRBofSLuG954FhjoCW6M878w_M-wSK6Cop7VnU2bEWPeectNlth7p69Y2FIzQu13zKb2BJH2HPAikWGYp4ruhMNeTiUk4gFkKXq7FBnpl-6WA97gFVGjsmYS-aWN4TDivC1lBQkjieyu1P2cHaGTB3_PzuK2FGbZcP62tDWSZELscOTXovv9oOOmwmrD3mmTXdU78nqUI2GqcpCh3i4orHi6Q";
