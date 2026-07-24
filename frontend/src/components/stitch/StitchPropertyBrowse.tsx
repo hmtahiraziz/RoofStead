@@ -2,7 +2,9 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useAuth } from "@/components/auth/AuthProvider";
 import { apiFetch } from "@/lib/api/client";
+import { isSellerAccount, sellerDashboardPath } from "@/lib/auth/routing";
 import {
   buildListingsApiQuery,
   DEFAULT_BROWSE_FILTERS,
@@ -89,6 +91,7 @@ export function StitchPropertyBrowse() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const { user, loading: authLoading } = useAuth();
   const appliedFilters = useMemo(() => filtersFromSearchParams(searchParams), [searchParams]);
   const draftPriceRange = appliedFilters.mode === "rent" ? RENT_PRICE_RANGE : SALE_PRICE_RANGE;
 
@@ -106,6 +109,13 @@ export function StitchPropertyBrowse() {
   useEffect(() => {
     setDraftFilters(appliedFilters);
   }, [appliedFilters]);
+
+  useEffect(() => {
+    if (authLoading) return;
+    if (user && isSellerAccount(user)) {
+      router.replace(sellerDashboardPath());
+    }
+  }, [authLoading, user, router]);
 
   const applyFilters = useCallback(
     (next: BrowseFilters) => {

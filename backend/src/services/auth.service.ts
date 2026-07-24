@@ -11,11 +11,14 @@ import { env } from "../config/env";
 import {
   buildPasswordResetUrl,
   hashPassword,
+  hashToken,
   PASSWORD_RESET_TTL_HOURS,
   signPasswordResetToken,
   signUserAccessToken,
+  signUserRefreshToken,
   verifyPassword,
   verifyPasswordResetToken,
+  verifyUserRefreshToken,
 } from "../lib/auth/tokens";
 
 export class AuthError extends Error {
@@ -32,6 +35,66 @@ function isAirtableUnknownFieldError(err: unknown): boolean {
   return message.includes("Unknown field name") || message.includes("UNKNOWN_FIELD_NAME");
 }
 
+async function persistRefreshTokenHash(userId: string, refreshToken: string) {
+  try {
+    await updateUser(userId, { refresh_token_hash: hashToken(refreshToken) });
+  } catch (err) {
+    if (!isAirtableUnknownFieldError(err)) throw err;
+  }
+}
+
+async function clearRefreshTokenHash(userId: string) {
+  try {
+    await updateUser(userId, { refresh_token_hash: "" });
+  } catch (err) {
+    if (!isAirtableUnknownFieldError(err)) throw err;
+  }
+}
+
+async function issueUserSession(user: UserRecord) {
+  const token = signUserAccessToken(user.id);
+  const refreshToken = signUserRefreshToken(user.id);
+  await persistRefreshTokenHash(user.id, refreshToken);
+  return {
+    token,
+    refreshToken,
+    user: toPublicUser(user),
+  };
+}
+
+export async function refreshUserSession(refreshToken: string) {
+  let userId: string;
+  try {
+    userId = verifyUserRefreshToken(refreshToken).sub;
+  } catch {
+    throw new AuthError("Invalid or expired refresh token", 401);
+  }
+
+  const user = await findUserById(userId);
+  if (!user || user.is_deleted || !user.is_active) {
+    throw new AuthError("Invalid or expired refresh token", 401);
+  }
+
+  if (user.refresh_token_hash) {
+    const tokenHash = hashToken(refreshToken);
+    if (tokenHash !== user.refresh_token_hash) {
+      throw new AuthError("Invalid or expired refresh token", 401);
+    }
+  }
+
+  const token = signUserAccessToken(user.id);
+  return {
+    token,
+    refreshToken,
+    user: toPublicUser(user),
+  };
+}
+
+export async function logoutUser(userId: string) {
+  await clearRefreshTokenHash(userId);
+  return { ok: true };
+}
+
 export async function registerUser(input: {
   email: string;
   password: string;
@@ -46,22 +109,32 @@ export async function registerUser(input: {
 
   const password_hash = await hashPassword(input.password);
 
-  const user = await createUser({
+  const intendsSeller = Boolean(input.intendsSeller);
+  const role = intendsSeller ? "seller" : "buyer";
+  const baseFields = {
     email,
     password_hash,
     name: input.name.trim(),
     email_verified: true,
-    verification_status: "pending",
-  });
+    intends_seller: intendsSeller,
+    verification_status: "unverified",
+  };
 
-  const token = signUserAccessToken(user.id);
+  let user: UserRecord;
+  try {
+    user = await createUser({ ...baseFields, role });
+  } catch (err) {
+    if (!isAirtableUnknownFieldError(err)) throw err;
+    user = await createUser(baseFields);
+  }
+
+  const session = await issueUserSession(user);
 
   return {
     id: user.id,
     email: user.email,
     name: user.name,
-    token,
-    user: toPublicUser(user),
+    ...session,
     message: "Account created successfully.",
   };
 }
@@ -203,11 +276,7 @@ export async function loginUser(email: string, password: string) {
   const ok = await verifyPassword(password, user.password_hash);
   if (!ok) throw new AuthError("Invalid email or password", 401);
 
-  const token = signUserAccessToken(user.id);
-  return {
-    token,
-    user: toPublicUser(user),
-  };
+  return issueUserSession(user);
 }
 
 export async function notifySellerVerificationSubmitted(_userId: string) {

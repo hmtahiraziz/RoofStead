@@ -7,6 +7,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { UserAccountMenu } from "@/components/stitch/UserAccountMenu";
 import { filtersFromSearchParams, filtersToSearchParams } from "@/lib/listings/filters";
+import { isSellerAccount, sellerDashboardPath } from "@/lib/auth/routing";
 import { STITCH_LOGO_SRC } from "@/lib/stitch/brand";
 
 type Props = {
@@ -105,12 +106,21 @@ export function StitchMarketHeader({ activeNav = "properties" }: Props) {
               ) : null}
               {!loading && user ? (
                 <>
-                  <Link
-                    className="hidden md:inline-flex items-center h-10 font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors px-4 border border-outline-variant rounded-lg hover:border-primary whitespace-nowrap"
-                    href="/seller/post"
-                  >
-                    List Property
-                  </Link>
+                  {isSellerAccount(user) ? (
+                    <Link
+                      className="hidden md:inline-flex items-center h-10 font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors px-4 border border-outline-variant rounded-lg hover:border-primary whitespace-nowrap"
+                      href={sellerDashboardPath()}
+                    >
+                      Seller dashboard
+                    </Link>
+                  ) : (
+                    <Link
+                      className="hidden md:inline-flex items-center h-10 font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors px-4 border border-outline-variant rounded-lg hover:border-primary whitespace-nowrap"
+                      href="/seller/post"
+                    >
+                      List Property
+                    </Link>
+                  )}
                   <UserAccountMenu />
                 </>
               ) : null}
