@@ -126,6 +126,14 @@ const SELLER_VERIFICATION_STATUS_TO_AIRTABLE: Record<string, string> = {
   rejected: "Rejected",
 };
 
+/** Airtable date-only columns (e.g. Reviewed At) require YYYY-MM-DD, not ISO datetime. */
+function toAirtableDateOnly(value: unknown): string | undefined {
+  if (value == null || value === "") return undefined;
+  const d = value instanceof Date ? value : new Date(String(value));
+  if (Number.isNaN(d.getTime())) return undefined;
+  return d.toISOString().slice(0, 10);
+}
+
 export function sellerVerificationFieldsToAirtable(fields: Record<string, unknown>): FieldSet {
   const out: FieldSet = {};
   for (const [key, value] of Object.entries(fields)) {
@@ -133,6 +141,12 @@ export function sellerVerificationFieldsToAirtable(fields: Record<string, unknow
     let v = value;
     if (key === "status" && typeof value === "string") {
       v = SELLER_VERIFICATION_STATUS_TO_AIRTABLE[value.toLowerCase()] ?? value;
+    }
+    if (key === "reviewed_at") {
+      const dateOnly = toAirtableDateOnly(value);
+      if (!dateOnly) continue;
+      out[SELLER_VERIFICATION_WRITE_MAP.reviewed_at] = dateOnly;
+      continue;
     }
     const airtableKey = SELLER_VERIFICATION_WRITE_MAP[key] ?? key;
     out[airtableKey] = v as FieldSet[string];
