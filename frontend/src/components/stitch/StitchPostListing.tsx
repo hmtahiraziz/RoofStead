@@ -4,12 +4,15 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { ListingImageUploader } from "@/components/listings/ListingImageUploader";
 import { SellerShell } from "@/components/seller/SellerShell";
 import { CurrencySelect } from "@/components/ui/CurrencySelect";
+import { FormattedPriceInput } from "@/components/ui/FormattedPriceInput";
 import { apiFetch } from "@/lib/api/client";
 import { isSellerAccount } from "@/lib/auth/routing";
 import { AREA_UNITS, DEFAULT_AREA_UNIT } from "@/lib/constants/areas";
-import type { CurrencyCode } from "@/lib/constants/currencies";
+import { getCurrencySymbol, type CurrencyCode } from "@/lib/constants/currencies";
+import { priceRangeForListingType, validateListingPrice } from "@/lib/listings/filters";
 
 const inputClass =
   "w-full bg-surface border border-outline-variant rounded-lg p-3 focus-ring font-body-md text-on-surface";
@@ -19,8 +22,12 @@ export function StitchPostListing() {
   const { token, user, loading: authLoading } = useAuth();
   const [listingType, setListingType] = useState<"sale" | "rent">("rent");
   const [currency, setCurrency] = useState<CurrencyCode>("USD");
+  const [price, setPrice] = useState<number | null>(null);
+  const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+
+  const priceRange = priceRangeForListingType(listingType);
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -30,9 +37,33 @@ export function StitchPostListing() {
       return;
     }
     const form = new FormData(e.currentTarget);
-    const price = Number(form.get("price"));
     const area = Number(form.get("area"));
     const area_unit = String(form.get("area_unit")) as "sqft" | "sqm";
+    const bedrooms = Number(form.get("bedrooms"));
+    const bathrooms = Number(form.get("bathrooms"));
+
+    if (price == null || price <= 0) {
+      setSubmitError("Enter a valid price.");
+      return;
+    }
+    const priceError = validateListingPrice(price, listingType);
+    if (priceError) {
+      setSubmitError(priceError);
+      return;
+    }
+    if (!Number.isFinite(area) || area <= 0) {
+      setSubmitError("Enter a valid area.");
+      return;
+    }
+    if (!Number.isFinite(bedrooms) || bedrooms < 0) {
+      setSubmitError("Enter a valid number of bedrooms.");
+      return;
+    }
+    if (!Number.isFinite(bathrooms) || bathrooms < 0) {
+      setSubmitError("Enter a valid number of bathrooms.");
+      return;
+    }
+
     const payload = {
       title: String(form.get("title")),
       description: String(form.get("description") ?? ""),
@@ -43,8 +74,9 @@ export function StitchPostListing() {
       address: String(form.get("address") ?? ""),
       area,
       area_unit,
-      bedrooms: 3,
-      bathrooms: 2,
+      bedrooms,
+      bathrooms,
+      ...(imageUrls.length > 0 ? { image_urls: imageUrls } : {}),
     };
     setSubmitting(true);
     try {
@@ -244,18 +276,18 @@ export function StitchPostListing() {
                   <label className="font-label-md text-label-md text-on-surface-variant block" htmlFor="price">
                     {listingType === "rent" ? "Monthly rent" : "Asking price"} ({currency})
                   </label>
-                  <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">$</span>
-                    <input
-                      className={`${inputClass} pl-8`}
-                      id="price"
-                      min={0}
-                      name="price"
-                      placeholder={listingType === "rent" ? "2,400" : "500,000"}
-                      required
-                      type="number"
-                    />
-                  </div>
+                  <FormattedPriceInput
+                    className={inputClass}
+                    currencySymbol={getCurrencySymbol(currency)}
+                    id="price"
+                    placeholder={listingType === "rent" ? "2,400" : "500,000"}
+                    required
+                    value={price}
+                    onChange={setPrice}
+                  />
+                  <p className="font-body-md text-body-md text-on-surface-variant text-sm">
+                    Max {listingType === "rent" ? `$${priceRange.max.toLocaleString()}/mo` : `$${priceRange.max.toLocaleString()}`}
+                  </p>
                 </div>
                 <div className="space-y-2">
                   <label className="font-label-md text-label-md text-on-surface-variant block" htmlFor="city">
@@ -324,53 +356,48 @@ export function StitchPostListing() {
                     type="text"
                   />
                 </div>
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <span className="font-label-md text-label-md text-on-surface-variant block">Amenities &amp; Features</span>
-              <div className="flex flex-wrap gap-2">
-                {["3 Bedrooms", "2 Bathrooms", "Pool", "Solar Ready"].map((chip) => (
-                  <span
-                    key={chip}
-                    className="bg-surface-container-high px-4 py-2 rounded-full font-body-md text-body-md flex items-center gap-2 text-on-surface"
-                  >
-                    {chip}
-                    <button className="text-on-surface-variant hover:text-error" type="button" aria-label={`Remove ${chip}`}>
-                      <span className="material-symbols-outlined text-sm">close</span>
-                    </button>
-                  </span>
-                ))}
-                <button
-                  className="border border-dashed border-outline text-primary px-4 py-2 rounded-full font-body-md text-body-md hover:bg-primary-fixed-dim transition-colors"
-                  type="button"
-                >
-                  + Add More
-                </button>
+                <div className="space-y-2">
+                  <label className="font-label-md text-label-md text-on-surface-variant block" htmlFor="bedrooms">
+                    Bedrooms
+                  </label>
+                  <input
+                    className={inputClass}
+                    defaultValue={3}
+                    id="bedrooms"
+                    min={0}
+                    name="bedrooms"
+                    required
+                    type="number"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="font-label-md text-label-md text-on-surface-variant block" htmlFor="bathrooms">
+                    Bathrooms
+                  </label>
+                  <input
+                    className={inputClass}
+                    defaultValue={2}
+                    id="bathrooms"
+                    min={0}
+                    name="bathrooms"
+                    required
+                    step="0.5"
+                    type="number"
+                  />
+                </div>
               </div>
             </div>
 
             <div className="space-y-4">
               <span className="font-label-md text-label-md text-on-surface-variant block">Property Imagery</span>
-              <div className="border-2 border-dashed border-outline-variant rounded-xl p-12 text-center bg-surface hover:bg-surface-container-low transition-all cursor-pointer group">
-                <div className="flex flex-col items-center gap-4">
-                  <div className="w-16 h-16 rounded-full bg-primary-fixed flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
-                    <span className="material-symbols-outlined text-3xl">add_a_photo</span>
-                  </div>
-                  <div>
-                    <p className="font-title-lg text-title-lg text-primary">Drag and drop images here</p>
-                    <p className="font-body-md text-body-md text-on-surface-variant">
-                      Support for JPG, PNG and HEIC. High resolution 4K photos recommended.
-                    </p>
-                  </div>
-                  <button
-                    className="bg-primary text-on-primary px-6 py-3 rounded-lg font-label-md text-label-md hover:opacity-90 transition-all"
-                    type="button"
-                  >
-                    Select Files
-                  </button>
-                </div>
-              </div>
+              {token && (
+                <ListingImageUploader
+                  disabled={submitting}
+                  images={imageUrls}
+                  token={token}
+                  onChange={setImageUrls}
+                />
+              )}
             </div>
 
             <div className="pt-12 border-t border-outline-variant flex flex-col md:flex-row justify-between items-center gap-6">
