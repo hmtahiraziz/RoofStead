@@ -4,24 +4,30 @@ import { v2 as cloudinary } from "cloudinary";
 import { env } from "../../config/env";
 import { shouldUseCloudinaryUpload } from "./profileImage";
 
+function fileExtension(mimeType: string): string {
+  if (mimeType === "image/png") return "png";
+  if (mimeType === "image/webp") return "webp";
+  return "jpg";
+}
+
 async function uploadToLocalDisk(
   userId: string,
-  kind: "id" | "selfie",
   buffer: Buffer,
   mimeType: string,
+  index: number,
 ): Promise<string> {
-  const dir = path.join(process.cwd(), "uploads", "verification");
+  const dir = path.join(process.cwd(), "uploads", "listings", userId.replace(/[^a-zA-Z0-9_-]/g, "_"));
   await fs.mkdir(dir, { recursive: true });
-  const ext = mimeType === "image/png" ? "png" : mimeType === "image/webp" ? "webp" : "jpg";
-  const filename = `${userId}-${kind}.${ext}`;
+  const ext = fileExtension(mimeType);
+  const filename = `${Date.now()}-${index}.${ext}`;
   await fs.writeFile(path.join(dir, filename), buffer);
-  return `${env.apiPublicUrl}/uploads/verification/${filename}`;
+  return `${env.apiPublicUrl}/uploads/listings/${userId.replace(/[^a-zA-Z0-9_-]/g, "_")}/${filename}`;
 }
 
 function uploadToCloudinary(
   userId: string,
-  kind: "id" | "selfie",
   buffer: Buffer,
+  index: number,
   timeoutMs: number,
 ): Promise<string> {
   cloudinary.config({
@@ -31,13 +37,13 @@ function uploadToCloudinary(
     secure: true,
   });
 
+  const safeUserId = userId.replace(/[^a-zA-Z0-9_-]/g, "_");
   const uploadPromise = new Promise<string>((resolve, reject) => {
     cloudinary.uploader
       .upload_stream(
         {
-          folder: `${env.cloudinary.uploadFolder}/verification`,
-          public_id: `${userId.replace(/[^a-zA-Z0-9_-]/g, "_")}-${kind}`,
-          overwrite: true,
+          folder: `${env.cloudinary.uploadFolder}/listings/${safeUserId}`,
+          public_id: `${Date.now()}-${index}`,
           resource_type: "image",
         },
         (err, res) => {
@@ -55,19 +61,19 @@ function uploadToCloudinary(
   return Promise.race([uploadPromise, timeoutPromise]);
 }
 
-export async function uploadVerificationImage(
+export async function uploadListingImage(
   userId: string,
-  kind: "id" | "selfie",
   buffer: Buffer,
   mimeType: string,
+  index: number,
 ): Promise<string> {
   if (shouldUseCloudinaryUpload()) {
     try {
-      return await uploadToCloudinary(userId, kind, buffer, 12_000);
+      return await uploadToCloudinary(userId, buffer, index, 12_000);
     } catch (err) {
-      console.warn("[verification] Cloudinary upload failed, using local storage:", err);
+      console.warn("[listings] Cloudinary upload failed, using local storage:", err);
     }
   }
 
-  return uploadToLocalDisk(userId, kind, buffer, mimeType);
+  return uploadToLocalDisk(userId, buffer, mimeType, index);
 }

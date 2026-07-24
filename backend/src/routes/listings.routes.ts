@@ -10,6 +10,7 @@ import {
   type ListingRecord,
   type ListingSort,
 } from "../lib/airtable/repositories";
+import { isPriceWithinRange, priceRangeError } from "../lib/listings/priceRanges";
 
 export const listingsRouter = Router();
 
@@ -167,8 +168,13 @@ listingsRouter.post("/", requireUserAuth, async (req: AuthedRequest, res) => {
     return;
   }
 
+  const data = parsed.data;
+  if (!isPriceWithinRange(data.price, data.listing_type)) {
+    res.status(400).json({ error: priceRangeError(data.listing_type) });
+    return;
+  }
+
   try {
-    const data = parsed.data;
     const created = await createListing({
       seller: [req.userId!],
       title: data.title,

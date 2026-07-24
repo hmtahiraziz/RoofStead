@@ -5,6 +5,5 @@ backend/dist/
 frontend/.next/
 frontend/out/
 frontend/.vercel/
-.env
-.env.local
 *.log
+config.bat
