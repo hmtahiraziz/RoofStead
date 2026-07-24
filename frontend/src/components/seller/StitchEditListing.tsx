@@ -4,12 +4,15 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useState } from "react";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { ListingImageUploader } from "@/components/listings/ListingImageUploader";
 import { SellerShell } from "@/components/seller/SellerShell";
 import { CurrencySelect } from "@/components/ui/CurrencySelect";
+import { FormattedPriceInput } from "@/components/ui/FormattedPriceInput";
 import { apiFetch } from "@/lib/api/client";
 import { isSellerAccount } from "@/lib/auth/routing";
 import { AREA_UNITS } from "@/lib/constants/areas";
-import type { CurrencyCode } from "@/lib/constants/currencies";
+import { getCurrencySymbol, type CurrencyCode } from "@/lib/constants/currencies";
+import { priceRangeForListingType, validateListingPrice } from "@/lib/listings/filters";
 import type { SellerListing } from "@/lib/types/sellerListing";
 
 const inputClass =
@@ -25,6 +28,10 @@ export function StitchEditListing({ listingId }: { listingId: string }) {
   const [submitting, setSubmitting] = useState(false);
   const [listingType, setListingType] = useState<"sale" | "rent">("rent");
   const [currency, setCurrency] = useState<CurrencyCode>("USD");
+  const [price, setPrice] = useState<number | null>(null);
+  const [imageUrls, setImageUrls] = useState<string[]>([]);
+
+  const priceRange = priceRangeForListingType(listingType);
 
   useEffect(() => {
     if (authLoading) return;
@@ -45,6 +52,14 @@ export function StitchEditListing({ listingId }: { listingId: string }) {
         setListing(data.listing);
         setListingType(data.listing.listingType);
         setCurrency(data.listing.currency as CurrencyCode);
+        setPrice(data.listing.price);
+        setImageUrls(
+          data.listing.imageUrls?.length
+            ? data.listing.imageUrls
+            : data.listing.imageUrl
+              ? [data.listing.imageUrl]
+              : [],
+        );
         setLoadError(null);
       })
       .catch((err) => {
@@ -66,18 +81,35 @@ export function StitchEditListing({ listingId }: { listingId: string }) {
     if (!token || !listing || listing.status === "deleted") return;
 
     const form = new FormData(e.currentTarget);
+    const area = Number(form.get("area"));
+
+    if (price == null || price <= 0) {
+      setSubmitError("Enter a valid price.");
+      return;
+    }
+    const priceError = validateListingPrice(price, listingType);
+    if (priceError) {
+      setSubmitError(priceError);
+      return;
+    }
+    if (!Number.isFinite(area) || area <= 0) {
+      setSubmitError("Enter a valid area.");
+      return;
+    }
+
     const payload = {
       title: String(form.get("title")),
       description: String(form.get("description") ?? ""),
       listing_type: listingType,
-      price: Number(form.get("price")),
+      price,
       currency,
       city: String(form.get("city")),
       address: String(form.get("address") ?? ""),
-      area: Number(form.get("area")),
+      area,
       area_unit: String(form.get("area_unit")) as "sqft" | "sqm",
       bedrooms: Number(form.get("bedrooms")),
       bathrooms: Number(form.get("bathrooms")),
+      image_urls: imageUrls,
     };
 
     setSubmitting(true);
@@ -191,15 +223,17 @@ export function StitchEditListing({ listingId }: { listingId: string }) {
             <label className="font-label-md text-on-surface-variant block" htmlFor="price">
               {listingType === "rent" ? "Monthly rent" : "Asking price"}
             </label>
-            <input
+            <FormattedPriceInput
               className={inputClass}
-              defaultValue={listing.price}
+              currencySymbol={getCurrencySymbol(currency)}
               id="price"
-              min={0}
-              name="price"
               required
-              type="number"
+              value={price}
+              onChange={setPrice}
             />
+            <p className="font-body-md text-on-surface-variant text-sm">
+              Max {listingType === "rent" ? `$${priceRange.max.toLocaleString()}/mo` : `$${priceRange.max.toLocaleString()}`}
+            </p>
           </div>
           <div className="space-y-2">
             <label className="font-label-md text-on-surface-variant block" htmlFor="edit-currency">
@@ -267,6 +301,18 @@ export function StitchEditListing({ listingId }: { listingId: string }) {
             />
           </div>
         </div>
+
+        {token && (
+          <section className="space-y-4">
+            <h2 className="font-headline-sm text-headline-sm text-primary">Property photos</h2>
+            <ListingImageUploader
+              disabled={submitting}
+              images={imageUrls}
+              token={token}
+              onChange={setImageUrls}
+            />
+          </section>
+        )}
 
         {submitError && <p className="text-error text-sm">{submitError}</p>}
 
