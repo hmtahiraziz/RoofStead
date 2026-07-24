@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { AdminPageHeader, AdminShell } from "@/components/admin/AdminShell";
 import { useAdminAuth } from "@/components/auth/AdminProvider";
+import { ListingImageGallery } from "@/components/listings/ListingImageGallery";
 import { apiFetch } from "@/lib/api/client";
 import { formatPrice } from "@/lib/format/currency";
 import type { CurrencyCode } from "@/lib/constants/currencies";
@@ -49,7 +50,6 @@ export function StitchAdminListingDetail({ listingId }: { listingId: string }) {
   const [data, setData] = useState<DetailResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [galleryIndex, setGalleryIndex] = useState(0);
 
   const load = useCallback(async () => {
     if (!token) return;
@@ -98,8 +98,7 @@ export function StitchAdminListingDetail({ listingId }: { listingId: string }) {
   if (!data) return null;
 
   const { listing, seller } = data;
-  const images = listing.imageUrls.length ? listing.imageUrls : [listing.imageUrl ?? LISTING_PLACEHOLDER];
-  const hero = images[galleryIndex] ?? LISTING_PLACEHOLDER;
+  const images = listing.imageUrls.length ? listing.imageUrls : listing.imageUrl ? [listing.imageUrl] : [];
   const sellerAvatar = userAvatarSrc(seller?.avatarUrl, "small");
 
   return (
@@ -126,29 +125,11 @@ export function StitchAdminListingDetail({ listingId }: { listingId: string }) {
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
-          <section className="overflow-hidden rounded-xl border border-outline-variant bg-surface-container-lowest card-shadow">
-            <div className="relative aspect-[16/10] bg-surface-container">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img alt="" className="h-full w-full object-cover" src={hero} />
-            </div>
-            {images.length > 1 && (
-              <div className="flex gap-2 overflow-x-auto border-t border-outline-variant p-4">
-                {images.map((url, i) => (
-                  <button
-                    key={`${url}-${i}`}
-                    className={`h-16 w-24 shrink-0 overflow-hidden rounded-lg border-2 transition-colors ${
-                      i === galleryIndex ? "border-primary" : "border-transparent"
-                    }`}
-                    type="button"
-                    onClick={() => setGalleryIndex(i)}
-                  >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img alt="" className="h-full w-full object-cover" src={url} />
-                  </button>
-                ))}
-              </div>
-            )}
-          </section>
+          <ListingImageGallery
+            images={images}
+            placeholder={LISTING_PLACEHOLDER}
+            showThumbnails={images.length > 1}
+          />
 
           <section className="rounded-xl border border-outline-variant bg-surface-container-lowest p-6 md:p-8 card-shadow">
             <h2 className="mb-4 font-title-lg text-title-lg text-primary">Description</h2>

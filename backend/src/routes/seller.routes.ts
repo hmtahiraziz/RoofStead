@@ -5,7 +5,9 @@ import type { AuthedRequest } from "../middleware/auth";
 import { requireUserAuth } from "../middleware/auth";
 import { isSellerUser } from "../lib/auth/userRole";
 import { toPublicUser } from "../lib/auth/publicUser";
+import { uploadListingImage } from "../lib/media/listingImage";
 import { uploadVerificationImage } from "../lib/media/verificationImage";
+import { isPriceWithinRange, priceRangeError } from "../lib/listings/priceRanges";
 import {
   createSellerVerification,
   findLatestSellerVerificationByUserId,
@@ -46,9 +48,23 @@ const statusSchema = z.object({
   status: z.enum(["active", "sold", "rented", "deleted"]),
 });
 
+const MAX_LISTING_IMAGES = 10;
+
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 8 * 1024 * 1024 },
+  fileFilter: (_req, file, cb) => {
+    if (file.mimetype === "image/jpeg" || file.mimetype === "image/png" || file.mimetype === "image/webp") {
+      cb(null, true);
+      return;
+    }
+    cb(new Error("Only JPEG, PNG, or WebP images are allowed"));
+  },
+});
+
+const listingUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 8 * 1024 * 1024, files: MAX_LISTING_IMAGES },
   fileFilter: (_req, file, cb) => {
     if (file.mimetype === "image/jpeg" || file.mimetype === "image/png" || file.mimetype === "image/webp") {
       cb(null, true);
@@ -225,6 +241,42 @@ sellerRouter.post("/verification/submit", requireUserAuth, async (req: AuthedReq
   }
 });
 
+sellerRouter.post(
+  "/listings/upload",
+  requireUserAuth,
+  (req, res, next) => {
+    listingUpload.array("files", MAX_LISTING_IMAGES)(req, res, (err) => {
+      if (err) {
+        res.status(400).json({ error: err instanceof Error ? err.message : "Invalid upload" });
+        return;
+      }
+      next();
+    });
+  },
+  async (req: AuthedRequest, res) => {
+    const user = await requireSellerAccount(req, res);
+    if (!user) return;
+
+    const files = req.files;
+    if (!Array.isArray(files) || files.length === 0) {
+      res.status(400).json({ error: "No images uploaded" });
+      return;
+    }
+
+    try {
+      const urls = await Promise.all(
+        files.map((file, index) =>
+          uploadListingImage(req.userId!, file.buffer, file.mimetype, index),
+        ),
+      );
+      res.json({ urls });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Could not upload images" });
+    }
+  },
+);
+
 sellerRouter.get("/listings", requireUserAuth, async (req: AuthedRequest, res) => {
   const user = await requireSellerAccount(req, res);
   if (!user) return;
@@ -268,6 +320,12 @@ sellerRouter.patch("/listings/:id", requireUserAuth, async (req: AuthedRequest, 
   const data = parsed.data;
   if (!Object.keys(data).length) {
     res.status(400).json({ error: "No fields to update" });
+    return;
+  }
+
+  const effectiveType = data.listing_type ?? listing.listing_type;
+  if (data.price != null && !isPriceWithinRange(data.price, effectiveType)) {
+    res.status(400).json({ error: priceRangeError(effectiveType) });
     return;
   }
 

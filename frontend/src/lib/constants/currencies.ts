@@ -34,3 +34,11 @@ export const POPULAR_CURRENCIES = [
 ] as const;
 
 export type CurrencyCode = (typeof POPULAR_CURRENCIES)[number]["code"];
+
+export function getCurrencyMeta(code: CurrencyCode) {
+  return POPULAR_CURRENCIES.find((c) => c.code === code);
+}
+
+export function getCurrencySymbol(code: CurrencyCode): string {
+  return getCurrencyMeta(code)?.symbol ?? code;
+}
