@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { ListingImageGallery } from "@/components/listings/ListingImageGallery";
 import { apiFetch } from "@/lib/api/client";
 import { isSellerAccount, sellerDashboardPath } from "@/lib/auth/routing";
 import { formatPrice } from "@/lib/format/currency";
@@ -92,7 +93,6 @@ export function StitchPropertyDetail({ listingId }: { listingId: string }) {
   const [error, setError] = useState<string | null>(null);
   const [contactError, setContactError] = useState<string | null>(null);
   const [contacting, setContacting] = useState(false);
-  const [galleryIndex, setGalleryIndex] = useState(0);
 
   useEffect(() => {
     if (authLoading) return;
@@ -209,7 +209,6 @@ export function StitchPropertyDetail({ listingId }: { listingId: string }) {
       : listing.imageUrl
         ? [listing.imageUrl]
         : [];
-  const activeImage = images[galleryIndex] ?? images[0];
   const priceLabel =
     listing.listingType === "rent"
       ? `${formatPrice(listing.price, listing.currency as CurrencyCode)}/mo`
@@ -222,45 +221,13 @@ export function StitchPropertyDetail({ listingId }: { listingId: string }) {
 
   return (
     <main className="max-w-[1440px] mx-auto overflow-hidden pt-6 md:pt-10 px-margin-mobile md:px-margin-desktop">
-      <section className="relative w-full aspect-[21/9] md:aspect-[21/7] overflow-hidden group bg-surface-container-high rounded-xl md:rounded-2xl">
-        {activeImage ? (
-          <Image alt="" className="object-cover" fill priority sizes="100vw" src={activeImage} />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center text-on-surface-variant">No photo</div>
-        )}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/40 pointer-events-none" />
-        {images.length > 1 && (
-          <>
-            <button
-              type="button"
-              className="absolute left-4 top-1/2 -translate-y-1/2 p-2 bg-white/20 backdrop-blur-md rounded-full text-white hover:bg-white/40 transition-all"
-              aria-label="Previous photo"
-              onClick={() => setGalleryIndex((i) => (i === 0 ? images.length - 1 : i - 1))}
-            >
-              <span className="material-symbols-outlined">chevron_left</span>
-            </button>
-            <button
-              type="button"
-              className="absolute right-4 top-1/2 -translate-y-1/2 p-2 bg-white/20 backdrop-blur-md rounded-full text-white hover:bg-white/40 transition-all"
-              aria-label="Next photo"
-              onClick={() => setGalleryIndex((i) => (i + 1) % images.length)}
-            >
-              <span className="material-symbols-outlined">chevron_right</span>
-            </button>
-          </>
-        )}
-        {images.length > 1 && (
-          <div className="absolute bottom-6 right-margin-desktop">
-            <button
-              type="button"
-              className="px-4 py-2 bg-white text-primary font-label-md text-label-md rounded-lg shadow-lg flex items-center gap-2"
-            >
-              <span className="material-symbols-outlined text-sm">photo_camera</span>
-              See all {images.length} photos
-            </button>
-          </div>
-        )}
-      </section>
+      <ListingImageGallery
+        aspectClass="aspect-[21/9] md:aspect-[21/7]"
+        images={images}
+        priority
+        roundedClass="rounded-xl md:rounded-2xl"
+        showThumbnails={images.length > 1}
+      />
 
       <div className="px-0 md:px-0 py-12 grid grid-cols-1 lg:grid-cols-12 gap-gutter max-w-container-max mx-auto">
         <div className="lg:col-span-8 space-y-10">
