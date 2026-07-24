@@ -47,7 +47,6 @@ type ListingRow = {
   listingType: string;
   price: number;
   currency: string;
-  status: string;
   sellerId: string;
   bedrooms?: number;
   bathrooms?: number;
@@ -104,39 +103,6 @@ function userStatusBadge(user: UserRow) {
     <span className="inline-flex items-center gap-1.5 rounded-md bg-primary-fixed px-2.5 py-1 font-label-md text-label-md text-on-primary-fixed">
       <span className="h-1.5 w-1.5 rounded-full bg-primary" />
       Active
-    </span>
-  );
-}
-
-function listingStatusBadge(status: string) {
-  const normalized = status.toLowerCase();
-  if (normalized === "deleted" || normalized === "moderated_hidden") {
-    return (
-      <span className="inline-flex items-center gap-1.5 rounded-full bg-error-container px-2.5 py-1 font-label-md text-label-md text-on-error-container">
-        <span className="material-symbols-outlined text-[14px]">flag</span>
-        {normalized === "moderated_hidden" ? "Hidden" : "Deleted"}
-      </span>
-    );
-  }
-  if (normalized === "rented" || normalized === "sold") {
-    return (
-      <span className="inline-flex items-center gap-1.5 rounded-full bg-surface-container-high px-2.5 py-1 font-label-md text-label-md text-on-surface-variant">
-        {normalized.charAt(0).toUpperCase() + normalized.slice(1)}
-      </span>
-    );
-  }
-  if (normalized === "active") {
-    return (
-      <span className="inline-flex items-center gap-1.5 rounded-full bg-primary-fixed px-2.5 py-1 font-label-md text-label-md text-on-primary-fixed">
-        <span className="material-symbols-outlined text-[14px]">check_circle</span>
-        Active
-      </span>
-    );
-  }
-  return (
-    <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary-container px-2.5 py-1 font-label-md text-label-md text-on-secondary-container">
-      <span className="material-symbols-outlined text-[14px]">pending</span>
-      Pending
     </span>
   );
 }
@@ -225,7 +191,7 @@ export function StitchAdminPanel() {
   }
 
   const dashboardStats = useMemo(() => {
-    const activeListings = listingRows.filter((l) => l.status.toLowerCase() === "active").length;
+    const activeListings = listingRows.length;
     return {
       activeListings,
       pendingVerifications: rows.length,
@@ -327,7 +293,7 @@ export function StitchAdminPanel() {
             >
               <div className="mb-4 flex items-start justify-between">
                 <span className="font-label-md text-label-md uppercase tracking-wider text-on-surface-variant">
-                  Active Listings
+                  Total Listings
                 </span>
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-container/10 text-primary-container">
                   <span className="material-symbols-outlined text-sm">real_estate_agent</span>
@@ -472,7 +438,7 @@ export function StitchAdminPanel() {
                     >
                       <div className="flex items-center gap-3">
                         <div className="h-2 w-2 rounded-full bg-error" />
-                        <span className="font-body-md text-body-md text-on-surface">Moderate listings</span>
+                        <span className="font-body-md text-body-md text-on-surface">Browse listings</span>
                       </div>
                       <span className="material-symbols-outlined text-sm text-on-surface-variant">chevron_right</span>
                     </button>
@@ -582,7 +548,11 @@ export function StitchAdminPanel() {
                   {pageUsers.map((u) => {
                     const avatar = userAvatarSrc(u.profile_picture_url, "small");
                     return (
-                      <tr key={u.id} className="transition-colors hover:bg-surface-container-low">
+                      <tr
+                        key={u.id}
+                        className="cursor-pointer transition-colors hover:bg-surface-container-low"
+                        onClick={() => router.push(`/admin/users/${u.id}`)}
+                      >
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-4">
                             {u.profile_picture_url ? (
@@ -617,12 +587,14 @@ export function StitchAdminPanel() {
                           {u.verification_status ?? "unverified"}
                         </td>
                         <td className="px-6 py-4 text-right">
-                          <button
-                            className="rounded-full p-1 text-on-surface-variant transition-colors hover:bg-surface-container hover:text-primary"
-                            type="button"
+                          <Link
+                            className="inline-flex rounded-full p-1 text-on-surface-variant transition-colors hover:bg-surface-container hover:text-primary"
+                            href={`/admin/users/${u.id}`}
+                            title="View user details"
+                            onClick={(e) => e.stopPropagation()}
                           >
-                            <span className="material-symbols-outlined">more_vert</span>
-                          </button>
+                            <span className="material-symbols-outlined">visibility</span>
+                          </Link>
                         </td>
                       </tr>
                     );
@@ -729,7 +701,7 @@ export function StitchAdminPanel() {
                             <div>
                               <Link
                                 className="font-title-lg text-title-lg text-on-surface hover:text-primary"
-                                href={`/admin/verifications/${row.id}`}
+                                href={`/admin/users/${row.userId}`}
                               >
                                 {row.userName}
                               </Link>
@@ -755,7 +727,7 @@ export function StitchAdminPanel() {
                           </span>
                         </td>
                         <td className="p-4">
-                          <div className="flex items-center justify-end gap-2 opacity-100 transition-opacity md:opacity-0 md:group-hover:opacity-100">
+                          <div className="flex items-center justify-end gap-2">
                             <Link
                               className="rounded-full border border-outline-variant bg-surface p-2 text-on-surface-variant shadow-sm transition-all hover:bg-surface-container hover:text-primary"
                               href={`/admin/verifications/${row.id}`}
@@ -798,7 +770,7 @@ export function StitchAdminPanel() {
                 Listing Moderation
               </h2>
               <p className="mt-2 font-body-lg text-body-lg text-on-surface-variant">
-                Review, approve, or manage property submissions.
+                View and manage published property listings.
               </p>
             </div>
             <div className="flex gap-3">
@@ -821,20 +793,23 @@ export function StitchAdminPanel() {
                     <th className="p-4 font-medium">Property</th>
                     <th className="p-4 font-medium">Seller</th>
                     <th className="p-4 font-medium">Price / Loc</th>
-                    <th className="p-4 font-medium">Status</th>
-                    <th className="p-4 text-right font-medium">Actions</th>
+                    <th className="p-4 font-medium">Type</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-outline-variant bg-surface">
                   {pageListings.length === 0 && (
                     <tr>
-                      <td className="p-8 text-on-surface-variant" colSpan={5}>
+                      <td className="p-8 text-on-surface-variant" colSpan={4}>
                         No listings in Airtable.
                       </td>
                     </tr>
                   )}
                   {pageListings.map((l) => (
-                    <tr key={l.id} className="group transition-colors hover:bg-surface-container-lowest">
+                    <tr
+                      key={l.id}
+                      className="group cursor-pointer transition-colors hover:bg-surface-container-lowest"
+                      onClick={() => router.push(`/admin/listings/${l.id}`)}
+                    >
                       <td className="p-4">
                         <div className="flex items-center gap-4">
                           <div className="h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-surface-variant">
@@ -846,7 +821,9 @@ export function StitchAdminPanel() {
                             />
                           </div>
                           <div>
-                            <h3 className="font-title-lg text-title-lg text-on-surface">{l.title}</h3>
+                            <h3 className="font-title-lg text-title-lg text-on-surface group-hover:text-primary transition-colors">
+                              {l.title}
+                            </h3>
                             <p className="mt-1 flex items-center gap-1 font-body-md text-body-md text-on-surface-variant">
                               {l.bedrooms != null && (
                                 <>
@@ -879,22 +856,8 @@ export function StitchAdminPanel() {
                           {l.city}
                         </div>
                       </td>
-                      <td className="p-4">
-                        {listingStatusBadge(l.status)}
-                        <div className="mt-1 font-body-md text-body-md capitalize text-on-surface-variant">
-                          {l.listingType}
-                        </div>
-                      </td>
-                      <td className="p-4">
-                        <div className="flex items-center justify-end gap-2 opacity-100 transition-opacity md:opacity-0 md:group-hover:opacity-100">
-                          <button
-                            className="rounded-full border border-outline-variant bg-surface p-2 text-on-surface-variant shadow-sm transition-all hover:bg-surface-container hover:text-primary"
-                            title="View Details"
-                            type="button"
-                          >
-                            <span className="material-symbols-outlined text-[20px]">visibility</span>
-                          </button>
-                        </div>
+                      <td className="p-4 capitalize font-body-md text-body-md text-on-surface-variant">
+                        {l.listingType}
                       </td>
                     </tr>
                   ))}
