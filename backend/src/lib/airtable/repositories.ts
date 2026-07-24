@@ -118,7 +118,7 @@ function readUserRole(f: FieldSet, intendsSeller: boolean): UserRole {
 function mapUser(record: { id: string; fields: FieldSet }): UserRecord {
   const f = record.fields;
   const passwordRaw = fieldValue(f, "password_hash", "Password Hash", "Password hash", "password");
-  const airtableRole = fieldValue(f, "Role", "role");
+  const airtableRole = String(fieldValue(f, "Role", "role") ?? "").toLowerCase();
   const intendsSeller =
     Boolean(fieldValue(f, "intends_seller", "Intends Seller")) || airtableRole === "seller";
   return {
@@ -234,6 +234,12 @@ function mapListing(record: { id: string; fields: FieldSet }): ListingRecord {
   };
 }
 
+function firstAttachmentUrl(value: unknown): string | undefined {
+  if (!Array.isArray(value) || !value.length) return undefined;
+  const first = value[0] as { url?: string };
+  return first?.url ? String(first.url) : undefined;
+}
+
 function mapVerification(record: { id: string; fields: FieldSet }): SellerVerificationRecord {
   const f = record.fields;
   const statusRaw = String(fieldValue(f, "status", "Status") ?? "pending").toLowerCase();
@@ -241,19 +247,21 @@ function mapVerification(record: { id: string; fields: FieldSet }): SellerVerifi
     statusRaw === "approved" || statusRaw === "rejected"
       ? (statusRaw as SellerVerificationRecord["status"])
       : "pending";
+  const selfieUrl =
+    fieldValue(f, "selfie_url", "Selfie URL", "Selfie Url") ??
+    firstAttachmentUrl(f["Selfie/Live Photo"]);
+  const idDocumentUrl =
+    fieldValue(f, "id_document_url", "ID Document URL", "Id Document URL", "ID document URL") ??
+    firstAttachmentUrl(f["ID Card / Passport Image"]);
   return {
     id: record.id,
     user_id: firstLink(fieldValue(f, "user", "User") ?? f.user),
     status,
-    selfie_url: fieldValue(f, "selfie_url", "Selfie URL", "Selfie Url")
-      ? String(fieldValue(f, "selfie_url", "Selfie URL", "Selfie Url"))
-      : undefined,
-    id_document_url: fieldValue(f, "id_document_url", "ID Document URL", "Id Document URL", "ID document URL")
-      ? String(fieldValue(f, "id_document_url", "ID Document URL", "Id Document URL", "ID document URL"))
-      : undefined,
+    selfie_url: selfieUrl ? String(selfieUrl) : undefined,
+    id_document_url: idDocumentUrl ? String(idDocumentUrl) : undefined,
     notes: fieldValue(f, "notes", "Notes") ? String(fieldValue(f, "notes", "Notes")) : undefined,
-    rejection_reason: fieldValue(f, "rejection_reason", "Rejection Reason")
-      ? String(fieldValue(f, "rejection_reason", "Rejection Reason"))
+    rejection_reason: fieldValue(f, "rejection_reason", "Rejection Reason", "Admin Notes")
+      ? String(fieldValue(f, "rejection_reason", "Rejection Reason", "Admin Notes"))
       : undefined,
     submitted_at: fieldValue(f, "submitted_at", "Submitted At", "Submitted at")
       ? String(fieldValue(f, "submitted_at", "Submitted At", "Submitted at"))

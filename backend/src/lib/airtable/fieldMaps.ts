@@ -55,15 +55,15 @@ const LISTING_STATUS_TO_AIRTABLE: Record<string, string> = {
 };
 
 const VERIFICATION_STATUS_TO_AIRTABLE: Record<string, string> = {
-  unverified: "Pending",
+  unverified: "Unverified",
   pending: "Pending",
   verified: "Verified",
   rejected: "Rejected",
 };
 
 const USER_ROLE_TO_AIRTABLE: Record<string, string> = {
-  buyer: "buyer",
-  seller: "seller",
+  buyer: "Buyer",
+  seller: "Seller",
 };
 
 export function userFieldsToAirtable(fields: Record<string, unknown>): FieldSet {
@@ -121,9 +121,9 @@ const SELLER_VERIFICATION_WRITE_MAP: Record<string, string> = {
 };
 
 const SELLER_VERIFICATION_STATUS_TO_AIRTABLE: Record<string, string> = {
-  pending: "pending",
-  approved: "approved",
-  rejected: "rejected",
+  pending: "Pending",
+  approved: "Approved",
+  rejected: "Rejected",
 };
 
 export function sellerVerificationFieldsToAirtable(fields: Record<string, unknown>): FieldSet {
