@@ -1,10 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { ListingImageGallery } from "@/components/listings/ListingImageGallery";
 import { SellerShell } from "@/components/seller/SellerShell";
 import {
   nextStatusFromAction,
@@ -141,15 +141,7 @@ export function StitchSellerListingDetail({ listingId }: { listingId: string }) 
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-6">
-          <div className="relative aspect-[16/10] rounded-xl overflow-hidden bg-surface-container-high">
-            {gallery[0] ? (
-              <Image alt="" className="object-cover" fill src={gallery[0]} unoptimized />
-            ) : (
-              <div className="flex items-center justify-center h-full text-outline">
-                <span className="material-symbols-outlined text-6xl">home</span>
-              </div>
-            )}
-          </div>
+          <ListingImageGallery images={gallery} showThumbnails={gallery.length > 1} />
 
           <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 md:p-8 space-y-4">
             <div className="flex flex-wrap items-start justify-between gap-3">
