@@ -6,6 +6,8 @@ import {
   createConversation,
   createMessage,
   findConversationById,
+  findConversationForListingAndParticipants,
+  findConversationsForListingAsSeller,
   findListingById,
   findUserById,
   listConversationsForUser,
@@ -47,6 +49,47 @@ messagesRouter.get("/conversations", async (req: AuthedRequest, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Could not load conversations" });
+  }
+});
+
+messagesRouter.get("/conversations/by-listing/:listingId", async (req: AuthedRequest, res) => {
+  try {
+    const listing = await findListingById(String(req.params.listingId));
+    if (!listing || listing.status !== "active") {
+      res.status(404).json({ error: "Listing not found" });
+      return;
+    }
+
+    const userId = req.userId!;
+
+    if (listing.seller_id === userId) {
+      const conversations = await findConversationsForListingAsSeller(listing.id, userId);
+      if (conversations.length === 0) {
+        res.status(404).json({ error: "No conversations for this listing yet" });
+        return;
+      }
+      res.json({
+        conversationId: conversations[0].id,
+        conversationIds: conversations.map((c) => c.id),
+        existing: true,
+      });
+      return;
+    }
+
+    const existing = await findConversationForListingAndParticipants(
+      listing.id,
+      userId,
+      listing.seller_id,
+    );
+    if (!existing) {
+      res.status(404).json({ error: "No conversation yet" });
+      return;
+    }
+
+    res.json({ conversationId: existing.id, existing: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Could not look up conversation" });
   }
 });
 
@@ -172,32 +215,46 @@ messagesRouter.post("/conversations", async (req: AuthedRequest, res) => {
     return;
   }
 
-  const buyerId = req.userId!;
-  if (listing.seller_id === buyerId) {
-    res.status(400).json({ error: "Cannot message your own listing" });
-    return;
-  }
+  const userId = req.userId!;
 
   try {
-    const existing = (await listConversationsForUser(buyerId)).find(
-      (c) => c.listing_id === listing.id && c.buyer_id === buyerId,
+    if (listing.seller_id === userId) {
+      const sellerConversations = await findConversationsForListingAsSeller(listing.id, userId);
+      if (sellerConversations.length === 0) {
+        res.status(404).json({ error: "No buyer inquiries for this listing yet" });
+        return;
+      }
+      res.json({
+        conversationId: sellerConversations[0].id,
+        existing: true,
+      });
+      return;
+    }
+
+    const existing = await findConversationForListingAndParticipants(
+      listing.id,
+      userId,
+      listing.seller_id,
     );
 
-    const conversation =
-      existing ??
-      (await createConversation({
-        listing: [listing.id],
-        buyer: [buyerId],
-        seller: [listing.seller_id],
-        last_message_at: new Date().toISOString(),
-        last_message_preview: "",
-      }));
+    if (existing) {
+      res.json({ conversationId: existing.id, existing: true });
+      return;
+    }
+
+    const now = new Date().toISOString();
+    const conversation = await createConversation({
+      listing: [listing.id],
+      buyer: [userId],
+      seller: [listing.seller_id],
+      last_message_at: now,
+      last_message_preview: "",
+    });
 
     if (parsed.data.message?.trim()) {
-      const now = new Date().toISOString();
       await createMessage({
         conversation: [conversation.id],
-        sender: [buyerId],
+        sender: [userId],
         body: parsed.data.message.trim(),
         created_at: now,
       });
@@ -207,7 +264,7 @@ messagesRouter.post("/conversations", async (req: AuthedRequest, res) => {
       });
     }
 
-    res.status(201).json({ conversationId: conversation.id });
+    res.status(201).json({ conversationId: conversation.id, existing: false });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Could not start conversation" });
