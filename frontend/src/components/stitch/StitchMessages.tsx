@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { ChatPeerProfilePane } from "@/components/messages/ChatPeerProfilePane";
@@ -153,6 +153,8 @@ function ConversationListItem({
 
 export function StitchMessages() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const conversationParam = searchParams.get("conversation");
   const { token, loading: authLoading } = useAuth();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -176,10 +178,16 @@ export function StitchMessages() {
     apiFetch<{ conversations: Conversation[] }>("/api/messages/conversations", { token })
       .then((data) => {
         setConversations(data.conversations);
-        if (data.conversations[0]) setActiveId(data.conversations[0].id);
+        const preferred =
+          conversationParam &&
+          (data.conversations.some((c) => c.id === conversationParam) || conversationParam.length > 0)
+            ? conversationParam
+            : data.conversations[0]?.id ?? null;
+        setActiveId(preferred);
+        if (preferred) setMobilePane("chat");
       })
       .catch((e) => setError(e instanceof Error ? e.message : "Failed to load"));
-  }, [token, authLoading, router]);
+  }, [token, authLoading, router, conversationParam]);
 
   const loadThread = useCallback(
     async (conversationId: string) => {
@@ -223,9 +231,28 @@ export function StitchMessages() {
   }, [conversations, searchQuery]);
 
   const active = conversations.find((c) => c.id === activeId);
-  const peerName = activePeer?.name ?? active?.peerName ?? "Conversation";
-  const peerAvatar = userAvatarSrc(activePeer?.avatarUrl ?? active?.peerAvatarUrl, "small");
-  const peerVerified = activePeer?.verified ?? active?.peerVerified;
+  const activeConversation: Conversation | null =
+    active ??
+    (activeId && activeListing
+      ? {
+          id: activeId,
+          listingId: activeListing.id,
+          listingTitle: activeListing.title,
+          listingPrice: activeListing.price,
+          listingCurrency: activeListing.currency,
+          listingCity: activeListing.city,
+          listingAddress: activeListing.address,
+          listingImageUrl: activeListing.imageUrl,
+          peerName: activePeer?.name ?? "Seller",
+          peerAvatarUrl: activePeer?.avatarUrl,
+          peerVerified: activePeer?.verified,
+          lastMessagePreview: messages[messages.length - 1]?.body ?? "",
+          lastMessageAt: messages[messages.length - 1]?.createdAt,
+        }
+      : null);
+  const peerName = activePeer?.name ?? activeConversation?.peerName ?? "Conversation";
+  const peerAvatar = userAvatarSrc(activePeer?.avatarUrl ?? activeConversation?.peerAvatarUrl, "small");
+  const peerVerified = activePeer?.verified ?? activeConversation?.peerVerified;
 
   async function sendMessage(e: FormEvent) {
     e.preventDefault();
@@ -254,6 +281,7 @@ export function StitchMessages() {
     setActiveId(id);
     setPeerPanelOpen(false);
     setMobilePane("chat");
+    router.replace(`/messages?conversation=${encodeURIComponent(id)}`, { scroll: false });
   }
 
   function openPeerPanel() {
@@ -277,7 +305,9 @@ export function StitchMessages() {
     }
   }
 
-  const listingCtx = activeListing ?? (active ? conversationToListingContext(active) : null);
+  const listingCtx =
+    activeListing ??
+    (activeConversation ? conversationToListingContext(activeConversation) : null);
 
   return (
     <div className="bg-background text-on-surface min-h-screen flex flex-col font-body-md md:overflow-hidden">
@@ -343,7 +373,7 @@ export function StitchMessages() {
             mobilePane === "chat" ? "flex flex-1" : mobilePane === "list" ? "hidden md:flex md:flex-1" : "hidden md:flex md:flex-1"
           } ${peerPanelOpen ? "" : "md:flex-[1_1_100%]"}`}
         >
-          {active ? (
+          {activeId ? (
             <>
               <header className="p-4 border-b border-outline-variant bg-surface-container-low flex justify-between items-center min-h-[5rem]">
                 <div className="flex items-center gap-3 min-w-0">
@@ -389,7 +419,7 @@ export function StitchMessages() {
                         )}
                       </div>
                       <p className="text-xs text-on-surface-variant font-label-md truncate">
-                        {active.listingTitle} · Tap for profile
+                        {activeConversation?.listingTitle ?? "Listing"} · Tap for profile
                       </p>
                     </div>
                   </button>
@@ -514,7 +544,7 @@ export function StitchMessages() {
                   </div>
                   <Link
                     className="text-xs font-label-md text-primary hover:underline transition-all shrink-0"
-                    href={`/listings/${active.listingId}`}
+                    href={`/listings/${activeConversation?.listingId ?? ""}`}
                   >
                     View details
                   </Link>
@@ -580,10 +610,10 @@ export function StitchMessages() {
             mobilePane === "profile" ? "flex flex-1 w-full" : "max-md:hidden"
           } ${peerPanelOpen ? "md:flex md:w-72 lg:w-80" : "md:hidden md:w-0"}`}
         >
-          {active && (peerPanelOpen || mobilePane === "profile") && (
+          {activeConversation && (peerPanelOpen || mobilePane === "profile") && (
             <div className="h-full bg-surface border border-outline-variant rounded-xl p-4 shadow-[0px_4px_20px_rgba(27,67,50,0.04)] overflow-y-auto">
               <ChatPeerProfilePane
-                active={active}
+                active={activeConversation}
                 peerAvatar={peerAvatar}
                 peerName={peerName}
                 peerVerified={Boolean(peerVerified)}
