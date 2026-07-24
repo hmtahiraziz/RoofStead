@@ -6,15 +6,17 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { apiFetch } from "@/lib/api/client";
+import { isSellerAccount, sellerDashboardPath } from "@/lib/auth/routing";
 import { formatPrice } from "@/lib/format/currency";
 import type { CurrencyCode } from "@/lib/constants/currencies";
-import { STITCH_BROWSE_LISTINGS } from "@/lib/stitch/sample-listings";
+import { getSampleListing, type ListingSeller } from "@/lib/stitch/sample-listings";
 
 type ApiListing = {
   id: string;
   title: string;
   description: string;
   city: string;
+  address?: string;
   listingType: "rent" | "sale";
   price: number;
   currency: string;
@@ -22,72 +24,159 @@ type ApiListing = {
   bathrooms: number;
   area: number;
   areaUnit: string;
+  propertyType?: string;
   imageUrl?: string;
+  imageUrls?: string[];
   sellerVerified: boolean;
+  seller?: {
+    id: string;
+    name: string;
+    avatarUrl?: string;
+    verified: boolean;
+  } | null;
 };
 
-function sampleToApiListing(sample: (typeof STITCH_BROWSE_LISTINGS)[number]): ApiListing {
-  const numericPrice = Number(sample.price.replace(/[^0-9.]/g, "")) || 0;
-  const sqftMatch = sample.sqft.match(/([\d,]+)/);
-  const area = sqftMatch ? Number(sqftMatch[1].replace(/,/g, "")) : 0;
+const AMENITY_ICONS: Record<string, string> = {
+  Pool: "pool",
+  Gym: "fitness_center",
+  "Smart Home": "stream_apps",
+  "3 Car Garage": "garage",
+  Garage: "garage",
+  "Wine Cellar": "wine_bar",
+  "Solar Panels": "solar_power",
+  "24/7 Security": "security",
+  Garden: "yard",
+  "Pet Friendly": "pets",
+};
+
+function defaultSeller(): ListingSeller {
+  return {
+    name: "Julian Sterling",
+    avatarUrl:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuAZ5Mb_kgKY4XpanbSJQskjA2qWbuI0J4HKlDw67tK92CEVuUeuq1zo1buv22m4mxluKT2SzbKZYQjwFimnwF0eeLbcyilFk0XpGLn3xpLwr33OO1XKg0J8ZFqxwvXOGQqYTCmrshinq3uML2E61zT1lflU7WLmCaEwQhRw43_ZRRR77W-yzIa6cxwPflbfGQczhLfi5bLvLvBS8qe3rOwp6ICOlQziQpAZgO5P3p9XDkkJ3Agtjn1_zA",
+    verified: true,
+    company: "Sterling & Associates Real Estate",
+    responseTime: "< 1 hour",
+    activeListings: 12,
+  };
+}
+
+function sampleToListing(sample: NonNullable<ReturnType<typeof getSampleListing>>): ApiListing {
   return {
     id: sample.id,
     title: sample.title,
-    description: `Stitch showcase property in ${sample.location}.`,
+    description: sample.description ?? "",
     city: sample.location,
+    address: sample.address,
     listingType: sample.listingType,
-    price: numericPrice,
+    price: sample.numericPrice,
     currency: "USD",
     bedrooms: sample.beds,
     bathrooms: sample.baths,
-    area,
+    area: sample.numericArea,
     areaUnit: "sqft",
+    propertyType: sample.propertyType,
     imageUrl: sample.imageUrl,
+    imageUrls: sample.imageUrls ?? [sample.imageUrl],
     sellerVerified: sample.verified,
   };
 }
 
 export function StitchPropertyDetail({ listingId }: { listingId: string }) {
   const router = useRouter();
-  const { token } = useAuth();
+  const { user, token, loading: authLoading } = useAuth();
   const [listing, setListing] = useState<ApiListing | null>(null);
+  const [isLiveListing, setIsLiveListing] = useState(false);
+  const [seller, setSeller] = useState<ListingSeller>(defaultSeller());
+  const [amenities, setAmenities] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [contactError, setContactError] = useState<string | null>(null);
   const [contacting, setContacting] = useState(false);
+  const [galleryIndex, setGalleryIndex] = useState(0);
 
   useEffect(() => {
-    const sample = STITCH_BROWSE_LISTINGS.find((l) => l.id === listingId);
-    if (sample) {
-      setListing(sampleToApiListing(sample));
-      setError(null);
-      return;
+    if (authLoading) return;
+    if (user && isSellerAccount(user)) {
+      router.replace(sellerDashboardPath());
     }
+  }, [authLoading, user, router]);
+
+  useEffect(() => {
+    let cancelled = false;
+
     apiFetch<{ listing: ApiListing }>(`/api/listings/${listingId}`)
       .then((data) => {
+        if (cancelled) return;
         setListing(data.listing);
+        setIsLiveListing(true);
+        if (data.listing.seller) {
+          setSeller({
+            name: data.listing.seller.name,
+            avatarUrl: data.listing.seller.avatarUrl ?? defaultSeller().avatarUrl,
+            verified: data.listing.seller.verified,
+            company: "RoofStead Premier Broker",
+            responseTime: "< 1 hour",
+            activeListings: 12,
+          });
+        }
+        setAmenities([]);
         setError(null);
       })
-      .catch((e) => setError(e instanceof Error ? e.message : "Not found"));
+      .catch(() => {
+        if (cancelled) return;
+        const sample = getSampleListing(listingId);
+        if (sample) {
+          setListing(sampleToListing(sample));
+          setIsLiveListing(false);
+          setSeller(sample.seller ?? defaultSeller());
+          setAmenities(sample.amenities ?? []);
+          setError(null);
+          return;
+        }
+        setListing(null);
+        setIsLiveListing(false);
+        setError("Listing not found");
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, [listingId]);
 
-  async function messageSeller() {
-    if (!token) {
-      router.push("/auth/login");
+  async function openListingChat() {
+    setContactError(null);
+
+    if (!isLiveListing || !listing) {
+      setContactError(
+        "This is a preview listing. Message a seller from a live property listed on RoofStead.",
+      );
       return;
     }
+
+    if (!token) {
+      router.push(`/auth/login?returnTo=${encodeURIComponent(`/listings/${listingId}`)}`);
+      return;
+    }
+
     setContacting(true);
     try {
-      const res = await apiFetch<{ conversationId: string }>("/api/messages/conversations", {
-        method: "POST",
-        token,
-        body: JSON.stringify({
-          listingId,
-          message: `Hi, I'm interested in ${listing?.title}.`,
-        }),
-      });
-      router.push("/messages");
-      void res.conversationId;
+      const isOwnListing = Boolean(user?.id && listing.seller?.id === user.id);
+      const res = await apiFetch<{ conversationId: string; existing?: boolean }>(
+        "/api/messages/conversations",
+        {
+          method: "POST",
+          token,
+          body: JSON.stringify({
+            listingId: listing.id,
+            ...(isOwnListing
+              ? {}
+              : { message: `Hi, I'm interested in ${listing.title}.` }),
+          }),
+        },
+      );
+      router.push(`/messages?conversation=${encodeURIComponent(res.conversationId)}`);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Could not start conversation");
+      setContactError(e instanceof Error ? e.message : "Could not open conversation");
     } finally {
       setContacting(false);
     }
@@ -114,52 +203,251 @@ export function StitchPropertyDetail({ listingId }: { listingId: string }) {
     );
   }
 
+  const images =
+    listing.imageUrls && listing.imageUrls.length > 0
+      ? listing.imageUrls
+      : listing.imageUrl
+        ? [listing.imageUrl]
+        : [];
+  const activeImage = images[galleryIndex] ?? images[0];
   const priceLabel =
     listing.listingType === "rent"
       ? `${formatPrice(listing.price, listing.currency as CurrencyCode)}/mo`
       : formatPrice(listing.price, listing.currency as CurrencyCode);
+  const locationLine = [listing.address, listing.city].filter(Boolean).join(", ");
+  const areaLabel =
+    listing.areaUnit === "sqm" ? `${listing.area.toLocaleString()} m²` : `${listing.area.toLocaleString()} sq ft`;
+  const isOwnListing = Boolean(user?.id && listing.seller?.id === user.id);
+  const primaryChatLabel = isOwnListing ? "View inquiries" : "Contact Seller";
 
   return (
-    <main className="max-w-container-max mx-auto px-margin-desktop py-10 grid lg:grid-cols-2 gap-gutter">
-        <div className="relative aspect-[4/3] rounded-2xl overflow-hidden card-shadow bg-surface-container-high">
-          {listing.imageUrl ? (
-            <Image alt="" className="object-cover" fill src={listing.imageUrl} sizes="50vw" />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center text-on-surface-variant">No photo</div>
+    <main className="max-w-[1440px] mx-auto overflow-hidden pt-6 md:pt-10 px-margin-mobile md:px-margin-desktop">
+      <section className="relative w-full aspect-[21/9] md:aspect-[21/7] overflow-hidden group bg-surface-container-high rounded-xl md:rounded-2xl">
+        {activeImage ? (
+          <Image alt="" className="object-cover" fill priority sizes="100vw" src={activeImage} />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-on-surface-variant">No photo</div>
+        )}
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/40 pointer-events-none" />
+        {images.length > 1 && (
+          <>
+            <button
+              type="button"
+              className="absolute left-4 top-1/2 -translate-y-1/2 p-2 bg-white/20 backdrop-blur-md rounded-full text-white hover:bg-white/40 transition-all"
+              aria-label="Previous photo"
+              onClick={() => setGalleryIndex((i) => (i === 0 ? images.length - 1 : i - 1))}
+            >
+              <span className="material-symbols-outlined">chevron_left</span>
+            </button>
+            <button
+              type="button"
+              className="absolute right-4 top-1/2 -translate-y-1/2 p-2 bg-white/20 backdrop-blur-md rounded-full text-white hover:bg-white/40 transition-all"
+              aria-label="Next photo"
+              onClick={() => setGalleryIndex((i) => (i + 1) % images.length)}
+            >
+              <span className="material-symbols-outlined">chevron_right</span>
+            </button>
+          </>
+        )}
+        {images.length > 1 && (
+          <div className="absolute bottom-6 right-margin-desktop">
+            <button
+              type="button"
+              className="px-4 py-2 bg-white text-primary font-label-md text-label-md rounded-lg shadow-lg flex items-center gap-2"
+            >
+              <span className="material-symbols-outlined text-sm">photo_camera</span>
+              See all {images.length} photos
+            </button>
+          </div>
+        )}
+      </section>
+
+      <div className="px-0 md:px-0 py-12 grid grid-cols-1 lg:grid-cols-12 gap-gutter max-w-container-max mx-auto">
+        <div className="lg:col-span-8 space-y-10">
+          <div className="space-y-4">
+            <div className="flex items-center gap-3 flex-wrap">
+              <span className="px-3 py-1 bg-primary-container text-white font-label-md text-label-md rounded-full uppercase tracking-wider">
+                {listing.listingType === "rent" ? "For Rent" : "For Sale"}
+              </span>
+              {listing.sellerVerified && (
+                <div className="flex items-center text-primary font-label-md text-label-md font-bold">
+                  <span
+                    className="material-symbols-outlined text-[16px] mr-1"
+                    style={{ fontVariationSettings: "'FILL' 1" }}
+                  >
+                    verified
+                  </span>
+                  Verified Listing
+                </div>
+              )}
+            </div>
+            <h1 className="font-headline-md text-headline-md text-on-surface">{listing.title}</h1>
+            <p className="font-body-lg text-body-lg text-on-surface-variant flex items-center gap-2">
+              <span className="material-symbols-outlined text-primary">location_on</span>
+              {locationLine || listing.city}
+            </p>
+            <div className="font-display-lg text-display-lg text-primary mt-4">{priceLabel}</div>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-6 bg-white rounded-xl ambient-shadow border border-outline-variant/30">
+            {[
+              { label: "Beds", icon: "bed", value: listing.bedrooms },
+              { label: "Baths", icon: "bathtub", value: listing.bathrooms },
+              { label: "Sq Ft", icon: "square_foot", value: areaLabel },
+              { label: "Type", icon: "home", value: listing.propertyType ?? "House" },
+            ].map((stat, index) => (
+              <div
+                key={stat.label}
+                className={`flex flex-col ${index < 3 ? "border-r border-outline-variant pr-4" : "pl-4"}`}
+              >
+                <span className="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest">
+                  {stat.label}
+                </span>
+                <span className="font-title-lg text-title-lg text-primary flex items-center gap-2">
+                  <span className="material-symbols-outlined">{stat.icon}</span>
+                  {stat.value}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          <div className="space-y-6">
+            <h2 className="font-headline-sm text-headline-sm text-on-surface border-b border-outline-variant pb-4">
+              About this property
+            </h2>
+            <p className="font-body-lg text-body-lg text-on-surface-variant leading-relaxed">
+              {listing.description || "No description provided."}
+            </p>
+          </div>
+
+          {amenities.length > 0 && (
+            <div className="space-y-6">
+              <h2 className="font-headline-sm text-headline-sm text-on-surface border-b border-outline-variant pb-4">
+                Amenities
+              </h2>
+              <div className="flex flex-wrap gap-3">
+                {amenities.map((amenity) => (
+                  <span
+                    key={amenity}
+                    className="px-4 py-2 bg-surface-container-low text-on-surface-variant font-body-md text-body-md rounded-full flex items-center gap-2"
+                  >
+                    <span className="material-symbols-outlined text-primary text-[18px]">
+                      {AMENITY_ICONS[amenity] ?? "check_circle"}
+                    </span>
+                    {amenity}
+                  </span>
+                ))}
+              </div>
+            </div>
           )}
         </div>
-        <div>
-          <div className="flex gap-2 mb-4">
-            {listing.sellerVerified && (
-              <span className="bg-primary-container text-on-primary text-label-md px-3 py-1 rounded-full">Verified</span>
-            )}
-            <span className="bg-surface-container-high px-3 py-1 rounded-full text-label-md">
-              {listing.listingType === "rent" ? "For rent" : "For sale"}
-            </span>
+
+        <div className="lg:col-span-4">
+          <div className="sticky top-28 space-y-6">
+            <div className="bg-white rounded-2xl p-8 ambient-shadow border border-outline-variant/30 flex flex-col items-center text-center">
+              <div className="relative mb-6">
+                <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-surface-container-low">
+                  <Image
+                    alt={seller.name}
+                    className="w-full h-full object-cover"
+                    height={96}
+                    src={seller.avatarUrl}
+                    unoptimized
+                    width={96}
+                  />
+                </div>
+                {seller.verified && (
+                  <div className="absolute bottom-0 right-0 bg-primary-container text-white rounded-full p-1 border-2 border-white">
+                    <span
+                      className="material-symbols-outlined text-[16px]"
+                      style={{ fontVariationSettings: "'FILL' 1" }}
+                    >
+                      shield
+                    </span>
+                  </div>
+                )}
+              </div>
+              <div className="space-y-1 mb-6">
+                <h3 className="font-title-lg text-title-lg text-on-surface">{seller.name}</h3>
+                {seller.verified && (
+                  <div className="flex items-center justify-center gap-1 text-primary font-label-md text-label-md">
+                    <span
+                      className="material-symbols-outlined text-[14px]"
+                      style={{ fontVariationSettings: "'FILL' 1" }}
+                    >
+                      verified
+                    </span>
+                    Verified Premier Broker
+                  </div>
+                )}
+                {seller.company && (
+                  <p className="font-label-md text-label-md text-on-surface-variant uppercase mt-2">
+                    {seller.company}
+                  </p>
+                )}
+              </div>
+              <div className="w-full space-y-3">
+                {contactError && (
+                  <p className="text-body-md text-error text-left px-1">{contactError}</p>
+                )}
+                {!isLiveListing && (
+                  <p className="text-body-md text-on-surface-variant text-left px-1">
+                    Preview listing — messaging is available on live properties only.
+                  </p>
+                )}
+                <button
+                  className="w-full py-4 bg-primary text-white rounded-xl font-title-lg text-title-lg hover:opacity-95 transition-all shadow-md active:scale-95 disabled:opacity-60"
+                  disabled={contacting || !isLiveListing}
+                  type="button"
+                  onClick={openListingChat}
+                >
+                  {contacting ? "Opening chat…" : primaryChatLabel}
+                </button>
+                {!isOwnListing && (
+                  <button
+                    className="w-full py-4 bg-transparent border border-primary text-primary rounded-xl font-title-lg text-title-lg hover:bg-primary/5 transition-all active:scale-95 disabled:opacity-50"
+                    disabled={contacting || !isLiveListing}
+                    type="button"
+                    onClick={openListingChat}
+                  >
+                    Schedule a Tour
+                  </button>
+                )}
+              </div>
+              <div className="mt-8 pt-8 border-t border-outline-variant w-full flex justify-between">
+                <div className="text-left">
+                  <p className="font-label-md text-label-md text-on-surface-variant">Response Time</p>
+                  <p className="font-body-md text-body-md text-on-surface font-semibold">
+                    {seller.responseTime ?? "< 1 hour"}
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="font-label-md text-label-md text-on-surface-variant">Listings</p>
+                  <p className="font-body-md text-body-md text-on-surface font-semibold">
+                    {seller.activeListings ?? 12} Active
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-surface-container-lowest rounded-2xl p-6 border border-outline-variant/30">
+              <h4 className="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest mb-4">
+                Market Insight
+              </h4>
+              <div className="flex items-end gap-2 mb-2">
+                <span className="font-headline-sm text-headline-sm text-primary">+4.2%</span>
+                <span className="font-label-md text-label-md text-on-surface-variant pb-1">
+                  Area growth this year
+                </span>
+              </div>
+              <p className="font-body-md text-body-md text-on-surface-variant">
+                {listing.city.split(",")[0]} continues to show strong appreciation for architecturally unique
+                properties.
+              </p>
+            </div>
           </div>
-          <h1 className="font-headline-md text-headline-md text-primary mb-2">{listing.title}</h1>
-          <p className="font-title-lg text-title-lg text-primary mb-4">{priceLabel}</p>
-          <p className="text-on-surface-variant font-body-md mb-6 flex items-center gap-1">
-            <span className="material-symbols-outlined text-lg">location_on</span>
-            {listing.city}
-          </p>
-          <p className="font-body-lg text-on-surface mb-8">{listing.description || "No description provided."}</p>
-          <div className="flex gap-6 text-on-surface-variant mb-8">
-            <span>{listing.bedrooms} bed</span>
-            <span>{listing.bathrooms} bath</span>
-            <span>
-              {listing.area} {listing.areaUnit === "sqm" ? "m²" : "sq ft"}
-            </span>
-          </div>
-          <button
-            className="bg-primary text-on-primary px-8 py-3 rounded-lg font-label-md hover:bg-primary-container transition-all disabled:opacity-60"
-            disabled={contacting}
-            type="button"
-            onClick={messageSeller}
-          >
-            {contacting ? "Opening chat…" : "Message seller"}
-          </button>
         </div>
+      </div>
     </main>
   );
 }

@@ -10,9 +10,14 @@ const USER_WRITE_MAP: Record<string, string> = {
   email_verification_token_hash: "Email Verification Token Hash",
   email_verification_expires_at: "Email Verification Expires At",
   intends_seller: "Intends Seller",
+  role: "Role",
+  refresh_token_hash: "Refresh Token Hash",
   is_active: "Is Active",
   is_deleted: "Is Deleted",
   profile_picture_url: "Profile Picture URL",
+  seller_phone: "Seller Phone",
+  seller_id_number: "Seller ID Number",
+  seller_legal_name: "Seller Legal Name",
   profilePictureUrl: "Profile Picture URL",
   avatar_url: "Profile Picture URL",
 };
@@ -43,6 +48,10 @@ const LISTING_TYPE_TO_AIRTABLE: Record<string, string> = {
 
 const LISTING_STATUS_TO_AIRTABLE: Record<string, string> = {
   active: "Active",
+  rented: "Rented",
+  sold: "Sold",
+  deleted: "Deleted",
+  moderated_hidden: "Moderated Hidden",
 };
 
 const VERIFICATION_STATUS_TO_AIRTABLE: Record<string, string> = {
@@ -50,6 +59,11 @@ const VERIFICATION_STATUS_TO_AIRTABLE: Record<string, string> = {
   pending: "Pending",
   verified: "Verified",
   rejected: "Rejected",
+};
+
+const USER_ROLE_TO_AIRTABLE: Record<string, string> = {
+  buyer: "buyer",
+  seller: "seller",
 };
 
 export function userFieldsToAirtable(fields: Record<string, unknown>): FieldSet {
@@ -60,6 +74,9 @@ export function userFieldsToAirtable(fields: Record<string, unknown>): FieldSet 
     let v = value;
     if (key === "verification_status" && typeof value === "string") {
       v = VERIFICATION_STATUS_TO_AIRTABLE[value.toLowerCase()] ?? value;
+    }
+    if (key === "role" && typeof value === "string") {
+      v = USER_ROLE_TO_AIRTABLE[value.toLowerCase()] ?? value;
     }
     out[airtableKey] = v as FieldSet[string];
   }

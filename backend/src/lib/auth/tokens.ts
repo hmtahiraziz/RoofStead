@@ -4,7 +4,8 @@ import jwt from "jsonwebtoken";
 import { env } from "../../config/env";
 
 const EMAIL_VERIFY_TTL_HOURS = 48;
-const ACCESS_TOKEN_TTL = "7d";
+const ACCESS_TOKEN_TTL = "1h";
+const REFRESH_TOKEN_TTL = "365d";
 const ADMIN_TOKEN_TTL = "12h";
 
 export type UserTokenPayload = {
@@ -18,6 +19,11 @@ export type AdminTokenPayload = {
   role: string;
 };
 
+export type AdminRefreshTokenPayload = {
+  sub: string;
+  type: "admin_refresh";
+};
+
 export type EmailVerifyPayload = {
   sub: string;
   type: "email_verify";
@@ -26,6 +32,11 @@ export type EmailVerifyPayload = {
 export type PasswordResetPayload = {
   sub: string;
   type: "password_reset";
+};
+
+export type RefreshTokenPayload = {
+  sub: string;
+  type: "refresh";
 };
 
 const PASSWORD_RESET_TTL_HOURS = 1;
@@ -62,12 +73,38 @@ export function signUserAccessToken(userId: string): string {
   });
 }
 
+export function signUserRefreshToken(userId: string): string {
+  return jwt.sign({ sub: userId, type: "refresh" } satisfies RefreshTokenPayload, env.jwtSecret, {
+    expiresIn: REFRESH_TOKEN_TTL,
+  });
+}
+
+export function verifyUserRefreshToken(token: string): RefreshTokenPayload {
+  const payload = jwt.verify(token, env.jwtSecret) as RefreshTokenPayload;
+  if (payload.type !== "refresh") throw new Error("Invalid token type");
+  return payload;
+}
+
 export function signAdminAccessToken(adminId: string, role: string): string {
   return jwt.sign(
     { sub: adminId, type: "admin", role } satisfies AdminTokenPayload,
     env.jwtAdminSecret,
     { expiresIn: ADMIN_TOKEN_TTL },
   );
+}
+
+export function signAdminRefreshToken(adminId: string): string {
+  return jwt.sign(
+    { sub: adminId, type: "admin_refresh" } satisfies AdminRefreshTokenPayload,
+    env.jwtAdminSecret,
+    { expiresIn: REFRESH_TOKEN_TTL },
+  );
+}
+
+export function verifyAdminRefreshToken(token: string): AdminRefreshTokenPayload {
+  const payload = jwt.verify(token, env.jwtAdminSecret) as AdminRefreshTokenPayload;
+  if (payload.type !== "admin_refresh") throw new Error("Invalid token type");
+  return payload;
 }
 
 export function verifyUserAccessToken(token: string): UserTokenPayload {

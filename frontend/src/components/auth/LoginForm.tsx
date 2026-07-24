@@ -5,18 +5,22 @@ import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import Image from "next/image";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { useRedirectIfAuthenticated } from "@/components/auth/useRedirectIfAuthenticated";
 import { apiFetch } from "@/lib/api/client";
+import { postAuthRedirect } from "@/lib/auth/routing";
 import type { StoredUser } from "@/lib/auth/session";
 import { STITCH_LOGO_SRC } from "@/lib/stitch/brand";
 
 type LoginResponse = {
   token: string;
+  refreshToken: string;
   user: StoredUser;
 };
 
 export function LoginForm() {
   const router = useRouter();
   const { login } = useAuth();
+  const { loading: authLoading, redirecting } = useRedirectIfAuthenticated();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -33,13 +37,21 @@ export function LoginForm() {
           password: form.get("password"),
         }),
       });
-      login(data.token, data.user);
-      router.push("/listings");
+      login(data.token, data.refreshToken, data.user);
+      router.push(postAuthRedirect(data.user));
     } catch (err) {
       setError(err instanceof Error ? err.message : "Login failed");
     } finally {
       setLoading(false);
     }
+  }
+
+  if (authLoading || redirecting) {
+    return (
+      <div className="bg-surface min-h-screen flex items-center justify-center text-on-surface-variant">
+        Redirecting…
+      </div>
+    );
   }
 
   return (

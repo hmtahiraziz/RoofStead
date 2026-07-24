@@ -7,6 +7,7 @@ import { FormEvent, useState } from "react";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { CurrencySelect } from "@/components/ui/CurrencySelect";
 import { apiFetch } from "@/lib/api/client";
+import { isSellerAccount } from "@/lib/auth/routing";
 import { AREA_UNITS, DEFAULT_AREA_UNIT } from "@/lib/constants/areas";
 import type { CurrencyCode } from "@/lib/constants/currencies";
 import { STITCH_LOGO_SRC } from "@/lib/stitch/brand";
@@ -53,12 +54,26 @@ export function StitchPostListing() {
         token,
         body: JSON.stringify(payload),
       });
-      router.push(`/listings/${res.listing.id}`);
+      router.push(`/seller/listings/${res.listing.id}`);
     } catch (err) {
       setSubmitError(err instanceof Error ? err.message : "Could not publish listing");
     } finally {
       setSubmitting(false);
     }
+  }
+
+  if (!authLoading && user && !isSellerAccount(user)) {
+    return (
+      <div className="bg-background min-h-screen flex flex-col items-center justify-center px-margin-mobile">
+        <p className="font-body-lg text-on-surface-variant mb-6">Seller accounts can post listings.</p>
+        <Link
+          className="bg-primary text-on-primary px-8 py-3 rounded-lg font-label-md"
+          href="/listings"
+        >
+          Browse properties
+        </Link>
+      </div>
+    );
   }
 
   if (!authLoading && !user) {
@@ -111,27 +126,30 @@ export function StitchPostListing() {
         </nav>
       </header>
 
-      {!verified && (
+      {!verified && user?.verification_status !== "pending" && user?.verification_status !== "rejected" && (
       <section className="bg-tertiary-fixed text-on-tertiary-fixed py-3 px-margin-desktop">
         <div className="max-w-container-max mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="flex items-center gap-2">
-            <span
-              className="material-symbols-outlined text-tertiary-container fill-icon"
-              style={{ fontVariationSettings: "'FILL' 1" }}
-            >
+            <span className="material-symbols-outlined text-tertiary-container fill-icon" style={{ fontVariationSettings: "'FILL' 1" }}>
               verified_user
             </span>
             <p className="font-label-md text-label-md">
-              Your identity verification is currently <span className="font-bold">Pending</span>. You can still
-              create drafts, but won&apos;t be able to publish until verified.
+              Complete seller verification to publish listings on RoofStead.
             </p>
           </div>
-          <Link
-            className="font-label-md text-label-md text-tertiary font-bold underline hover:no-underline transition-all"
-            href="/profile"
-          >
+          <Link className="font-label-md text-label-md text-tertiary font-bold underline hover:no-underline transition-all" href="/profile/verification">
             Complete Verification →
           </Link>
+        </div>
+      </section>
+      )}
+      {!verified && user?.verification_status === "pending" && (
+      <section className="bg-secondary-container/40 text-on-secondary-container py-3 px-margin-desktop border-b border-secondary-container">
+        <div className="max-w-container-max mx-auto flex items-center gap-2">
+          <span className="material-symbols-outlined">hourglass_top</span>
+          <p className="font-label-md text-label-md">
+            Your verification is <span className="font-bold">under review</span>. You can prepare listings, but cannot publish until verified.
+          </p>
         </div>
       </section>
       )}

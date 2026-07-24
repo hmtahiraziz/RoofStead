@@ -4,8 +4,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useAdminAuth } from "@/components/auth/AdminProvider";
 import { apiFetch } from "@/lib/api/client";
-import { clearAdminSession, getAdminToken } from "@/lib/auth/session";
+import { getAdminToken } from "@/lib/auth/session";
 import { STITCH_LOGO_SRC } from "@/lib/stitch/brand";
 import { userAvatarSrc } from "@/lib/stitch/userAvatar";
 
@@ -139,6 +140,7 @@ function NavItem({
 
 export function StitchAdminPanel() {
   const router = useRouter();
+  const { logout: adminLogout } = useAdminAuth();
   const [section, setSection] = useState<AdminSection>("dashboard");
   const [admin, setAdmin] = useState<AdminMe | null>(null);
   const [rows, setRows] = useState<VerificationRow[]>([]);
@@ -164,7 +166,6 @@ export function StitchAdminPanel() {
       const me = await apiFetch<AdminMe>("/api/admin/me", { token: t });
       setAdmin(me);
     } catch {
-      clearAdminSession();
       router.replace("/admin/login");
       return;
     } finally {
@@ -339,8 +340,7 @@ export function StitchAdminPanel() {
             className="w-full flex items-center justify-center py-2 px-4 border border-outline-variant rounded hover:bg-surface-container-low transition-colors text-body-md font-body-md"
             type="button"
             onClick={() => {
-              clearAdminSession();
-              router.push("/admin/login");
+              void adminLogout().then(() => router.push("/admin/login"));
             }}
           >
             <span className="material-symbols-outlined text-sm mr-2">logout</span>
@@ -618,7 +618,9 @@ export function StitchAdminPanel() {
                             />
                           </div>
                           <div>
-                            <p className="font-title-lg text-title-lg text-on-surface">{row.userName}</p>
+                            <Link className="font-title-lg text-title-lg text-on-surface hover:text-primary" href={`/admin/verifications/${row.id}`}>
+                              {row.userName}
+                            </Link>
                             <p className="text-on-surface-variant font-body-md text-body-md">{row.userEmail}</p>
                           </div>
                         </div>
@@ -636,26 +638,12 @@ export function StitchAdminPanel() {
                         )}
                       </td>
                       <td className="px-6 py-6 text-right">
-                        <div className="flex justify-end space-x-2">
-                          <button
-                            className="px-4 py-2 border border-outline text-on-surface-variant font-label-md text-label-md rounded hover:bg-error-container hover:text-on-error-container hover:border-transparent transition-all active:scale-95"
-                            type="button"
-                            onClick={() => {
-                              setRejectId(row.id);
-                              setRejectUserId(row.userId);
-                              setRejectName(row.userName);
-                            }}
-                          >
-                            Reject
-                          </button>
-                          <button
-                            className="px-4 py-2 bg-primary-container text-on-primary-container font-label-md text-label-md rounded hover:brightness-110 shadow-sm transition-all active:scale-95"
-                            type="button"
-                            onClick={() => approve(row)}
-                          >
-                            Approve
-                          </button>
-                        </div>
+                        <Link
+                          className="inline-flex px-4 py-2 bg-primary text-on-primary font-label-md text-label-md rounded hover:opacity-90 transition-all"
+                          href={`/admin/verifications/${row.id}`}
+                        >
+                          Review
+                        </Link>
                       </td>
                     </tr>
                   );
