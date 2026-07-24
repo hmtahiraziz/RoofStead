@@ -31,6 +31,23 @@ export const DEFAULT_BROWSE_FILTERS: BrowseFilters = {
 export const SALE_PRICE_RANGE = { min: 0, max: 100_000_000, step: 50_000 };
 export const RENT_PRICE_RANGE = { min: 0, max: 50_000, step: 500 };
 
+export function priceRangeForListingType(listingType: ListingMode) {
+  return listingType === "rent" ? RENT_PRICE_RANGE : SALE_PRICE_RANGE;
+}
+
+export function validateListingPrice(price: number, listingType: ListingMode): string | null {
+  const range = priceRangeForListingType(listingType);
+  if (!Number.isFinite(price) || price <= 0) {
+    return "Enter a valid price greater than zero.";
+  }
+  if (price > range.max) {
+    return listingType === "rent"
+      ? `Monthly rent cannot exceed $${range.max.toLocaleString()}.`
+      : `Asking price cannot exceed $${range.max.toLocaleString()}.`;
+  }
+  return null;
+}
+
 const PROPERTY_TYPE_KEYWORDS: Record<PropertyTypeFilter, string[]> = {
   all: [],
   house: ["house", "home", "residence", "manor", "family", "mews"],
