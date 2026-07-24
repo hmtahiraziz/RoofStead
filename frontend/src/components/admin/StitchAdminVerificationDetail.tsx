@@ -4,9 +4,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+import { AdminPageHeader, AdminShell } from "@/components/admin/AdminShell";
 import { useAdminAuth } from "@/components/auth/AdminProvider";
 import { apiFetch } from "@/lib/api/client";
-import { STITCH_LOGO_SRC } from "@/lib/stitch/brand";
 import { userAvatarSrc } from "@/lib/stitch/userAvatar";
 
 type DetailResponse = {
@@ -88,7 +88,7 @@ export function StitchAdminVerificationDetail({ verificationId }: { verification
 
   if (authLoading || loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center text-on-surface-variant">
+      <div className="flex min-h-screen items-center justify-center bg-background text-on-surface-variant">
         Loading verification…
       </div>
     );
@@ -96,10 +96,10 @@ export function StitchAdminVerificationDetail({ verificationId }: { verification
 
   if (error && !data) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-8">
+      <div className="flex min-h-screen items-center justify-center bg-background p-8">
         <div className="text-center">
-          <p className="text-error mb-4">{error}</p>
-          <Link className="text-primary font-label-md hover:underline" href="/admin">
+          <p className="mb-4 text-error">{error}</p>
+          <Link className="font-label-md text-primary hover:underline" href="/admin">
             Back to admin
           </Link>
         </div>
@@ -112,70 +112,119 @@ export function StitchAdminVerificationDetail({ verificationId }: { verification
   const avatar = userAvatarSrc(data.user.avatarUrl, "small");
 
   return (
-    <div className="min-h-screen bg-background text-on-surface">
-      <header className="bg-surface border-b border-outline-variant px-margin-desktop py-4">
-        <div className="max-w-container-max mx-auto flex items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <Image alt="RoofStead Admin" className="h-10 w-auto" height={40} src={STITCH_LOGO_SRC} width={120} />
-            <h1 className="font-headline-sm text-headline-sm text-primary">Verification review</h1>
-          </div>
-          <Link className="font-label-md text-primary hover:underline" href="/admin">
-            Back to queue
-          </Link>
-        </div>
-      </header>
+    <AdminShell
+      section="verification"
+      onSectionChange={(s) => {
+        router.push(s === "dashboard" ? "/admin" : `/admin?section=${s}`);
+      }}
+    >
+      <div className="mb-6">
+        <Link
+          className="inline-flex items-center gap-1 font-label-md text-label-md text-primary hover:underline"
+          href="/admin"
+        >
+          <span className="material-symbols-outlined text-[18px]">arrow_back</span>
+          Back to verification queue
+        </Link>
+      </div>
 
-      <main className="max-w-container-max mx-auto px-margin-desktop py-10 grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 space-y-8">
-          <section className="bg-surface rounded-xl border border-outline-variant p-6 md:p-8">
-            <div className="flex items-center gap-4 mb-6">
-              <Image alt="" className="rounded-full w-14 h-14 object-cover" height={56} src={avatar} unoptimized width={56} />
+      <AdminPageHeader
+        description="Review submitted documents and approve or reject this seller verification."
+        title="Verification Review"
+      />
+
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+        <div className="space-y-8 lg:col-span-2">
+          <section className="rounded-xl border border-outline-variant bg-surface-container-lowest p-6 md:p-8 card-shadow">
+            <div className="mb-6 flex items-center gap-4">
+              <Image
+                alt=""
+                className="h-14 w-14 rounded-full object-cover"
+                height={56}
+                src={avatar}
+                unoptimized
+                width={56}
+              />
               <div>
                 <h2 className="font-title-lg text-title-lg">{data.user.name}</h2>
                 <p className="text-on-surface-variant">{data.user.email}</p>
               </div>
             </div>
-            <dl className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-              <div><dt className="text-on-surface-variant">Legal name</dt><dd>{data.user.legalName || "—"}</dd></div>
-              <div><dt className="text-on-surface-variant">ID number</dt><dd>{data.user.idNumber || "—"}</dd></div>
-              <div><dt className="text-on-surface-variant">Phone</dt><dd>{data.user.phone || "—"}</dd></div>
-              <div><dt className="text-on-surface-variant">Submitted</dt><dd>{data.verification.submittedAt ? new Date(data.verification.submittedAt).toLocaleString() : "—"}</dd></div>
+            <dl className="grid grid-cols-1 gap-4 text-sm md:grid-cols-2">
+              <div>
+                <dt className="text-on-surface-variant">Legal name</dt>
+                <dd>{data.user.legalName || "—"}</dd>
+              </div>
+              <div>
+                <dt className="text-on-surface-variant">ID number</dt>
+                <dd>{data.user.idNumber || "—"}</dd>
+              </div>
+              <div>
+                <dt className="text-on-surface-variant">Phone</dt>
+                <dd>{data.user.phone || "—"}</dd>
+              </div>
+              <div>
+                <dt className="text-on-surface-variant">Submitted</dt>
+                <dd>
+                  {data.verification.submittedAt
+                    ? new Date(data.verification.submittedAt).toLocaleString()
+                    : "—"}
+                </dd>
+              </div>
             </dl>
             {data.verification.notes && (
-              <p className="mt-4 text-sm"><span className="text-on-surface-variant">Notes:</span> {data.verification.notes}</p>
+              <p className="mt-4 text-sm">
+                <span className="text-on-surface-variant">Notes:</span> {data.verification.notes}
+              </p>
             )}
           </section>
 
-          <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <section className="grid grid-cols-1 gap-6 md:grid-cols-2">
             {data.verification.idDocumentUrl && (
-              <div className="bg-surface rounded-xl border border-outline-variant p-4">
-                <p className="font-label-md mb-3">ID document</p>
+              <div className="rounded-xl border border-outline-variant bg-surface-container-lowest p-4 card-shadow">
+                <p className="mb-3 font-label-md">ID document</p>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img alt="ID document" className="w-full rounded-lg border border-outline-variant" src={data.verification.idDocumentUrl} />
+                <img
+                  alt="ID document"
+                  className="w-full rounded-lg border border-outline-variant"
+                  src={data.verification.idDocumentUrl}
+                />
               </div>
             )}
             {data.verification.selfieUrl && (
-              <div className="bg-surface rounded-xl border border-outline-variant p-4">
-                <p className="font-label-md mb-3">Selfie</p>
+              <div className="rounded-xl border border-outline-variant bg-surface-container-lowest p-4 card-shadow">
+                <p className="mb-3 font-label-md">Selfie</p>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img alt="Selfie" className="w-full rounded-lg border border-outline-variant" src={data.verification.selfieUrl} />
+                <img
+                  alt="Selfie"
+                  className="w-full rounded-lg border border-outline-variant"
+                  src={data.verification.selfieUrl}
+                />
               </div>
             )}
           </section>
         </div>
 
-        <aside className="bg-surface rounded-xl border border-outline-variant p-6 h-fit sticky top-6 space-y-6">
+        <aside className="sticky top-24 h-fit space-y-6 rounded-xl border border-outline-variant bg-surface-container-lowest p-6 card-shadow">
           <h3 className="font-headline-sm text-headline-sm text-primary">Decision</h3>
           <div className="flex flex-col gap-3">
             <button
-              className={`px-4 py-3 rounded-lg border font-label-md text-left ${statusChoice === "approved" ? "border-primary bg-primary-fixed text-primary" : "border-outline-variant"}`}
+              className={`rounded-lg border px-4 py-3 text-left font-label-md ${
+                statusChoice === "approved"
+                  ? "border-primary bg-primary-fixed text-primary"
+                  : "border-outline-variant"
+              }`}
               type="button"
               onClick={() => setStatusChoice("approved")}
             >
               Verify seller
             </button>
             <button
-              className={`px-4 py-3 rounded-lg border font-label-md text-left ${statusChoice === "rejected" ? "border-error bg-error-container/20 text-error" : "border-outline-variant"}`}
+              className={`rounded-lg border px-4 py-3 text-left font-label-md ${
+                statusChoice === "rejected"
+                  ? "border-error bg-error-container/20 text-error"
+                  : "border-outline-variant"
+              }`}
               type="button"
               onClick={() => setStatusChoice("rejected")}
             >
@@ -189,19 +238,19 @@ export function StitchAdminVerificationDetail({ verificationId }: { verification
                 Rejection reason
               </label>
               <textarea
-                className="w-full border border-outline-variant rounded-lg p-3 min-h-[100px]"
+                className="min-h-[100px] w-full rounded-lg border border-outline-variant p-3"
                 id="reject-reason"
+                placeholder="Explain what needs to be corrected…"
                 value={rejectionReason}
                 onChange={(e) => setRejectionReason(e.target.value)}
-                placeholder="Explain what needs to be corrected…"
               />
             </div>
           )}
 
-          {error && <p className="text-error text-sm">{error}</p>}
+          {error && <p className="text-sm text-error">{error}</p>}
 
           <button
-            className="w-full bg-primary text-on-primary py-3 rounded-lg font-label-md disabled:opacity-60"
+            className="w-full rounded-lg bg-primary py-3 font-label-md text-on-primary disabled:opacity-60"
             disabled={saving}
             type="button"
             onClick={() => void saveDecision()}
@@ -209,7 +258,7 @@ export function StitchAdminVerificationDetail({ verificationId }: { verification
             {saving ? "Saving…" : "Update status"}
           </button>
         </aside>
-      </main>
-    </div>
+      </div>
+    </AdminShell>
   );
 }
