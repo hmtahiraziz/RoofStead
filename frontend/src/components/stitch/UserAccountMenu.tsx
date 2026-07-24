@@ -46,7 +46,7 @@ export function UserAccountMenu() {
       <button
         aria-expanded={open}
         aria-haspopup="menu"
-        className="flex items-center gap-1.5 rounded-full border border-outline-variant p-0.5 pr-2 hover:border-primary transition-colors focus-ring"
+        className="flex items-center gap-1.5 h-10 rounded-full border border-outline-variant pl-0.5 pr-2 hover:border-primary transition-colors focus-ring"
         type="button"
         onClick={() => setOpen((v) => !v)}
       >
