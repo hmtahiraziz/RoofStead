@@ -18,6 +18,7 @@ type DetailResponse = {
     notes?: string;
     rejectionReason?: string;
     submittedAt?: string;
+    hasSubmission?: boolean;
   };
   user: {
     id: string;
@@ -29,6 +30,12 @@ type DetailResponse = {
     idNumber?: string;
     phone?: string;
   };
+  priorRejections?: {
+    id: string;
+    rejectionReason?: string;
+    submittedAt?: string;
+    reviewedAt?: string;
+  }[];
 };
 
 export function StitchAdminVerificationDetail({ verificationId }: { verificationId: string }) {
@@ -78,7 +85,7 @@ export function StitchAdminVerificationDetail({ verificationId }: { verification
           rejectionReason: statusChoice === "rejected" ? rejectionReason : undefined,
         }),
       });
-      router.push("/admin");
+      router.push("/admin?section=verification");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not update status");
     } finally {
@@ -110,6 +117,8 @@ export function StitchAdminVerificationDetail({ verificationId }: { verification
   if (!data) return null;
 
   const avatar = userAvatarSrc(data.user.avatarUrl, "small");
+  const isPending = data.verification.status === "pending";
+  const priorRejections = data.priorRejections ?? [];
 
   return (
     <AdminShell
@@ -121,7 +130,7 @@ export function StitchAdminVerificationDetail({ verificationId }: { verification
       <div className="mb-6">
         <Link
           className="inline-flex items-center gap-1 font-label-md text-label-md text-primary hover:underline"
-          href="/admin"
+          href="/admin?section=verification"
         >
           <span className="material-symbols-outlined text-[18px]">arrow_back</span>
           Back to verification queue
@@ -132,6 +141,35 @@ export function StitchAdminVerificationDetail({ verificationId }: { verification
         description="Review submitted documents and approve or reject this seller verification."
         title="Verification Review"
       />
+
+      {priorRejections.length > 0 && (
+        <div className="mb-6 rounded-xl border border-error-container bg-error-container/10 p-4">
+          <p className="flex items-center gap-2 font-label-md text-on-error-container">
+            <span className="material-symbols-outlined text-[18px]">history</span>
+            This seller was previously rejected {priorRejections.length} time
+            {priorRejections.length === 1 ? "" : "s"}
+          </p>
+          <ul className="mt-2 space-y-1 text-sm text-on-surface-variant">
+            {priorRejections.map((entry) => (
+              <li key={entry.id}>
+                {entry.reviewedAt
+                  ? new Date(entry.reviewedAt).toLocaleDateString()
+                  : entry.submittedAt
+                    ? new Date(entry.submittedAt).toLocaleDateString()
+                    : "Previous submission"}
+                {entry.rejectionReason ? `: ${entry.rejectionReason}` : ""}
+              </li>
+            ))}
+          </ul>
+          <Link
+            className="mt-3 inline-flex items-center gap-1 font-label-md text-primary hover:underline"
+            href={`/admin/users/${data.user.id}?tab=verification`}
+          >
+            View full verification history
+            <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+          </Link>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         <div className="space-y-8 lg:col-span-2">
@@ -146,7 +184,12 @@ export function StitchAdminVerificationDetail({ verificationId }: { verification
                 width={56}
               />
               <div>
-                <h2 className="font-title-lg text-title-lg">{data.user.name}</h2>
+                <Link
+                  className="font-title-lg text-title-lg hover:text-primary"
+                  href={`/admin/users/${data.user.id}`}
+                >
+                  {data.user.name}
+                </Link>
                 <p className="text-on-surface-variant">{data.user.email}</p>
               </div>
             </div>
@@ -202,61 +245,77 @@ export function StitchAdminVerificationDetail({ verificationId }: { verification
                 />
               </div>
             )}
+            {!data.verification.idDocumentUrl && !data.verification.selfieUrl && (
+              <div className="rounded-xl border border-outline-variant bg-surface-container-lowest p-4 text-on-surface-variant md:col-span-2 card-shadow">
+                No verification documents uploaded for this user.
+              </div>
+            )}
           </section>
         </div>
 
         <aside className="sticky top-24 h-fit space-y-6 rounded-xl border border-outline-variant bg-surface-container-lowest p-6 card-shadow">
           <h3 className="font-headline-sm text-headline-sm text-primary">Decision</h3>
-          <div className="flex flex-col gap-3">
-            <button
-              className={`rounded-lg border px-4 py-3 text-left font-label-md ${
-                statusChoice === "approved"
-                  ? "border-primary bg-primary-fixed text-primary"
-                  : "border-outline-variant"
-              }`}
-              type="button"
-              onClick={() => setStatusChoice("approved")}
-            >
-              Verify seller
-            </button>
-            <button
-              className={`rounded-lg border px-4 py-3 text-left font-label-md ${
-                statusChoice === "rejected"
-                  ? "border-error bg-error-container/20 text-error"
-                  : "border-outline-variant"
-              }`}
-              type="button"
-              onClick={() => setStatusChoice("rejected")}
-            >
-              Reject verification
-            </button>
-          </div>
-
-          {statusChoice === "rejected" && (
-            <div className="space-y-2">
-              <label className="font-label-md text-on-surface-variant" htmlFor="reject-reason">
-                Rejection reason
-              </label>
-              <textarea
-                className="min-h-[100px] w-full rounded-lg border border-outline-variant p-3"
-                id="reject-reason"
-                placeholder="Explain what needs to be corrected…"
-                value={rejectionReason}
-                onChange={(e) => setRejectionReason(e.target.value)}
-              />
+          {!isPending ? (
+            <div className="rounded-lg border border-outline-variant bg-surface-container p-4">
+              <p className="font-label-md capitalize text-on-surface-variant">Status: {data.verification.status}</p>
+              {data.verification.rejectionReason && (
+                <p className="mt-2 text-sm text-on-surface">{data.verification.rejectionReason}</p>
+              )}
             </div>
+          ) : (
+            <>
+              <div className="flex flex-col gap-3">
+                <button
+                  className={`rounded-lg border px-4 py-3 text-left font-label-md ${
+                    statusChoice === "approved"
+                      ? "border-primary bg-primary-fixed text-primary"
+                      : "border-outline-variant"
+                  }`}
+                  type="button"
+                  onClick={() => setStatusChoice("approved")}
+                >
+                  Verify seller
+                </button>
+                <button
+                  className={`rounded-lg border px-4 py-3 text-left font-label-md ${
+                    statusChoice === "rejected"
+                      ? "border-error bg-error-container/20 text-error"
+                      : "border-outline-variant"
+                  }`}
+                  type="button"
+                  onClick={() => setStatusChoice("rejected")}
+                >
+                  Reject verification
+                </button>
+              </div>
+
+              {statusChoice === "rejected" && (
+                <div className="space-y-2">
+                  <label className="font-label-md text-on-surface-variant" htmlFor="reject-reason">
+                    Rejection reason
+                  </label>
+                  <textarea
+                    className="min-h-[100px] w-full rounded-lg border border-outline-variant p-3"
+                    id="reject-reason"
+                    placeholder="Explain what needs to be corrected…"
+                    value={rejectionReason}
+                    onChange={(e) => setRejectionReason(e.target.value)}
+                  />
+                </div>
+              )}
+
+              {error && <p className="text-sm text-error">{error}</p>}
+
+              <button
+                className="w-full rounded-lg bg-primary py-3 font-label-md text-on-primary disabled:opacity-60"
+                disabled={saving}
+                type="button"
+                onClick={() => void saveDecision()}
+              >
+                {saving ? "Saving…" : "Update status"}
+              </button>
+            </>
           )}
-
-          {error && <p className="text-sm text-error">{error}</p>}
-
-          <button
-            className="w-full rounded-lg bg-primary py-3 font-label-md text-on-primary disabled:opacity-60"
-            disabled={saving}
-            type="button"
-            onClick={() => void saveDecision()}
-          >
-            {saving ? "Saving…" : "Update status"}
-          </button>
         </aside>
       </div>
     </AdminShell>
