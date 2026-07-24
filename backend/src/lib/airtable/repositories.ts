@@ -397,11 +397,66 @@ export async function listPendingSellerVerifications(): Promise<SellerVerificati
   return records.map(mapVerification);
 }
 
-export async function listActiveListings(filters: {
+export type ListingSort = "newest" | "price_asc" | "price_desc";
+
+export type ListingFilters = {
   city?: string;
   listing_type?: string;
   min_price?: number;
-}): Promise<ListingRecord[]> {
+  max_price?: number;
+  bedrooms?: number;
+  min_bedrooms?: number;
+  bathrooms?: number;
+  min_bathrooms?: number;
+  min_area?: number;
+  max_area?: number;
+  search?: string;
+  property_type?: string;
+  sort?: ListingSort;
+};
+
+const PROPERTY_TYPE_KEYWORDS: Record<string, string[]> = {
+  house: ["house", "home", "residence", "manor", "family"],
+  mansion: ["mansion", "estate", "pavilion", "palace"],
+  villa: ["villa", "villah"],
+};
+
+function listingMatchesPropertyType(listing: ListingRecord, propertyType: string): boolean {
+  const needle = propertyType.trim().toLowerCase();
+  if (!needle || needle === "all") return true;
+  const haystack = `${listing.title} ${listing.description ?? ""}`.toLowerCase();
+  const keywords = PROPERTY_TYPE_KEYWORDS[needle] ?? [needle];
+  return keywords.some((kw) => haystack.includes(kw));
+}
+
+function listingMatchesSearch(listing: ListingRecord, search: string): boolean {
+  const needle = search.trim().toLowerCase();
+  if (!needle) return true;
+  const haystack = [
+    listing.title,
+    listing.description ?? "",
+    listing.city,
+    listing.address ?? "",
+    String(listing.bedrooms),
+    String(listing.bathrooms),
+    String(listing.area),
+  ]
+    .join(" ")
+    .toLowerCase();
+  return haystack.includes(needle);
+}
+
+function sortListings(listings: ListingRecord[], sort?: ListingSort): ListingRecord[] {
+  const rows = [...listings];
+  if (sort === "price_asc") {
+    rows.sort((a, b) => a.price - b.price);
+  } else if (sort === "price_desc") {
+    rows.sort((a, b) => b.price - a.price);
+  }
+  return rows;
+}
+
+export async function listActiveListings(filters: ListingFilters): Promise<ListingRecord[]> {
   const base = getAirtableBase();
 
   let records;
@@ -428,8 +483,35 @@ export async function listActiveListings(filters: {
   if (filters.min_price != null && !Number.isNaN(filters.min_price)) {
     listings = listings.filter((l) => l.price >= filters.min_price!);
   }
+  if (filters.max_price != null && !Number.isNaN(filters.max_price)) {
+    listings = listings.filter((l) => l.price <= filters.max_price!);
+  }
+  if (filters.min_bedrooms != null && !Number.isNaN(filters.min_bedrooms)) {
+    listings = listings.filter((l) => l.bedrooms >= filters.min_bedrooms!);
+  }
+  if (filters.bedrooms != null && !Number.isNaN(filters.bedrooms)) {
+    listings = listings.filter((l) => l.bedrooms === filters.bedrooms);
+  }
+  if (filters.min_bathrooms != null && !Number.isNaN(filters.min_bathrooms)) {
+    listings = listings.filter((l) => l.bathrooms >= filters.min_bathrooms!);
+  }
+  if (filters.bathrooms != null && !Number.isNaN(filters.bathrooms)) {
+    listings = listings.filter((l) => l.bathrooms === filters.bathrooms);
+  }
+  if (filters.min_area != null && !Number.isNaN(filters.min_area)) {
+    listings = listings.filter((l) => l.area >= filters.min_area!);
+  }
+  if (filters.max_area != null && !Number.isNaN(filters.max_area)) {
+    listings = listings.filter((l) => l.area <= filters.max_area!);
+  }
+  if (filters.search?.trim()) {
+    listings = listings.filter((l) => listingMatchesSearch(l, filters.search!));
+  }
+  if (filters.property_type?.trim()) {
+    listings = listings.filter((l) => listingMatchesPropertyType(l, filters.property_type!));
+  }
 
-  return listings;
+  return sortListings(listings, filters.sort);
 }
 
 export async function listAllListingsForAdmin(maxRecords = 100): Promise<ListingRecord[]> {
@@ -488,6 +570,29 @@ export async function findConversationById(id: string): Promise<ConversationReco
   } catch {
     return null;
   }
+}
+
+export async function findConversationForListingAndParticipants(
+  listingId: string,
+  buyerId: string,
+  sellerId: string,
+): Promise<ConversationRecord | null> {
+  const rows = await listConversationsForUser(buyerId);
+  return (
+    rows.find(
+      (c) => c.listing_id === listingId && c.buyer_id === buyerId && c.seller_id === sellerId,
+    ) ?? null
+  );
+}
+
+export async function findConversationsForListingAsSeller(
+  listingId: string,
+  sellerId: string,
+): Promise<ConversationRecord[]> {
+  const rows = await listConversationsForUser(sellerId);
+  return rows
+    .filter((c) => c.listing_id === listingId && c.seller_id === sellerId)
+    .sort((a, b) => (b.last_message_at ?? "").localeCompare(a.last_message_at ?? ""));
 }
 
 export async function createConversation(fields: AirtableFields): Promise<ConversationRecord> {

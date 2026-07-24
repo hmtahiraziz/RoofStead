@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import { usePathname } from "next/navigation";
 import { StitchMarketFooter } from "@/components/stitch/StitchMarketFooter";
 import { StitchMarketHeader } from "@/components/stitch/StitchMarketHeader";
@@ -8,6 +9,10 @@ type Props = {
   children: React.ReactNode;
   variant?: "default" | "admin";
 };
+
+function HeaderFallback() {
+  return <div className="h-[5.5rem] bg-surface border-b border-outline-variant" aria-hidden />;
+}
 
 function useChrome(pathname: string) {
   if (pathname.startsWith("/auth/")) return "bare";
@@ -30,7 +35,9 @@ export function AppShell({ children, variant = "default" }: Props) {
   if (chrome === "market") {
     return (
       <div className="min-h-screen flex flex-col bg-surface">
-        <StitchMarketHeader />
+        <Suspense fallback={<HeaderFallback />}>
+          <StitchMarketHeader />
+        </Suspense>
         <div className="flex-1">{children}</div>
         <StitchMarketFooter />
       </div>
