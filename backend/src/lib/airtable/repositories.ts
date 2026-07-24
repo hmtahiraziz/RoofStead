@@ -10,7 +10,7 @@ import {
   USER_VERIFICATION_STATUS_FIELD,
   userFieldsToAirtable,
 } from "./fieldMaps";
-import { airtableErrorCode } from "./errors";
+import { airtableErrorCode, isAirtableUnknownField } from "./errors";
 import { AirtableTables } from "./tables";
 
 export type UserVerificationStatus = "unverified" | "pending" | "verified" | "rejected";
@@ -73,6 +73,7 @@ export type SellerVerificationRecord = {
   notes?: string;
   rejection_reason?: string;
   submitted_at?: string;
+  reviewed_at?: string;
 };
 
 export type ConversationRecord = {
@@ -210,6 +211,12 @@ function readListingType(f: FieldSet): "rent" | "sale" {
   return raw === "rent" ? "rent" : "sale";
 }
 
+function normalizeListingStatus(raw: string): string {
+  const status = raw.toLowerCase();
+  if (status === "pending" || status === "approved") return "active";
+  return status;
+}
+
 function mapListing(record: { id: string; fields: FieldSet }): ListingRecord {
   const f = record.fields;
   const areaSqft = fieldValue(f, "area", "Area (sqft)", "Area");
@@ -230,7 +237,7 @@ function mapListing(record: { id: string; fields: FieldSet }): ListingRecord {
     area: Number(areaSqft ?? 0),
     area_unit: fieldValue(f, "area_unit", "Area Unit") === "sqm" ? "sqm" : "sqft",
     image_urls: parseImageUrls(fieldValue(f, "image_urls", "Image URLs")),
-    status: String(fieldValue(f, "status", "Status") ?? "active").toLowerCase(),
+    status: normalizeListingStatus(String(fieldValue(f, "status", "Status") ?? "active")),
   };
 }
 
@@ -238,6 +245,15 @@ function firstAttachmentUrl(value: unknown): string | undefined {
   if (!Array.isArray(value) || !value.length) return undefined;
   const first = value[0] as { url?: string };
   return first?.url ? String(first.url) : undefined;
+}
+
+function isSellerVerificationFields(f: FieldSet): boolean {
+  const userLink = firstLink(fieldValue(f, "user", "User") ?? f.user);
+  if (userLink) return true;
+  // Airtable .find(id) is base-wide — reject User rows (Name/Email) mistaken as verifications.
+  const hasUserIdentity = fieldValue(f, "name", "Name") ?? fieldValue(f, "email", "Email");
+  if (hasUserIdentity) return false;
+  return Boolean(fieldValue(f, "submitted_at", "Submitted At", "Submitted at"));
 }
 
 function mapVerification(record: { id: string; fields: FieldSet }): SellerVerificationRecord {
@@ -265,6 +281,9 @@ function mapVerification(record: { id: string; fields: FieldSet }): SellerVerifi
       : undefined,
     submitted_at: fieldValue(f, "submitted_at", "Submitted At", "Submitted at")
       ? String(fieldValue(f, "submitted_at", "Submitted At", "Submitted at"))
+      : undefined,
+    reviewed_at: fieldValue(f, "reviewed_at", "Reviewed At", "Reviewed at")
+      ? String(fieldValue(f, "reviewed_at", "Reviewed At", "Reviewed at"))
       : undefined,
   };
 }
@@ -335,6 +354,28 @@ export async function listUsersPendingVerification(maxRecords = 100): Promise<Us
   }
 }
 
+export type PendingVerificationQueueItem = {
+  verificationId: string;
+  user: UserRecord;
+  submission: SellerVerificationRecord | null;
+};
+
+/** Queue is driven by Users.verification_status = pending (not orphaned SellerVerifications rows). */
+export async function listPendingVerificationsForAdmin(): Promise<PendingVerificationQueueItem[]> {
+  const pendingUsers = await listUsersPendingVerification();
+  return Promise.all(
+    pendingUsers.map(async (user) => {
+      const submissions = await listSellerVerificationsByUserId(user.id);
+      const pendingSubmission = submissions.find((s) => s.status === "pending") ?? null;
+      return {
+        verificationId: pendingSubmission?.id ?? user.id,
+        user,
+        submission: pendingSubmission,
+      };
+    }),
+  );
+}
+
 export async function createUser(fields: AirtableFields): Promise<UserRecord> {
   const base = getAirtableBase();
   const airtableFields = userFieldsToAirtable(fields as Record<string, unknown>);
@@ -391,7 +432,25 @@ export async function updateAdminUser(id: string, fields: AirtableFields): Promi
 export async function updateSellerVerification(id: string, fields: AirtableFields): Promise<void> {
   const base = getAirtableBase();
   const airtableFields = sellerVerificationFieldsToAirtable(fields as Record<string, unknown>);
-  await base(AirtableTables.SellerVerifications).update([{ id, fields: airtableFields }]);
+
+  try {
+    await base(AirtableTables.SellerVerifications).update([{ id, fields: airtableFields }]);
+    return;
+  } catch (err) {
+    if (!isAirtableUnknownField(err)) throw err;
+  }
+
+  // Retry without optional columns that may not exist in every base.
+  const { "Rejection Reason": rejectionReason, "Reviewed At": reviewedAt, ...rest } =
+    airtableFields as Record<string, unknown>;
+  const fallback: FieldSet = { ...rest } as FieldSet;
+  if (rejectionReason != null) {
+    fallback["Admin Notes"] = rejectionReason as FieldSet[string];
+  }
+  if (reviewedAt != null) {
+    fallback["Reviewed At"] = reviewedAt as FieldSet[string];
+  }
+  await base(AirtableTables.SellerVerifications).update([{ id, fields: fallback }]);
 }
 
 export async function createSellerVerification(fields: AirtableFields): Promise<string> {
@@ -405,35 +464,45 @@ export async function findSellerVerificationById(id: string): Promise<SellerVeri
   const base = getAirtableBase();
   try {
     const record = await base(AirtableTables.SellerVerifications).find(id);
+    if (!isSellerVerificationFields(record.fields)) return null;
     return mapVerification(record);
   } catch {
     return null;
   }
 }
 
-export async function findLatestSellerVerificationByUserId(
-  userId: string,
-): Promise<SellerVerificationRecord | null> {
+async function fetchSellerVerificationsForUser(userId: string): Promise<SellerVerificationRecord[]> {
   const base = getAirtableBase();
   const escapedId = userId.replace(/'/g, "\\'");
   try {
     const records = await base(AirtableTables.SellerVerifications)
       .select({
         filterByFormula: `FIND('${escapedId}', ARRAYJOIN({User}))`,
-        maxRecords: 10,
+        maxRecords: 50,
         sort: [{ field: SELLER_VERIFICATION_SUBMITTED_FIELD, direction: "desc" }],
       })
       .all();
-    if (!records.length) return null;
-    return mapVerification(records[0]);
+    return records.map(mapVerification);
   } catch {
-    const records = await base(AirtableTables.SellerVerifications).select({ maxRecords: 100 }).all();
-    const matches = records
+    const records = await base(AirtableTables.SellerVerifications).select({ maxRecords: 200 }).all();
+    return records
       .map(mapVerification)
       .filter((row) => row.user_id === userId)
       .sort((a, b) => String(b.submitted_at ?? "").localeCompare(String(a.submitted_at ?? "")));
-    return matches[0] ?? null;
   }
+}
+
+export async function findLatestSellerVerificationByUserId(
+  userId: string,
+): Promise<SellerVerificationRecord | null> {
+  const rows = await fetchSellerVerificationsForUser(userId);
+  return rows[0] ?? null;
+}
+
+export async function listSellerVerificationsByUserId(
+  userId: string,
+): Promise<SellerVerificationRecord[]> {
+  return fetchSellerVerificationsForUser(userId);
 }
 
 export async function listPendingSellerVerifications(): Promise<SellerVerificationRecord[]> {
