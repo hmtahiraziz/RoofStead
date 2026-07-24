@@ -119,23 +119,6 @@ export function AdminShell({
 
         <div className="mt-auto space-y-2 border-t border-outline-variant pt-4">
           <button
-            className="mb-4 w-full rounded-lg bg-primary-container py-3 text-center font-label-md text-label-md text-on-primary-container transition-colors hover:bg-surface-container-high"
-            disabled
-            title="Coming soon"
-            type="button"
-          >
-            Add Listing
-          </button>
-          <button
-            className="flex w-full items-center gap-3 rounded-lg px-4 py-3 font-body-md text-body-md text-on-surface-variant opacity-50 transition-colors hover:bg-surface-container-high"
-            disabled
-            title="Coming soon"
-            type="button"
-          >
-            <span className="material-symbols-outlined text-[20px]">settings</span>
-            Settings
-          </button>
-          <button
             className="flex w-full items-center gap-3 rounded-lg px-4 py-3 font-body-md text-body-md text-on-surface-variant transition-colors hover:bg-surface-container-high"
             type="button"
             onClick={() => {

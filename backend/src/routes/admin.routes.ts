@@ -5,10 +5,13 @@ import { AuthError } from "../services/auth.service";
 import type { AuthedRequest } from "../middleware/auth";
 import { requireAdminAuth } from "../middleware/auth";
 import {
+  findListingById,
   findSellerVerificationById,
   findUserById,
   listAllListingsForAdmin,
-  listPendingSellerVerifications,
+  listListingsBySeller,
+  listPendingVerificationsForAdmin,
+  listSellerVerificationsByUserId,
   listUsersForAdmin,
   updateSellerVerification,
   updateUser,
@@ -99,45 +102,38 @@ async function applySellerVerificationDecision(
   verificationId: string,
   userId: string,
   decision: "approved" | "rejected",
-  adminId: string | undefined,
+  _adminId: string | undefined,
   rejectionReason?: string,
 ) {
-  if (verificationId && verificationId !== userId) {
-    try {
-      await updateSellerVerification(verificationId, {
-        status: decision === "approved" ? "approved" : "rejected",
-        ...(decision === "rejected" ? { rejection_reason: rejectionReason } : {}),
-        reviewed_at: new Date().toISOString(),
-        ...(adminId ? { reviewed_by: [adminId] } : {}),
-      });
-    } catch (err) {
-      console.warn("[admin] SellerVerifications row not updated:", err);
-    }
-  }
+  if (!verificationId || verificationId === userId) return;
+
+  await updateSellerVerification(verificationId, {
+    status: decision === "approved" ? "approved" : "rejected",
+    ...(decision === "rejected" ? { rejection_reason: rejectionReason } : {}),
+    reviewed_at: new Date().toISOString(),
+    // reviewed_by omitted — not all Airtable bases have this column
+  });
 }
 
 adminAuthRouter.get("/verifications", requireAdminAuth, async (_req, res) => {
+  res.set("Cache-Control", "no-store");
   try {
-    const sellerRows = await listPendingSellerVerifications();
-    const verifications = await Promise.all(
-      sellerRows.map(async (sellerRow) => {
-        const user = await findUserById(sellerRow.user_id);
-        return {
-          id: sellerRow.id,
-          userId: sellerRow.user_id,
-          userName: user?.name ?? "Unknown seller",
-          userEmail: user?.email ?? "—",
-          userAvatarUrl: user?.profile_picture_url,
-          legalName: user?.seller_legal_name,
-          idNumber: user?.seller_id_number,
-          phone: user?.seller_phone,
-          selfieUrl: sellerRow.selfie_url,
-          idDocumentUrl: sellerRow.id_document_url,
-          submittedAt: sellerRow.submitted_at,
-          notes: sellerRow.notes,
-        };
-      }),
-    );
+    const queue = await listPendingVerificationsForAdmin();
+    const verifications = queue.map(({ verificationId, user, submission }) => ({
+      id: verificationId,
+      userId: user.id,
+      userName: user.name ?? "Unknown seller",
+      userEmail: user.email ?? "—",
+      userAvatarUrl: user.profile_picture_url,
+      legalName: user.seller_legal_name,
+      idNumber: user.seller_id_number,
+      phone: user.seller_phone,
+      selfieUrl: submission?.selfie_url,
+      idDocumentUrl: submission?.id_document_url,
+      submittedAt: submission?.submitted_at,
+      notes: submission?.notes,
+      hasSubmission: Boolean(submission),
+    }));
     res.json({ verifications, total: verifications.length });
   } catch (err) {
     console.error(err);
@@ -163,27 +159,39 @@ adminAuthRouter.get("/verifications", requireAdminAuth, async (_req, res) => {
 
 adminAuthRouter.get("/verifications/:verificationId", requireAdminAuth, async (req, res) => {
   const verificationId = String(req.params.verificationId);
-  const verification = await findSellerVerificationById(verificationId);
-  if (!verification) {
+  let verification = await findSellerVerificationById(verificationId);
+  let user = verification?.user_id
+    ? await findUserById(verification.user_id)
+    : await findUserById(verificationId);
+
+  if (!user) {
     res.status(404).json({ error: "Verification not found" });
     return;
   }
 
-  const user = await findUserById(verification.user_id);
-  if (!user) {
-    res.status(404).json({ error: "User not found" });
-    return;
+  if (!verification) {
+    if (user.verification_status && user.verification_status !== "pending") {
+      res.status(404).json({ error: "Verification not found" });
+      return;
+    }
+    const submissions = await listSellerVerificationsByUserId(user.id);
+    verification = submissions.find((s) => s.status === "pending") ?? submissions[0] ?? null;
   }
+
+  const history = await listSellerVerificationsByUserId(user.id);
+  const activeId = verification?.id ?? user.id;
+  const priorRejections = history.filter((h) => h.id !== activeId && h.status === "rejected");
 
   res.json({
     verification: {
-      id: verification.id,
-      status: verification.status,
-      selfieUrl: verification.selfie_url,
-      idDocumentUrl: verification.id_document_url,
-      notes: verification.notes,
-      rejectionReason: verification.rejection_reason,
-      submittedAt: verification.submitted_at,
+      id: activeId,
+      status: verification?.status ?? user.verification_status ?? "pending",
+      selfieUrl: verification?.selfie_url,
+      idDocumentUrl: verification?.id_document_url,
+      notes: verification?.notes,
+      rejectionReason: verification?.rejection_reason,
+      submittedAt: verification?.submitted_at,
+      hasSubmission: Boolean(verification),
     },
     user: {
       id: user.id,
@@ -196,6 +204,12 @@ adminAuthRouter.get("/verifications/:verificationId", requireAdminAuth, async (r
       idNumber: user.seller_id_number,
       phone: user.seller_phone,
     },
+    priorRejections: priorRejections.map((h) => ({
+      id: h.id,
+      rejectionReason: h.rejection_reason,
+      submittedAt: h.submitted_at,
+      reviewedAt: h.reviewed_at,
+    })),
   });
 });
 
@@ -214,20 +228,41 @@ adminAuthRouter.patch("/verifications/:verificationId/status", requireAdminAuth,
 
   const verificationId = String(req.params.verificationId);
   const userId = parsed.data.userId;
-  const verification = await findSellerVerificationById(verificationId);
-  if (!verification || verification.user_id !== userId) {
+  let verification = await findSellerVerificationById(verificationId);
+  const user = await findUserById(userId);
+
+  if (!user || user.id !== userId) {
     res.status(404).json({ error: "Verification not found" });
+    return;
+  }
+
+  if (verification && verification.user_id !== userId) {
+    res.status(404).json({ error: "Verification not found" });
+    return;
+  }
+
+  if (verification) {
+    if (verification.status !== "pending") {
+      res.status(409).json({ error: "This verification has already been reviewed" });
+      return;
+    }
+  } else if (user.verification_status !== "pending") {
+    res.status(409).json({ error: "This verification has already been reviewed" });
     return;
   }
 
   try {
     if (parsed.data.status === "approved") {
-      await applySellerVerificationDecision(verificationId, userId, "approved", req.adminId);
+      if (verification) {
+        await applySellerVerificationDecision(verification.id, userId, "approved", req.adminId);
+      }
       await updateUser(userId, { verification_status: "verified" });
       await notifySellerVerificationApproved(userId);
     } else {
       const reason = parsed.data.rejectionReason?.trim() || "Documentation did not meet requirements.";
-      await applySellerVerificationDecision(verificationId, userId, "rejected", req.adminId, reason);
+      if (verification) {
+        await applySellerVerificationDecision(verification.id, userId, "rejected", req.adminId, reason);
+      }
       await updateUser(userId, { verification_status: "rejected" });
       await notifySellerVerificationRejected(userId, reason);
     }
@@ -340,7 +375,6 @@ adminAuthRouter.get("/listings", requireAdminAuth, async (_req, res) => {
         listingType: l.listing_type,
         price: l.price,
         currency: l.currency,
-        status: l.status,
         sellerId: l.seller_id,
         bedrooms: l.bedrooms,
         bathrooms: l.bathrooms,
@@ -354,19 +388,99 @@ adminAuthRouter.get("/listings", requireAdminAuth, async (_req, res) => {
   }
 });
 
+adminAuthRouter.get("/listings/:listingId", requireAdminAuth, async (req, res) => {
+  const listingId = String(req.params.listingId);
+  const listing = await findListingById(listingId);
+  if (!listing) {
+    res.status(404).json({ error: "Listing not found" });
+    return;
+  }
+
+  const seller = await findUserById(listing.seller_id);
+
+  res.json({
+    listing: {
+      id: listing.id,
+      title: listing.title,
+      description: listing.description ?? "",
+      city: listing.city,
+      address: listing.address ?? "",
+      listingType: listing.listing_type,
+      price: listing.price,
+      currency: listing.currency,
+      status: listing.status,
+      bedrooms: listing.bedrooms,
+      bathrooms: listing.bathrooms,
+      area: listing.area,
+      areaUnit: listing.area_unit,
+      imageUrls: listing.image_urls,
+      imageUrl: listing.image_urls[0],
+      sellerId: listing.seller_id,
+    },
+    seller: seller
+      ? {
+          id: seller.id,
+          name: seller.name,
+          email: seller.email,
+          avatarUrl: seller.profile_picture_url,
+          verificationStatus: seller.verification_status,
+          role: seller.role,
+        }
+      : null,
+  });
+});
+
 adminAuthRouter.get("/users/:userId", requireAdminAuth, async (req, res) => {
-  const user = await findUserById(String(req.params.userId));
+  const userId = String(req.params.userId);
+  const user = await findUserById(userId);
   if (!user) {
     res.status(404).json({ error: "User not found" });
     return;
   }
+
+  const [listings, verificationHistory] = await Promise.all([
+    listListingsBySeller(userId),
+    listSellerVerificationsByUserId(userId),
+  ]);
+
   res.json({
-    id: user.id,
-    email: user.email,
-    name: user.name,
-    email_verified: user.email_verified,
-    verification_status: user.verification_status,
-    is_active: user.is_active,
-    is_deleted: user.is_deleted,
+    user: {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      role: user.role ?? (user.intends_seller ? "seller" : "buyer"),
+      profile_picture_url: user.profile_picture_url,
+      email_verified: user.email_verified,
+      verification_status: user.verification_status,
+      intends_seller: user.intends_seller,
+      is_active: user.is_active,
+      is_deleted: user.is_deleted,
+      seller_phone: user.seller_phone,
+      seller_id_number: user.seller_id_number,
+      seller_legal_name: user.seller_legal_name,
+    },
+    listings: listings.map((l) => ({
+      id: l.id,
+      title: l.title,
+      city: l.city,
+      address: l.address,
+      listingType: l.listing_type,
+      price: l.price,
+      currency: l.currency,
+      status: l.status,
+      bedrooms: l.bedrooms,
+      bathrooms: l.bathrooms,
+      imageUrl: l.image_urls[0],
+    })),
+    verificationHistory: verificationHistory.map((v) => ({
+      id: v.id,
+      status: v.status,
+      selfieUrl: v.selfie_url,
+      idDocumentUrl: v.id_document_url,
+      notes: v.notes,
+      rejectionReason: v.rejection_reason,
+      submittedAt: v.submitted_at,
+      reviewedAt: v.reviewed_at,
+    })),
   });
 });
