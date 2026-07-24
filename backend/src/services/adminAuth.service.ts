@@ -7,11 +7,23 @@ import {
 } from "../lib/airtable/repositories";
 import { isAirtableNetworkError } from "../lib/airtable/errors";
 import { env } from "../config/env";
-import { hashPassword, signAdminAccessToken, verifyPassword } from "../lib/auth/tokens";
+import {
+  hashPassword,
+  hashToken,
+  signAdminAccessToken,
+  signAdminRefreshToken,
+  verifyAdminRefreshToken,
+  verifyPassword,
+} from "../lib/auth/tokens";
 import { AuthError } from "./auth.service";
 
 /** JWT subject when dev login succeeds while Airtable is unreachable (development only). */
 export const DEV_OFFLINE_ADMIN_ID = "dev-super-admin";
+
+function isAirtableUnknownFieldError(err: unknown): boolean {
+  const message = err instanceof Error ? err.message : String(err);
+  return message.includes("Unknown field name") || message.includes("UNKNOWN_FIELD_NAME");
+}
 
 function devSuperAdminConfig() {
   return {
@@ -33,11 +45,32 @@ function offlineDevSuperAdminRecord(): AdminUserRecord {
   };
 }
 
-function adminLoginPayload(admin: AdminUserRecord) {
+async function persistAdminRefreshTokenHash(adminId: string, refreshToken: string) {
+  if (adminId === DEV_OFFLINE_ADMIN_ID) return;
+  try {
+    await updateAdminUser(adminId, { refresh_token_hash: hashToken(refreshToken) });
+  } catch (err) {
+    if (!isAirtableUnknownFieldError(err)) throw err;
+  }
+}
+
+async function clearAdminRefreshTokenHash(adminId: string) {
+  if (adminId === DEV_OFFLINE_ADMIN_ID) return;
+  try {
+    await updateAdminUser(adminId, { refresh_token_hash: "" });
+  } catch (err) {
+    if (!isAirtableUnknownFieldError(err)) throw err;
+  }
+}
+
+async function issueAdminSession(admin: AdminUserRecord) {
   const role = admin.role ?? "admin";
   const token = signAdminAccessToken(admin.id, role);
+  const refreshToken = signAdminRefreshToken(admin.id);
+  await persistAdminRefreshTokenHash(admin.id, refreshToken);
   return {
     token,
+    refreshToken,
     admin: {
       id: admin.id,
       email: admin.email,
@@ -95,7 +128,7 @@ export async function loginAdmin(email: string, password: string) {
   } catch (err) {
     if (isAirtableNetworkError(err)) {
       const offline = tryOfflineDevSuperAdminLogin(normalized, password);
-      if (offline) return adminLoginPayload(offline);
+      if (offline) return issueAdminSession(offline);
       throw new AuthError(
         "Cannot reach Airtable (DNS/network). Fix internet or set Windows DNS to 1.1.1.1 / 8.8.8.8. In development, use SUPER_ADMIN_EMAIL and SUPER_ADMIN_PASSWORD from backend/.env.",
         503,
@@ -109,12 +142,12 @@ export async function loginAdmin(email: string, password: string) {
   }
 
   if (admin && (await verifyPassword(password, admin.password_hash))) {
-    return adminLoginPayload(admin);
+    return issueAdminSession(admin);
   }
 
   const synced = await syncDevSuperAdmin(normalized, password);
   if (synced) {
-    return adminLoginPayload(synced);
+    return issueAdminSession(synced);
   }
 
   if (!admin) {
@@ -125,6 +158,49 @@ export async function loginAdmin(email: string, password: string) {
   }
 
   throw new AuthError("Invalid admin email or password", 401);
+}
+
+export async function refreshAdminSession(refreshToken: string) {
+  let adminId: string;
+  try {
+    adminId = verifyAdminRefreshToken(refreshToken).sub;
+  } catch {
+    throw new AuthError("Invalid or expired refresh token", 401);
+  }
+
+  if (env.nodeEnv !== "production" && adminId === DEV_OFFLINE_ADMIN_ID) {
+    return issueAdminSession(offlineDevSuperAdminRecord());
+  }
+
+  const admin = await findAdminById(adminId);
+  if (!admin || !admin.is_active) {
+    throw new AuthError("Invalid or expired refresh token", 401);
+  }
+
+  if (admin.refresh_token_hash) {
+    const tokenHash = hashToken(refreshToken);
+    if (tokenHash !== admin.refresh_token_hash) {
+      throw new AuthError("Invalid or expired refresh token", 401);
+    }
+  }
+
+  const role = admin.role ?? "admin";
+  const token = signAdminAccessToken(admin.id, role);
+  return {
+    token,
+    refreshToken,
+    admin: {
+      id: admin.id,
+      email: admin.email,
+      name: admin.name,
+      role,
+    },
+  };
+}
+
+export async function logoutAdmin(adminId: string) {
+  await clearAdminRefreshTokenHash(adminId);
+  return { ok: true };
 }
 
 export async function getAdminSession(adminId: string) {

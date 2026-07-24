@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { apiFetch } from "@/lib/api/client";
+import { isSellerAccount, sellerDashboardPath } from "@/lib/auth/routing";
 import { formatPrice } from "@/lib/format/currency";
 import type { CurrencyCode } from "@/lib/constants/currencies";
 import { getSampleListing, type ListingSeller } from "@/lib/stitch/sample-listings";
@@ -83,7 +84,7 @@ function sampleToListing(sample: NonNullable<ReturnType<typeof getSampleListing>
 
 export function StitchPropertyDetail({ listingId }: { listingId: string }) {
   const router = useRouter();
-  const { user, token } = useAuth();
+  const { user, token, loading: authLoading } = useAuth();
   const [listing, setListing] = useState<ApiListing | null>(null);
   const [isLiveListing, setIsLiveListing] = useState(false);
   const [seller, setSeller] = useState<ListingSeller>(defaultSeller());
@@ -92,6 +93,13 @@ export function StitchPropertyDetail({ listingId }: { listingId: string }) {
   const [contactError, setContactError] = useState<string | null>(null);
   const [contacting, setContacting] = useState(false);
   const [galleryIndex, setGalleryIndex] = useState(0);
+
+  useEffect(() => {
+    if (authLoading) return;
+    if (user && isSellerAccount(user)) {
+      router.replace(sellerDashboardPath());
+    }
+  }, [authLoading, user, router]);
 
   useEffect(() => {
     let cancelled = false;

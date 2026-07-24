@@ -10,6 +10,8 @@ import {
   AuthError,
   changeUserPassword,
   loginUser,
+  refreshUserSession,
+  logoutUser,
   registerUser,
   requestPasswordReset,
   resetPasswordWithToken,
@@ -44,6 +46,10 @@ const forgotPasswordSchema = z.object({
 const resetPasswordSchema = z.object({
   token: z.string().min(1),
   newPassword: z.string().min(8),
+});
+
+const refreshSchema = z.object({
+  refreshToken: z.string().min(1),
 });
 
 const upload = multer({
@@ -97,6 +103,36 @@ authRouter.post("/login", async (req, res) => {
     }
     console.error(err);
     res.status(500).json({ error: "Login failed" });
+  }
+});
+
+authRouter.post("/refresh", async (req, res) => {
+  const parsed = refreshSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: "Invalid input" });
+    return;
+  }
+
+  try {
+    const result = await refreshUserSession(parsed.data.refreshToken);
+    res.json(result);
+  } catch (err) {
+    if (err instanceof AuthError) {
+      res.status(err.statusCode).json({ error: err.message });
+      return;
+    }
+    console.error(err);
+    res.status(500).json({ error: "Could not refresh session" });
+  }
+});
+
+authRouter.post("/logout", requireUserAuth, async (req: AuthedRequest, res) => {
+  try {
+    const result = await logoutUser(req.userId!);
+    res.json(result);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Logout failed" });
   }
 });
 

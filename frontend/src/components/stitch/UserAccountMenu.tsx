@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { isSellerAccount, sellerDashboardPath } from "@/lib/auth/routing";
 import { userAvatarSrc } from "@/lib/stitch/userAvatar";
 
 export function UserAccountMenu() {
@@ -37,8 +38,7 @@ export function UserAccountMenu() {
 
   function signOut() {
     setOpen(false);
-    logout();
-    router.push("/");
+    void logout().then(() => router.push("/"));
   }
 
   return (
@@ -75,6 +75,17 @@ export function UserAccountMenu() {
             <p className="font-label-md text-on-surface truncate">{user.name}</p>
             <p className="text-[12px] text-on-surface-variant truncate">{user.email}</p>
           </div>
+          {isSellerAccount(user) && (
+            <Link
+              className="flex items-center gap-3 px-4 py-2.5 font-body-md text-on-surface hover:bg-surface-container-high transition-colors"
+              href={sellerDashboardPath()}
+              role="menuitem"
+              onClick={() => setOpen(false)}
+            >
+              <span className="material-symbols-outlined text-[20px] text-on-surface-variant">dashboard</span>
+              Seller dashboard
+            </Link>
+          )}
           <Link
             className="flex items-center gap-3 px-4 py-2.5 font-body-md text-on-surface hover:bg-surface-container-high transition-colors"
             href="/profile"

@@ -133,7 +133,7 @@ export function StitchProfileSettings() {
             />
             <SettingsRow icon="payments" subtitle="Manage payout methods" title="Payment Methods" />
             <SettingsRow
-              href="/seller/post"
+              href="/seller"
               icon="history"
               subtitle="View listings and activity"
               title="My Listings"

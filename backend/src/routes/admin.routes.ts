@@ -1,15 +1,15 @@
 import { Router } from "express";
 import { z } from "zod";
-import { getAdminSession, loginAdmin } from "../services/adminAuth.service";
+import { getAdminSession, loginAdmin, logoutAdmin, refreshAdminSession } from "../services/adminAuth.service";
 import { AuthError } from "../services/auth.service";
 import type { AuthedRequest } from "../middleware/auth";
 import { requireAdminAuth } from "../middleware/auth";
 import {
+  findSellerVerificationById,
   findUserById,
   listAllListingsForAdmin,
   listPendingSellerVerifications,
   listUsersForAdmin,
-  listUsersPendingVerification,
   updateSellerVerification,
   updateUser,
 } from "../lib/airtable/repositories";
@@ -23,6 +23,10 @@ import { isAirtableNotAuthorized, isAirtableUnknownField, SELLER_VERIFICATIONS_F
 const loginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(1),
+});
+
+const refreshSchema = z.object({
+  refreshToken: z.string().min(1),
 });
 
 export const adminAuthRouter = Router();
@@ -44,6 +48,36 @@ adminAuthRouter.post("/login", async (req, res) => {
     }
     console.error(err);
     res.status(500).json({ error: "Admin login failed" });
+  }
+});
+
+adminAuthRouter.post("/refresh", async (req, res) => {
+  const parsed = refreshSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: "Invalid input" });
+    return;
+  }
+
+  try {
+    const result = await refreshAdminSession(parsed.data.refreshToken);
+    res.json(result);
+  } catch (err) {
+    if (err instanceof AuthError) {
+      res.status(err.statusCode).json({ error: err.message });
+      return;
+    }
+    console.error(err);
+    res.status(500).json({ error: "Could not refresh admin session" });
+  }
+});
+
+adminAuthRouter.post("/logout", requireAdminAuth, async (req: AuthedRequest, res) => {
+  try {
+    const result = await logoutAdmin(req.adminId!);
+    res.json(result);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Logout failed" });
   }
 });
 
@@ -84,29 +118,26 @@ async function applySellerVerificationDecision(
 
 adminAuthRouter.get("/verifications", requireAdminAuth, async (_req, res) => {
   try {
-    const pendingUsers = await listUsersPendingVerification();
-    let sellerByUserId = new Map<string, Awaited<ReturnType<typeof listPendingSellerVerifications>>[number]>();
-    try {
-      const sellerRows = await listPendingSellerVerifications();
-      sellerByUserId = new Map(sellerRows.map((r) => [r.user_id, r]));
-    } catch {
-      // Optional: documents live on SellerVerifications when present
-    }
-
-    const verifications = pendingUsers.map((user) => {
-      const sellerRow = sellerByUserId.get(user.id);
-      return {
-        id: sellerRow?.id ?? user.id,
-        userId: user.id,
-        userName: user.name,
-        userEmail: user.email,
-        userAvatarUrl: user.profile_picture_url,
-        selfieUrl: sellerRow?.selfie_url,
-        idDocumentUrl: sellerRow?.id_document_url,
-        submittedAt: sellerRow?.submitted_at,
-        notes: sellerRow?.notes,
-      };
-    });
+    const sellerRows = await listPendingSellerVerifications();
+    const verifications = await Promise.all(
+      sellerRows.map(async (sellerRow) => {
+        const user = await findUserById(sellerRow.user_id);
+        return {
+          id: sellerRow.id,
+          userId: sellerRow.user_id,
+          userName: user?.name ?? "Unknown seller",
+          userEmail: user?.email ?? "—",
+          userAvatarUrl: user?.profile_picture_url,
+          legalName: user?.seller_legal_name,
+          idNumber: user?.seller_id_number,
+          phone: user?.seller_phone,
+          selfieUrl: sellerRow.selfie_url,
+          idDocumentUrl: sellerRow.id_document_url,
+          submittedAt: sellerRow.submitted_at,
+          notes: sellerRow.notes,
+        };
+      }),
+    );
     res.json({ verifications, total: verifications.length });
   } catch (err) {
     console.error(err);
@@ -127,6 +158,83 @@ adminAuthRouter.get("/verifications", requireAdminAuth, async (_req, res) => {
       return;
     }
     res.status(500).json({ error: "Could not load verification queue" });
+  }
+});
+
+adminAuthRouter.get("/verifications/:verificationId", requireAdminAuth, async (req, res) => {
+  const verificationId = String(req.params.verificationId);
+  const verification = await findSellerVerificationById(verificationId);
+  if (!verification) {
+    res.status(404).json({ error: "Verification not found" });
+    return;
+  }
+
+  const user = await findUserById(verification.user_id);
+  if (!user) {
+    res.status(404).json({ error: "User not found" });
+    return;
+  }
+
+  res.json({
+    verification: {
+      id: verification.id,
+      status: verification.status,
+      selfieUrl: verification.selfie_url,
+      idDocumentUrl: verification.id_document_url,
+      notes: verification.notes,
+      rejectionReason: verification.rejection_reason,
+      submittedAt: verification.submitted_at,
+    },
+    user: {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      avatarUrl: user.profile_picture_url,
+      verificationStatus: user.verification_status,
+      role: user.role,
+      legalName: user.seller_legal_name,
+      idNumber: user.seller_id_number,
+      phone: user.seller_phone,
+    },
+  });
+});
+
+const statusUpdateSchema = z.object({
+  userId: z.string().min(1),
+  status: z.enum(["approved", "rejected"]),
+  rejectionReason: z.string().optional(),
+});
+
+adminAuthRouter.patch("/verifications/:verificationId/status", requireAdminAuth, async (req: AuthedRequest, res) => {
+  const parsed = statusUpdateSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: "Invalid input", details: parsed.error.flatten() });
+    return;
+  }
+
+  const verificationId = String(req.params.verificationId);
+  const userId = parsed.data.userId;
+  const verification = await findSellerVerificationById(verificationId);
+  if (!verification || verification.user_id !== userId) {
+    res.status(404).json({ error: "Verification not found" });
+    return;
+  }
+
+  try {
+    if (parsed.data.status === "approved") {
+      await applySellerVerificationDecision(verificationId, userId, "approved", req.adminId);
+      await updateUser(userId, { verification_status: "verified" });
+      await notifySellerVerificationApproved(userId);
+    } else {
+      const reason = parsed.data.rejectionReason?.trim() || "Documentation did not meet requirements.";
+      await applySellerVerificationDecision(verificationId, userId, "rejected", req.adminId, reason);
+      await updateUser(userId, { verification_status: "rejected" });
+      await notifySellerVerificationRejected(userId, reason);
+    }
+    res.json({ ok: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Could not update verification status" });
   }
 });
 

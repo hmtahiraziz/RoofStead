@@ -2,22 +2,32 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
+import { useAdminAuth, useRedirectIfAdminAuthenticated } from "@/components/auth/AdminProvider";
 import { apiFetch } from "@/lib/api/client";
-import { ADMIN_TOKEN_KEY } from "@/lib/auth/session";
+import type { StoredAdmin } from "@/lib/auth/session";
 import { STITCH_LOGO_SRC } from "@/lib/stitch/brand";
 
 type AdminLoginResponse = {
   token: string;
-  admin: { id: string; email: string; name: string; role: string };
+  refreshToken: string;
+  admin: StoredAdmin;
 };
 
 export default function AdminLoginPage() {
   const router = useRouter();
+  const { login } = useAdminAuth();
+  const { loading: authLoading, redirecting } = useRedirectIfAdminAuthenticated();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!authLoading && redirecting) {
+      router.replace("/admin");
+    }
+  }, [authLoading, redirecting, router]);
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -28,13 +38,21 @@ export default function AdminLoginPage() {
         method: "POST",
         body: JSON.stringify({ email, password }),
       });
-      localStorage.setItem(ADMIN_TOKEN_KEY, data.token);
+      login(data.token, data.refreshToken, data.admin);
       router.push("/admin");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Login failed");
     } finally {
       setLoading(false);
     }
+  }
+
+  if (authLoading || redirecting) {
+    return (
+      <div className="bg-surface min-h-screen flex items-center justify-center text-on-surface-variant">
+        Redirecting…
+      </div>
+    );
   }
 
   return (
@@ -74,12 +92,6 @@ export default function AdminLoginPage() {
               />
             </div>
             {error && <p className="text-error text-sm">{error}</p>}
-            <p className="text-xs text-on-surface-variant">
-              Dev: use <span className="font-mono">SUPER_ADMIN_EMAIL</span> and{" "}
-              <span className="font-mono">SUPER_ADMIN_PASSWORD</span> from{" "}
-              <span className="font-mono">backend/.env</span> (default email{" "}
-              <span className="font-mono">admin@roofstead.local</span>). Buyer accounts cannot sign in here.
-            </p>
             <button
               className="w-full bg-primary text-on-primary py-3 rounded-lg font-label-md disabled:opacity-60"
               disabled={loading}
@@ -93,5 +105,3 @@ export default function AdminLoginPage() {
     </div>
   );
 }
-
-export { ADMIN_TOKEN_KEY };
