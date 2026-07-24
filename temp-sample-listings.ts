@@ -1,4 +1,4 @@
-import type { ListingType } from "@/lib/types/listing";
+﻿import type { ListingType } from "@/lib/types/listing";
 
 export type ListingSeller = {
   name: string;
