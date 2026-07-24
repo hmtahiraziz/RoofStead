@@ -1,16 +1,15 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { SellerShell } from "@/components/seller/SellerShell";
 import { CurrencySelect } from "@/components/ui/CurrencySelect";
 import { apiFetch } from "@/lib/api/client";
 import { isSellerAccount } from "@/lib/auth/routing";
 import { AREA_UNITS, DEFAULT_AREA_UNIT } from "@/lib/constants/areas";
 import type { CurrencyCode } from "@/lib/constants/currencies";
-import { STITCH_LOGO_SRC } from "@/lib/stitch/brand";
 
 const inputClass =
   "w-full bg-surface border border-outline-variant rounded-lg p-3 focus-ring font-body-md text-on-surface";
@@ -62,7 +61,29 @@ export function StitchPostListing() {
     }
   }
 
-  if (!authLoading && user && !isSellerAccount(user)) {
+  if (authLoading) {
+    return (
+      <div className="bg-background min-h-screen flex flex-col items-center justify-center px-margin-mobile text-on-surface-variant">
+        Loading…
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="bg-background min-h-screen flex flex-col items-center justify-center px-margin-mobile">
+        <p className="font-body-lg text-on-surface-variant mb-6">Sign in to list your property.</p>
+        <Link
+          className="bg-primary text-on-primary px-8 py-3 rounded-lg font-label-md"
+          href="/auth/login?returnTo=%2Fseller%2Fpost"
+        >
+          Sign in
+        </Link>
+      </div>
+    );
+  }
+
+  if (!isSellerAccount(user)) {
     return (
       <div className="bg-background min-h-screen flex flex-col items-center justify-center px-margin-mobile">
         <p className="font-body-lg text-on-surface-variant mb-6">Seller accounts can post listings.</p>
@@ -76,59 +97,13 @@ export function StitchPostListing() {
     );
   }
 
-  if (!authLoading && !user) {
-    return (
-      <div className="bg-background min-h-screen flex flex-col items-center justify-center px-margin-mobile">
-        <p className="font-body-lg text-on-surface-variant mb-6">Sign in to list your property.</p>
-        <Link
-          className="bg-primary text-on-primary px-8 py-3 rounded-lg font-label-md"
-          href="/auth/login"
-        >
-          Sign in
-        </Link>
-      </div>
-    );
-  }
-
-  const verified = user?.verification_status === "verified";
+  const verified = user.verification_status === "verified";
 
   return (
-    <div className="bg-background text-on-surface font-body-lg min-h-screen flex flex-col">
-      <header className="bg-surface border-b border-outline-variant shadow-sm sticky top-0 z-50">
-        <nav className="flex justify-between items-center w-full px-margin-desktop py-4 max-w-container-max mx-auto">
-          <div className="flex items-center gap-8">
-            <Link href="/">
-              <Image alt="RoofStead Logo" className="h-10 w-auto" height={40} src={STITCH_LOGO_SRC} width={120} />
-            </Link>
-            <div className="hidden md:flex gap-6">
-              <Link
-                className="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors"
-                href="/listings"
-              >
-                Properties
-              </Link>
-              <span className="font-label-md text-label-md text-on-surface-variant">Market Trends</span>
-              <span className="font-label-md text-label-md text-on-surface-variant">Guides</span>
-              <span className="font-label-md text-label-md text-on-surface-variant">About</span>
-            </div>
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="font-label-md text-label-md text-primary font-bold border-b-2 border-primary pb-1">
-              List Property
-            </span>
-            <Link
-              className="font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-low px-4 py-2 rounded-lg transition-all"
-              href="/auth/login"
-            >
-              Sign In
-            </Link>
-          </div>
-        </nav>
-      </header>
-
-      {!verified && user?.verification_status !== "pending" && user?.verification_status !== "rejected" && (
-      <section className="bg-tertiary-fixed text-on-tertiary-fixed py-3 px-margin-desktop">
-        <div className="max-w-container-max mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+    <SellerShell title="Post Your Listing">
+      {!verified && user.verification_status !== "pending" && user.verification_status !== "rejected" && (
+      <section className="bg-tertiary-fixed text-on-tertiary-fixed py-3 px-margin-mobile md:px-margin-desktop -mx-margin-mobile md:-mx-margin-desktop mb-8 rounded-lg">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="flex items-center gap-2">
             <span className="material-symbols-outlined text-tertiary-container fill-icon" style={{ fontVariationSettings: "'FILL' 1" }}>
               verified_user
@@ -143,9 +118,9 @@ export function StitchPostListing() {
         </div>
       </section>
       )}
-      {!verified && user?.verification_status === "pending" && (
-      <section className="bg-secondary-container/40 text-on-secondary-container py-3 px-margin-desktop border-b border-secondary-container">
-        <div className="max-w-container-max mx-auto flex items-center gap-2">
+      {!verified && user.verification_status === "pending" && (
+      <section className="bg-secondary-container/40 text-on-secondary-container py-3 px-margin-mobile md:px-margin-desktop -mx-margin-mobile md:-mx-margin-desktop mb-8 rounded-lg border border-secondary-container">
+        <div className="flex items-center gap-2">
           <span className="material-symbols-outlined">hourglass_top</span>
           <p className="font-label-md text-label-md">
             Your verification is <span className="font-bold">under review</span>. You can prepare listings, but cannot publish until verified.
@@ -154,14 +129,11 @@ export function StitchPostListing() {
       </section>
       )}
 
-      <main className="max-w-4xl mx-auto px-6 py-12 flex-1 w-full">
-        <div className="text-center mb-12">
-          <h1 className="font-display-lg text-display-lg text-primary mb-4">Post Your Listing</h1>
-          <p className="text-on-surface-variant max-w-xl mx-auto">
-            Welcome to RoofStead. Fill in the details below to reach thousands of qualified buyers and renters in
-            our curated marketplace.
-          </p>
-        </div>
+      <div className="max-w-4xl mx-auto w-full">
+        <p className="text-on-surface-variant text-center mb-12 max-w-xl mx-auto">
+          Welcome to RoofStead. Fill in the details below to reach thousands of qualified buyers and renters in
+          our curated marketplace.
+        </p>
 
         <div className="flex items-center mb-16 px-4">
           <div className="flex flex-col items-center gap-2">
@@ -427,39 +399,7 @@ export function StitchPostListing() {
             </div>
           </form>
         </div>
-      </main>
-
-      <footer className="bg-surface-container border-t border-outline-variant mt-24">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-gutter px-margin-desktop py-12 max-w-container-max mx-auto">
-          <div className="md:col-span-1">
-            <h4 className="font-headline-sm text-headline-sm font-bold text-primary mb-4">RoofStead</h4>
-            <p className="font-body-md text-body-md text-on-surface-variant">
-              Elevating the residential experience through transparency and design.
-            </p>
-          </div>
-          <div className="flex flex-col gap-3">
-            <h5 className="font-label-md text-label-md text-primary font-bold uppercase tracking-wider">Marketplace</h5>
-            <Link className="font-body-md text-body-md text-on-surface-variant hover:text-primary underline decoration-2 underline-offset-4 transition-all" href="/listings">
-              Browse Homes
-            </Link>
-          </div>
-          <div className="flex flex-col gap-3">
-            <h5 className="font-label-md text-label-md text-primary font-bold uppercase tracking-wider">Resources</h5>
-            <Link className="font-body-md text-body-md text-on-surface-variant hover:text-primary underline decoration-2 underline-offset-4 transition-all" href="/seller/post">
-              Seller Resources
-            </Link>
-          </div>
-          <div className="flex flex-col gap-3">
-            <h5 className="font-label-md text-label-md text-primary font-bold uppercase tracking-wider">Legal</h5>
-            <span className="font-body-md text-body-md text-on-surface-variant">Privacy Policy</span>
-          </div>
-        </div>
-        <div className="px-margin-desktop py-6 border-t border-outline-variant/30 text-center">
-          <p className="font-label-md text-label-md text-on-surface-variant">
-            © 2024 RoofStead Real Estate. All rights reserved. Licensed Brokerage.
-          </p>
-        </div>
-      </footer>
-    </div>
+      </div>
+    </SellerShell>
   );
 }

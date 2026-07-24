@@ -1,13 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { FormEvent, useState } from "react";
 import Image from "next/image";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useRedirectIfAuthenticated } from "@/components/auth/useRedirectIfAuthenticated";
 import { apiFetch } from "@/lib/api/client";
-import { postAuthRedirect } from "@/lib/auth/routing";
+import { authRedirectPath } from "@/lib/auth/routing";
 import type { StoredUser } from "@/lib/auth/session";
 import { STITCH_LOGO_SRC } from "@/lib/stitch/brand";
 
@@ -19,6 +19,7 @@ type LoginResponse = {
 
 export function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { login } = useAuth();
   const { loading: authLoading, redirecting } = useRedirectIfAuthenticated();
   const [error, setError] = useState<string | null>(null);
@@ -38,7 +39,7 @@ export function LoginForm() {
         }),
       });
       login(data.token, data.refreshToken, data.user);
-      router.push(postAuthRedirect(data.user));
+      router.push(authRedirectPath(data.user, searchParams.get("returnTo")));
     } catch (err) {
       setError(err instanceof Error ? err.message : "Login failed");
     } finally {
