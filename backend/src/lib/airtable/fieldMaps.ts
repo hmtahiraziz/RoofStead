@@ -100,8 +100,39 @@ export function listingFieldsToAirtable(fields: Record<string, unknown>): FieldS
   return out;
 }
 
+const CONVERSATION_WRITE_MAP: Record<string, string> = {
+  listing: "Listing",
+  buyer: "Buyer",
+  seller: "Seller",
+  last_message_at: "Last Message At",
+  last_message_preview: "Last Message Preview",
+  buyer_last_read_at: "Buyer Last Read At",
+  seller_last_read_at: "Seller Last Read At",
+  buyer_unread_count: "Buyer Unread Count",
+  seller_unread_count: "Seller Unread Count",
+  buyer_deleted_at: "Buyer Deleted At",
+  seller_deleted_at: "Seller Deleted At",
+  buyer_blocked: "Buyer Blocked",
+  seller_blocked: "Seller Blocked",
+};
+
+const MESSAGE_WRITE_MAP: Record<string, string> = {
+  conversation: "Conversation",
+  sender: "Sender",
+  body: "Body",
+  created_at: "Sent At",
+  sent_at: "Sent At",
+  image_url: "Image URL",
+};
+
 export const USER_EMAIL_FIELD = "Email";
 export const LISTING_STATUS_FIELD = "Status";
+export const CONVERSATION_LISTING_FIELD = "Listing";
+export const CONVERSATION_BUYER_FIELD = "Buyer";
+export const CONVERSATION_SELLER_FIELD = "Seller";
+export const CONVERSATION_LAST_MESSAGE_AT_FIELD = "Last Message At";
+export const MESSAGE_CONVERSATION_FIELD = "Conversation";
+export const MESSAGE_SENT_AT_FIELD = "Sent At";
 
 /** Airtable column names on SellerVerifications */
 export const SELLER_VERIFICATION_STATUS_FIELD = "Status";
@@ -132,6 +163,26 @@ function toAirtableDateOnly(value: unknown): string | undefined {
   const d = value instanceof Date ? value : new Date(String(value));
   if (Number.isNaN(d.getTime())) return undefined;
   return d.toISOString().slice(0, 10);
+}
+
+export function conversationFieldsToAirtable(fields: Record<string, unknown>): FieldSet {
+  const out: FieldSet = {};
+  for (const [key, value] of Object.entries(fields)) {
+    if (value === undefined) continue;
+    const airtableKey = CONVERSATION_WRITE_MAP[key] ?? key;
+    out[airtableKey] = value as FieldSet[string];
+  }
+  return out;
+}
+
+export function messageFieldsToAirtable(fields: Record<string, unknown>): FieldSet {
+  const out: FieldSet = {};
+  for (const [key, value] of Object.entries(fields)) {
+    if (value === undefined) continue;
+    const airtableKey = MESSAGE_WRITE_MAP[key] ?? key;
+    out[airtableKey] = value as FieldSet[string];
+  }
+  return out;
 }
 
 export function sellerVerificationFieldsToAirtable(fields: Record<string, unknown>): FieldSet {

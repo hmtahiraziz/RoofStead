@@ -135,6 +135,14 @@ async function main() {
   const adminUsers = findTable(tables, AirtableTables.AdminUsers);
   const listings = findTable(tables, AirtableTables.Listings);
   let sellerVerifications = tables.find((t) => t.name === AirtableTables.SellerVerifications);
+  let conversations = tables.find((t) => t.name === AirtableTables.Conversations);
+  let messages = tables.find((t) => t.name === AirtableTables.Messages);
+
+  const dateTimeOptions = {
+    dateFormat: { name: "iso" },
+    timeFormat: { name: "24hour" },
+    timeZone: "utc",
+  };
 
   console.log("\n=== Users ===");
   await ensureField(users, {
@@ -295,6 +303,159 @@ async function main() {
         options: { dateFormat: { name: "iso" }, timeFormat: { name: "24hour" }, timeZone: "utc" },
       });
     }
+  }
+
+  console.log("\n=== Conversations ===");
+  if (!conversations) {
+    console.log("  + Creating Conversations table");
+    const usersTableId = users.id;
+    const listingsTableId = listings.id;
+    await metaFetch("/tables", {
+      method: "POST",
+      body: JSON.stringify({
+        name: AirtableTables.Conversations,
+        fields: [
+          {
+            name: "Listing",
+            type: "multipleRecordLinks",
+            options: { linkedTableId: listingsTableId },
+          },
+          {
+            name: "Buyer",
+            type: "multipleRecordLinks",
+            options: { linkedTableId: usersTableId },
+          },
+          {
+            name: "Seller",
+            type: "multipleRecordLinks",
+            options: { linkedTableId: usersTableId },
+          },
+          {
+            name: "Last Message At",
+            type: "dateTime",
+            options: dateTimeOptions,
+          },
+          { name: "Last Message Preview", type: "singleLineText" },
+          {
+            name: "Buyer Blocked",
+            type: "checkbox",
+            options: { icon: "check", color: "redBright" },
+          },
+          {
+            name: "Seller Blocked",
+            type: "checkbox",
+            options: { icon: "check", color: "redBright" },
+          },
+          { name: "Buyer Deleted At", type: "dateTime", options: dateTimeOptions },
+          { name: "Seller Deleted At", type: "dateTime", options: dateTimeOptions },
+        ],
+      }),
+    });
+    tables = await loadTables();
+    conversations = findTable(tables, AirtableTables.Conversations);
+  } else {
+    await ensureField(conversations, {
+      name: "Listing",
+      type: "multipleRecordLinks",
+      options: { linkedTableId: listings.id },
+    });
+    await ensureField(conversations, {
+      name: "Buyer",
+      type: "multipleRecordLinks",
+      options: { linkedTableId: users.id },
+    });
+    await ensureField(conversations, {
+      name: "Seller",
+      type: "multipleRecordLinks",
+      options: { linkedTableId: users.id },
+    });
+    await ensureField(conversations, {
+      name: "Last Message At",
+      type: "dateTime",
+      options: dateTimeOptions,
+    });
+    await ensureField(conversations, { name: "Last Message Preview", type: "singleLineText" });
+    await ensureField(conversations, {
+      name: "Buyer Blocked",
+      type: "checkbox",
+      options: { icon: "check", color: "redBright" },
+    });
+    await ensureField(conversations, {
+      name: "Seller Blocked",
+      type: "checkbox",
+      options: { icon: "check", color: "redBright" },
+    });
+    await ensureField(conversations, {
+      name: "Buyer Deleted At",
+      type: "dateTime",
+      options: dateTimeOptions,
+    });
+    await ensureField(conversations, {
+      name: "Seller Deleted At",
+      type: "dateTime",
+      options: dateTimeOptions,
+    });
+    await ensureField(conversations, {
+      name: "Buyer Last Read At",
+      type: "dateTime",
+      options: dateTimeOptions,
+    });
+    await ensureField(conversations, {
+      name: "Seller Last Read At",
+      type: "dateTime",
+      options: dateTimeOptions,
+    });
+    await ensureField(conversations, { name: "Buyer Unread Count", type: "number", options: { precision: 0 } });
+    await ensureField(conversations, { name: "Seller Unread Count", type: "number", options: { precision: 0 } });
+  }
+
+  console.log("\n=== Messages ===");
+  if (!messages) {
+    if (!conversations) {
+      tables = await loadTables();
+      conversations = findTable(tables, AirtableTables.Conversations);
+    }
+    console.log("  + Creating Messages table");
+    await metaFetch("/tables", {
+      method: "POST",
+      body: JSON.stringify({
+        name: AirtableTables.Messages,
+        fields: [
+          {
+            name: "Conversation",
+            type: "multipleRecordLinks",
+            options: { linkedTableId: conversations!.id },
+          },
+          {
+            name: "Sender",
+            type: "multipleRecordLinks",
+            options: { linkedTableId: users.id },
+          },
+          { name: "Body", type: "multilineText" },
+          { name: "Sent At", type: "dateTime", options: dateTimeOptions },
+          { name: "Image URL", type: "url" },
+        ],
+      }),
+    });
+    tables = await loadTables();
+    messages = findTable(tables, AirtableTables.Messages);
+  } else {
+    if (!conversations) {
+      conversations = findTable(tables, AirtableTables.Conversations);
+    }
+    await ensureField(messages, {
+      name: "Conversation",
+      type: "multipleRecordLinks",
+      options: { linkedTableId: conversations.id },
+    });
+    await ensureField(messages, {
+      name: "Sender",
+      type: "multipleRecordLinks",
+      options: { linkedTableId: users.id },
+    });
+    await ensureField(messages, { name: "Body", type: "multilineText" });
+    await ensureField(messages, { name: "Sent At", type: "dateTime", options: dateTimeOptions });
+    await ensureField(messages, { name: "Image URL", type: "url" });
   }
 
   console.log("\nDone. Airtable schema sync complete.");

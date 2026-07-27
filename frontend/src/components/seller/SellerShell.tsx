@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { UserAccountMenu } from "@/components/stitch/UserAccountMenu";
+import { useUnreadMessageCount } from "@/lib/messages/useUnreadMessageCount";
 import { STITCH_LOGO_SRC } from "@/lib/stitch/brand";
 
 type Props = {
@@ -15,6 +16,7 @@ type Props = {
 export function SellerShell({ children, title }: Props) {
   const pathname = usePathname();
   const { user } = useAuth();
+  const { badgeLabel: unreadBadge } = useUnreadMessageCount();
 
   const navClass = (href: string) =>
     pathname === href || pathname.startsWith(`${href}/`)
@@ -36,8 +38,13 @@ export function SellerShell({ children, title }: Props) {
               <Link className={navClass("/seller/post")} href="/seller/post">
                 Post Listing
               </Link>
-              <Link className={navClass("/messages")} href="/messages">
+              <Link className={`${navClass("/messages")} inline-flex items-center gap-1.5`} href="/messages">
                 Messages
+                {unreadBadge && (
+                  <span className="min-w-[1.125rem] h-[1.125rem] px-1 rounded-full bg-error text-white text-[10px] font-label-md flex items-center justify-center leading-none">
+                    {unreadBadge}
+                  </span>
+                )}
               </Link>
             </div>
           </div>

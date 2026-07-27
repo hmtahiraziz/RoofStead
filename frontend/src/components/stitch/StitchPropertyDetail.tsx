@@ -370,16 +370,6 @@ export function StitchPropertyDetail({ listingId }: { listingId: string }) {
                 >
                   {contacting ? "Opening chat…" : primaryChatLabel}
                 </button>
-                {!isOwnListing && (
-                  <button
-                    className="w-full py-4 bg-transparent border border-primary text-primary rounded-xl font-title-lg text-title-lg hover:bg-primary/5 transition-all active:scale-95 disabled:opacity-50"
-                    disabled={contacting || !isLiveListing}
-                    type="button"
-                    onClick={openListingChat}
-                  >
-                    Schedule a Tour
-                  </button>
-                )}
               </div>
               <div className="mt-8 pt-8 border-t border-outline-variant w-full flex justify-between">
                 <div className="text-left">
