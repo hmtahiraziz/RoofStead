@@ -1,4 +1,4 @@
-import { StitchProfileSettings } from "@/components/profile/StitchProfileSettings";
+import { StitchProfileSettings } from "@/components/profile/ProfileSettings";
 
 export default function ProfileSettingsPage() {
   return <StitchProfileSettings />;

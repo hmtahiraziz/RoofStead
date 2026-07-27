@@ -1,8 +1,15 @@
 import type { FieldSet } from "airtable";
 import { getAirtableBase } from "./client";
 import {
+  conversationFieldsToAirtable,
+  CONVERSATION_BUYER_FIELD,
+  CONVERSATION_LAST_MESSAGE_AT_FIELD,
+  CONVERSATION_SELLER_FIELD,
   listingFieldsToAirtable,
   LISTING_STATUS_FIELD,
+  messageFieldsToAirtable,
+  MESSAGE_CONVERSATION_FIELD,
+  MESSAGE_SENT_AT_FIELD,
   SELLER_VERIFICATION_STATUS_FIELD,
   SELLER_VERIFICATION_SUBMITTED_FIELD,
   sellerVerificationFieldsToAirtable,
@@ -83,6 +90,10 @@ export type ConversationRecord = {
   seller_id: string;
   last_message_at?: string;
   last_message_preview?: string;
+  buyer_last_read_at?: string;
+  seller_last_read_at?: string;
+  buyer_unread_count?: number;
+  seller_unread_count?: number;
 };
 
 export type MessageRecord = {
@@ -288,15 +299,107 @@ function mapVerification(record: { id: string; fields: FieldSet }): SellerVerifi
   };
 }
 
+function escapeFormulaValue(value: string): string {
+  return value.replace(/'/g, "\\'");
+}
+
+function conversationThreadKey(c: ConversationRecord): string {
+  return `${c.listing_id}:${c.buyer_id}:${c.seller_id}`;
+}
+
+async function listAllConversationRecords(): Promise<ConversationRecord[]> {
+  const base = getAirtableBase();
+  const all = await base(AirtableTables.Conversations).select({ maxRecords: 200 }).all();
+  return all.map(mapConversation);
+}
+
+function dedupeConversationRecords(rows: ConversationRecord[]): ConversationRecord[] {
+  const groups = new Map<string, ConversationRecord[]>();
+  for (const row of rows) {
+    if (!row.listing_id || !row.buyer_id || !row.seller_id) continue;
+    const key = conversationThreadKey(row);
+    const group = groups.get(key) ?? [];
+    group.push(row);
+    groups.set(key, group);
+  }
+
+  const deduped: ConversationRecord[] = [];
+  for (const group of groups.values()) {
+    const sorted = group.sort((a, b) =>
+      (b.last_message_at ?? "").localeCompare(a.last_message_at ?? ""),
+    );
+    const canonical = { ...sorted[0] };
+    canonical.buyer_unread_count = group.reduce((sum, c) => sum + (c.buyer_unread_count ?? 0), 0);
+    canonical.seller_unread_count = group.reduce((sum, c) => sum + (c.seller_unread_count ?? 0), 0);
+    const withPreview = sorted.find((c) => c.last_message_preview?.trim());
+    if (withPreview?.last_message_preview) {
+      canonical.last_message_preview = withPreview.last_message_preview;
+    }
+    deduped.push(canonical);
+  }
+
+  return deduped.sort((a, b) => (b.last_message_at ?? "").localeCompare(a.last_message_at ?? ""));
+}
+
+export async function getConversationSiblings(
+  conversation: ConversationRecord,
+): Promise<ConversationRecord[]> {
+  const all = await listAllConversationRecords();
+  return all.filter(
+    (c) =>
+      c.listing_id === conversation.listing_id &&
+      c.buyer_id === conversation.buyer_id &&
+      c.seller_id === conversation.seller_id,
+  );
+}
+
+export async function resolveCanonicalConversation(
+  conversation: ConversationRecord,
+): Promise<ConversationRecord> {
+  const siblings = await getConversationSiblings(conversation);
+  if (siblings.length <= 1) return conversation;
+  return siblings.sort((a, b) =>
+    (b.last_message_at ?? "").localeCompare(a.last_message_at ?? ""),
+  )[0];
+}
+
+export async function listMessagesForConversationThread(
+  conversation: ConversationRecord,
+): Promise<MessageRecord[]> {
+  const siblings = await getConversationSiblings(conversation);
+  const messageLists = await Promise.all(siblings.map((s) => listMessagesForConversation(s.id)));
+  const byId = new Map<string, MessageRecord>();
+  for (const list of messageLists) {
+    for (const message of list) {
+      byId.set(message.id, message);
+    }
+  }
+  return Array.from(byId.values()).sort((a, b) =>
+    (a.created_at ?? "").localeCompare(b.created_at ?? ""),
+  );
+}
+
 function mapConversation(record: { id: string; fields: FieldSet }): ConversationRecord {
   const f = record.fields;
   return {
     id: record.id,
-    listing_id: firstLink(f.listing),
-    buyer_id: firstLink(f.buyer),
-    seller_id: firstLink(f.seller),
-    last_message_at: f.last_message_at ? String(f.last_message_at) : undefined,
-    last_message_preview: f.last_message_preview ? String(f.last_message_preview) : undefined,
+    listing_id: firstLink(fieldValue(f, "listing", "Listing")),
+    buyer_id: firstLink(fieldValue(f, "buyer", "Buyer")),
+    seller_id: firstLink(fieldValue(f, "seller", "Seller")),
+    last_message_at: fieldValue(f, "last_message_at", "Last Message At")
+      ? String(fieldValue(f, "last_message_at", "Last Message At"))
+      : undefined,
+    last_message_preview: fieldValue(f, "last_message_preview", "Last Message Preview")
+      ? String(fieldValue(f, "last_message_preview", "Last Message Preview"))
+      : undefined,
+    buyer_last_read_at: fieldValue(f, "buyer_last_read_at", "Buyer Last Read At")
+      ? String(fieldValue(f, "buyer_last_read_at", "Buyer Last Read At"))
+      : undefined,
+    seller_last_read_at: fieldValue(f, "seller_last_read_at", "Seller Last Read At")
+      ? String(fieldValue(f, "seller_last_read_at", "Seller Last Read At"))
+      : undefined,
+    buyer_unread_count: Number(fieldValue(f, "buyer_unread_count", "Buyer Unread Count") ?? 0) || 0,
+    seller_unread_count: Number(fieldValue(f, "seller_unread_count", "Seller Unread Count") ?? 0) || 0,
   };
 }
 
@@ -304,10 +407,12 @@ function mapMessage(record: { id: string; fields: FieldSet }): MessageRecord {
   const f = record.fields;
   return {
     id: record.id,
-    conversation_id: firstLink(f.conversation),
-    sender_id: firstLink(f.sender),
-    body: String(f.body ?? ""),
-    created_at: f.created_at ? String(f.created_at) : undefined,
+    conversation_id: firstLink(fieldValue(f, "conversation", "Conversation")),
+    sender_id: firstLink(fieldValue(f, "sender", "Sender")),
+    body: String(fieldValue(f, "body", "Body") ?? ""),
+    created_at: fieldValue(f, "created_at", "sent_at", "Sent At")
+      ? String(fieldValue(f, "created_at", "sent_at", "Sent At"))
+      : undefined,
   };
 }
 
@@ -718,23 +823,41 @@ export async function updateListing(id: string, fields: AirtableFields): Promise
 
 export async function listConversationsForUser(userId: string): Promise<ConversationRecord[]> {
   const base = getAirtableBase();
-  const records = await base(AirtableTables.Conversations)
-    .select({
-      filterByFormula: `OR(FIND('${userId}', ARRAYJOIN({buyer})), FIND('${userId}', ARRAYJOIN({seller})))`,
-      maxRecords: 50,
-      sort: [{ field: "last_message_at", direction: "desc" }],
-    })
-    .all()
-    .catch(async () => {
-      const all = await base(AirtableTables.Conversations).select({ maxRecords: 50 }).all();
-      return all.filter((r) => {
-        const buyer = firstLink(r.fields.buyer);
-        const seller = firstLink(r.fields.seller);
-        return buyer === userId || seller === userId;
-      });
-    });
+  const escapedId = escapeFormulaValue(userId);
 
-  return records.map(mapConversation);
+  let records;
+  try {
+    records = await base(AirtableTables.Conversations)
+      .select({
+        filterByFormula: `OR({${CONVERSATION_BUYER_FIELD}} = '${escapedId}', {${CONVERSATION_SELLER_FIELD}} = '${escapedId}')`,
+        maxRecords: 200,
+        sort: [{ field: CONVERSATION_LAST_MESSAGE_AT_FIELD, direction: "desc" }],
+      })
+      .all();
+  } catch {
+    records = [];
+  }
+
+  if (!records.length) {
+    const all = await base(AirtableTables.Conversations).select({ maxRecords: 200 }).all();
+    records = all.filter((r) => {
+      const buyer = firstLink(fieldValue(r.fields, "buyer", "Buyer"));
+      const seller = firstLink(fieldValue(r.fields, "seller", "Seller"));
+      return buyer === userId || seller === userId;
+    });
+  }
+
+  const mapped = records.map(mapConversation);
+
+  // Merge with full scan so we never miss rows the formula skipped
+  const allMapped = await listAllConversationRecords();
+  const userFromAll = allMapped.filter((c) => c.buyer_id === userId || c.seller_id === userId);
+  const byId = new Map<string, ConversationRecord>();
+  for (const row of [...mapped, ...userFromAll]) {
+    byId.set(row.id, row);
+  }
+
+  return dedupeConversationRecords(Array.from(byId.values()));
 }
 
 export async function findConversationById(id: string): Promise<ConversationRecord | null> {
@@ -751,12 +874,14 @@ export async function findConversationForListingAndParticipants(
   buyerId: string,
   sellerId: string,
 ): Promise<ConversationRecord | null> {
-  const rows = await listConversationsForUser(buyerId);
-  return (
-    rows.find(
-      (c) => c.listing_id === listingId && c.buyer_id === buyerId && c.seller_id === sellerId,
-    ) ?? null
+  const all = await listAllConversationRecords();
+  const matches = all.filter(
+    (c) => c.listing_id === listingId && c.buyer_id === buyerId && c.seller_id === sellerId,
   );
+  if (!matches.length) return null;
+  return matches.sort((a, b) =>
+    (b.last_message_at ?? "").localeCompare(a.last_message_at ?? ""),
+  )[0];
 }
 
 export async function findConversationsForListingAsSeller(
@@ -771,36 +896,102 @@ export async function findConversationsForListingAsSeller(
 
 export async function createConversation(fields: AirtableFields): Promise<ConversationRecord> {
   const base = getAirtableBase();
-  const created = await base(AirtableTables.Conversations).create([
-    { fields } as { fields: FieldSet },
-  ]);
+  const airtableFields = conversationFieldsToAirtable(fields as Record<string, unknown>);
+  const created = await base(AirtableTables.Conversations).create([{ fields: airtableFields }]);
   return mapConversation(created[0]);
 }
 
 export async function updateConversation(id: string, fields: AirtableFields): Promise<void> {
   const base = getAirtableBase();
-  await base(AirtableTables.Conversations).update([{ id, fields } as { id: string; fields: FieldSet }]);
+  const airtableFields = conversationFieldsToAirtable(fields as Record<string, unknown>);
+  await base(AirtableTables.Conversations).update([{ id, fields: airtableFields }]);
 }
 
 export async function listMessagesForConversation(conversationId: string): Promise<MessageRecord[]> {
   const base = getAirtableBase();
-  const records = await base(AirtableTables.Messages)
-    .select({
-      filterByFormula: `FIND('${conversationId}', ARRAYJOIN({conversation}))`,
-      maxRecords: 200,
-      sort: [{ field: "created_at", direction: "asc" }],
-    })
-    .all()
-    .catch(async () => {
-      const all = await base(AirtableTables.Messages).select({ maxRecords: 200 }).all();
-      return all.filter((r) => firstLink(r.fields.conversation) === conversationId);
-    });
+  const escapedId = escapeFormulaValue(conversationId);
 
-  return records.map(mapMessage);
+  let records;
+  try {
+    records = await base(AirtableTables.Messages)
+      .select({
+        filterByFormula: `{${MESSAGE_CONVERSATION_FIELD}} = '${escapedId}'`,
+        maxRecords: 500,
+        sort: [{ field: MESSAGE_SENT_AT_FIELD, direction: "asc" }],
+      })
+      .all();
+  } catch {
+    records = [];
+  }
+
+  if (!records.length) {
+    const all = await base(AirtableTables.Messages).select({ maxRecords: 500 }).all();
+    records = all.filter(
+      (r) => firstLink(fieldValue(r.fields, "conversation", "Conversation")) === conversationId,
+    );
+  }
+
+  return records
+    .map(mapMessage)
+    .sort((a, b) => (a.created_at ?? "").localeCompare(b.created_at ?? ""));
+}
+
+export function unreadCountForUser(conversation: ConversationRecord, userId: string): number {
+  if (conversation.buyer_id === userId) return conversation.buyer_unread_count ?? 0;
+  if (conversation.seller_id === userId) return conversation.seller_unread_count ?? 0;
+  return 0;
+}
+
+export async function incrementUnreadForRecipient(
+  conversationId: string,
+  senderId: string,
+): Promise<void> {
+  const conversation = await findConversationById(conversationId);
+  if (!conversation) return;
+
+  const fields: AirtableFields = {};
+  if (conversation.buyer_id === senderId) {
+    fields.seller_unread_count = (conversation.seller_unread_count ?? 0) + 1;
+  } else if (conversation.seller_id === senderId) {
+    fields.buyer_unread_count = (conversation.buyer_unread_count ?? 0) + 1;
+  } else {
+    return;
+  }
+  await updateConversation(conversation.id, fields);
+}
+
+export async function markConversationRead(
+  conversation: ConversationRecord,
+  userId: string,
+): Promise<void> {
+  const now = new Date().toISOString();
+  const siblings = await getConversationSiblings(conversation);
+
+  await Promise.all(
+    siblings.map(async (sibling) => {
+      const fields: AirtableFields = {};
+      if (sibling.buyer_id === userId) {
+        fields.buyer_last_read_at = now;
+        fields.buyer_unread_count = 0;
+      } else if (sibling.seller_id === userId) {
+        fields.seller_last_read_at = now;
+        fields.seller_unread_count = 0;
+      } else {
+        return;
+      }
+      await updateConversation(sibling.id, fields);
+    }),
+  );
+}
+
+export async function getTotalUnreadCountForUser(userId: string): Promise<number> {
+  const rows = await listConversationsForUser(userId);
+  return rows.reduce((sum, row) => sum + unreadCountForUser(row, userId), 0);
 }
 
 export async function createMessage(fields: AirtableFields): Promise<MessageRecord> {
   const base = getAirtableBase();
-  const created = await base(AirtableTables.Messages).create([{ fields } as { fields: FieldSet }]);
+  const airtableFields = messageFieldsToAirtable(fields as Record<string, unknown>);
+  const created = await base(AirtableTables.Messages).create([{ fields: airtableFields }]);
   return mapMessage(created[0]);
 }
