@@ -1,4 +1,4 @@
-import { StitchSecurityPassword } from "@/components/profile/StitchSecurityPassword";
+import { StitchSecurityPassword } from "@/components/profile/SecurityPassword";
 
 export default function ProfileSecurityPage() {
   return <StitchSecurityPassword />;
