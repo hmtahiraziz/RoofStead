@@ -20,6 +20,7 @@ export function StitchListingCard({ listing }: Props) {
           fill
           sizes="(max-width: 768px) 100vw, 33vw"
           src={listing.imageUrl}
+          unoptimized
         />
         <div className="absolute top-4 left-4 flex gap-2">
           {listing.verified && (

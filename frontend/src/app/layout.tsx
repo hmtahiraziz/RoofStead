@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Source_Serif_4 } from "next/font/google";
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import { AppShell } from "@/components/layout/AppShell";
+import { MessagesRealtimeProvider } from "@/lib/messages/MessagesRealtimeProvider";
 import "./globals.css";
 
 const inter = Inter({
@@ -34,7 +35,9 @@ export default function RootLayout({
       </head>
       <body className="font-body-lg text-on-surface bg-surface">
         <AuthProvider>
-          <AppShell>{children}</AppShell>
+          <MessagesRealtimeProvider>
+            <AppShell>{children}</AppShell>
+          </MessagesRealtimeProvider>
         </AuthProvider>
       </body>
     </html>
