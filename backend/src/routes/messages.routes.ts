@@ -4,47 +4,66 @@ import type { AuthedRequest } from "../middleware/auth";
 import { requireUserAuth } from "../middleware/auth";
 import {
   createConversation,
-  createMessage,
   findConversationById,
   findConversationForListingAndParticipants,
   findConversationsForListingAsSeller,
   findListingById,
   findUserById,
+  getTotalUnreadCountForUser,
   listConversationsForUser,
-  listMessagesForConversation,
-  updateConversation,
+  listMessagesForConversationThread,
+  markConversationRead,
+  resolveCanonicalConversation,
 } from "../lib/airtable/repositories";
+import { enrichConversation } from "../lib/messages/enrichConversation";
+import { recipientLastReadAt, serializeMessages } from "../lib/messages/serialize";
+import { sendConversationMessage } from "../lib/messages/sendMessage";
+import { emitConversationRead } from "../lib/socket/messageEvents";
 
 export const messagesRouter = Router();
 
 messagesRouter.use(requireUserAuth);
 
-messagesRouter.get("/conversations", async (req: AuthedRequest, res) => {
+async function assertConversationAccess(conversationId: string, userId: string) {
+  const conversation = await findConversationById(conversationId);
+  if (!conversation) return { error: "Conversation not found", status: 404 as const };
+  if (conversation.buyer_id !== userId && conversation.seller_id !== userId) {
+    return { error: "Forbidden", status: 403 as const };
+  }
+  return { conversation, status: 200 as const };
+}
+
+async function enrichConversations(userId: string) {
+  const rows = await listConversationsForUser(userId);
+  return Promise.all(rows.map((c) => enrichConversation(c, userId)));
+}
+
+messagesRouter.get("/unread-count", async (req: AuthedRequest, res) => {
+  try {
+    const total = await getTotalUnreadCountForUser(req.userId!);
+    res.json({ unreadCount: total });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Could not load unread count" });
+  }
+});
+
+/** Lightweight poll for navbar badge + conversation list updates */
+messagesRouter.get("/poll", async (req: AuthedRequest, res) => {
   try {
     const userId = req.userId!;
-    const rows = await listConversationsForUser(userId);
-    const conversations = await Promise.all(
-      rows.map(async (c) => {
-        const listing = await findListingById(c.listing_id);
-        const peerId = c.buyer_id === userId ? c.seller_id : c.buyer_id;
-        const peer = await findUserById(peerId);
-        return {
-          id: c.id,
-          listingId: c.listing_id,
-          listingTitle: listing?.title ?? "Listing",
-          listingPrice: listing?.price,
-          listingCurrency: listing?.currency ?? "USD",
-          listingCity: listing?.city,
-          listingAddress: listing?.address,
-          listingImageUrl: listing?.image_urls?.[0],
-          peerName: peer?.name ?? "User",
-          peerAvatarUrl: peer?.profile_picture_url,
-          peerVerified: peer?.verification_status === "verified",
-          lastMessagePreview: c.last_message_preview ?? "",
-          lastMessageAt: c.last_message_at,
-        };
-      }),
-    );
+    const conversations = await enrichConversations(userId);
+    const unreadCount = conversations.reduce((sum, c) => sum + (c.unreadCount ?? 0), 0);
+    res.json({ unreadCount, conversations });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Could not poll messages" });
+  }
+});
+
+messagesRouter.get("/conversations", async (req: AuthedRequest, res) => {
+  try {
+    const conversations = await enrichConversations(req.userId!);
     res.json({ conversations });
   } catch (err) {
     console.error(err);
@@ -93,28 +112,71 @@ messagesRouter.get("/conversations/by-listing/:listingId", async (req: AuthedReq
   }
 });
 
+/** Poll active thread — marks read when the viewer has the chat open */
+messagesRouter.get("/conversations/:id/poll", async (req: AuthedRequest, res) => {
+  try {
+    const access = await assertConversationAccess(String(req.params.id), req.userId!);
+    if ("error" in access) {
+      res.status(access.status).json({ error: access.error });
+      return;
+    }
+
+    const { conversation } = access;
+    const userId = req.userId!;
+    const canonical = await resolveCanonicalConversation(conversation);
+    const messages = await listMessagesForConversationThread(canonical);
+
+    try {
+      await markConversationRead(canonical, userId);
+      await emitConversationRead(canonical, userId);
+    } catch (readErr) {
+      console.warn("[messages] Could not mark conversation read:", readErr);
+    }
+
+    const refreshed = (await findConversationById(canonical.id)) ?? canonical;
+
+    res.json({
+      messages: serializeMessages(messages, refreshed, userId),
+      peerLastReadAt: recipientLastReadAt(refreshed, userId),
+      conversationId: canonical.id,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Could not poll conversation" });
+  }
+});
+
 messagesRouter.get("/conversations/:id", async (req: AuthedRequest, res) => {
   try {
-    const conversation = await findConversationById(String(req.params.id));
-    if (!conversation) {
-      res.status(404).json({ error: "Conversation not found" });
+    const access = await assertConversationAccess(String(req.params.id), req.userId!);
+    if ("error" in access) {
+      res.status(access.status).json({ error: access.error });
       return;
     }
+
+    const { conversation } = access;
     const userId = req.userId!;
-    if (conversation.buyer_id !== userId && conversation.seller_id !== userId) {
-      res.status(403).json({ error: "Forbidden" });
-      return;
-    }
-    const listing = await findListingById(conversation.listing_id);
-    const peerId = conversation.buyer_id === userId ? conversation.seller_id : conversation.buyer_id;
+    const canonical = await resolveCanonicalConversation(conversation);
+    const listing = await findListingById(canonical.listing_id);
+    const peerId = canonical.buyer_id === userId ? canonical.seller_id : canonical.buyer_id;
     const peer = await findUserById(peerId);
-    const messages = await listMessagesForConversation(conversation.id);
+    const messages = await listMessagesForConversationThread(canonical);
+
+    try {
+      await markConversationRead(canonical, userId);
+      await emitConversationRead(canonical, userId);
+    } catch (readErr) {
+      console.warn("[messages] Could not mark conversation read:", readErr);
+    }
+
+    const refreshed = (await findConversationById(canonical.id)) ?? canonical;
+
     res.json({
       conversation: {
-        id: conversation.id,
-        listingId: conversation.listing_id,
-        buyerId: conversation.buyer_id,
-        sellerId: conversation.seller_id,
+        id: canonical.id,
+        listingId: canonical.listing_id,
+        buyerId: canonical.buyer_id,
+        sellerId: canonical.seller_id,
       },
       listing: listing
         ? {
@@ -134,13 +196,8 @@ messagesRouter.get("/conversations/:id", async (req: AuthedRequest, res) => {
             verified: peer.verification_status === "verified",
           }
         : null,
-      messages: messages.map((m) => ({
-        id: m.id,
-        senderId: m.sender_id,
-        body: m.body,
-        createdAt: m.created_at,
-        isMine: m.sender_id === userId,
-      })),
+      messages: serializeMessages(messages, refreshed, userId),
+      peerLastReadAt: recipientLastReadAt(refreshed, userId),
     });
   } catch (err) {
     console.error(err);
@@ -149,48 +206,57 @@ messagesRouter.get("/conversations/:id", async (req: AuthedRequest, res) => {
 });
 
 const sendSchema = z.object({
+  conversationId: z.string().min(1),
   body: z.string().min(1).max(4000),
 });
 
-messagesRouter.post("/conversations/:id", async (req: AuthedRequest, res) => {
+/** Dedicated send endpoint */
+messagesRouter.post("/send", async (req: AuthedRequest, res) => {
   const parsed = sendSchema.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: "Invalid message" });
     return;
   }
 
-  const conversation = await findConversationById(String(req.params.id));
-  if (!conversation) {
-    res.status(404).json({ error: "Conversation not found" });
-    return;
-  }
-  const userId = req.userId!;
-  if (conversation.buyer_id !== userId && conversation.seller_id !== userId) {
-    res.status(403).json({ error: "Forbidden" });
+  const access = await assertConversationAccess(parsed.data.conversationId, req.userId!);
+  if ("error" in access) {
+    res.status(access.status).json({ error: access.error });
     return;
   }
 
   try {
-    const now = new Date().toISOString();
-    const message = await createMessage({
-      conversation: [conversation.id],
-      sender: [userId],
-      body: parsed.data.body.trim(),
-      created_at: now,
-    });
-    await updateConversation(conversation.id, {
-      last_message_at: now,
-      last_message_preview: parsed.data.body.trim().slice(0, 120),
-    });
-    res.status(201).json({
-      message: {
-        id: message.id,
-        senderId: message.sender_id,
-        body: message.body,
-        createdAt: message.created_at,
-        isMine: true,
-      },
-    });
+    const { serialized } = await sendConversationMessage(
+      access.conversation,
+      req.userId!,
+      parsed.data.body,
+    );
+    res.status(201).json({ message: serialized });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Could not send message" });
+  }
+});
+
+messagesRouter.post("/conversations/:id", async (req: AuthedRequest, res) => {
+  const parsed = z.object({ body: z.string().min(1).max(4000) }).safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: "Invalid message" });
+    return;
+  }
+
+  const access = await assertConversationAccess(String(req.params.id), req.userId!);
+  if ("error" in access) {
+    res.status(access.status).json({ error: access.error });
+    return;
+  }
+
+  try {
+    const { serialized } = await sendConversationMessage(
+      access.conversation,
+      req.userId!,
+      parsed.data.body,
+    );
+    res.status(201).json({ message: serialized });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Could not send message" });
@@ -252,16 +318,7 @@ messagesRouter.post("/conversations", async (req: AuthedRequest, res) => {
     });
 
     if (parsed.data.message?.trim()) {
-      await createMessage({
-        conversation: [conversation.id],
-        sender: [userId],
-        body: parsed.data.message.trim(),
-        created_at: now,
-      });
-      await updateConversation(conversation.id, {
-        last_message_at: now,
-        last_message_preview: parsed.data.message.trim().slice(0, 120),
-      });
+      await sendConversationMessage(conversation, userId, parsed.data.message);
     }
 
     res.status(201).json({ conversationId: conversation.id, existing: false });

@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "tsx watch src/index.ts",
+    "dev": "node api.js && tsx watch src/index.ts",
     "build": "tsc",
-    "start": "node dist/index.js",
+    "start": "node api.js && node dist/index.js",
     "seed:admin": "tsx scripts/seed-super-admin.ts",
     "airtable:profile-picture-field": "tsx scripts/add-profile-picture-field.ts",
     "airtable:sync-schema": "tsx scripts/sync-airtable-schema.ts"
