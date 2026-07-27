@@ -8,6 +8,7 @@ import { useAuth } from "@/components/auth/AuthProvider";
 import { UserAccountMenu } from "@/components/stitch/UserAccountMenu";
 import { filtersFromSearchParams, filtersToSearchParams } from "@/lib/listings/filters";
 import { isSellerAccount, sellerDashboardPath } from "@/lib/auth/routing";
+import { useUnreadMessageCount } from "@/lib/messages/useUnreadMessageCount";
 import { STITCH_LOGO_SRC } from "@/lib/stitch/brand";
 
 type Props = {
@@ -20,6 +21,7 @@ export function StitchMarketHeader({ activeNav = "properties" }: Props) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [searchDraft, setSearchDraft] = useState("");
+  const { badgeLabel: unreadBadge } = useUnreadMessageCount();
 
   useEffect(() => {
     const filters = filtersFromSearchParams(searchParams);
@@ -79,8 +81,17 @@ export function StitchMarketHeader({ activeNav = "properties" }: Props) {
                 Properties
               </Link>
               {user && (
-                <Link className={`${navClass("messages")} inline-flex items-center h-full`} href="/messages">
+                <Link
+                  className={`${navClass("messages")} inline-flex items-center h-full relative gap-1.5`}
+                  href="/messages"
+                >
+                  <span className="material-symbols-outlined text-[20px]">mail</span>
                   Messages
+                  {unreadBadge && (
+                    <span className="min-w-[1.125rem] h-[1.125rem] px-1 rounded-full bg-error text-white text-[10px] font-label-md flex items-center justify-center leading-none">
+                      {unreadBadge}
+                    </span>
+                  )}
                 </Link>
               )}
             </nav>

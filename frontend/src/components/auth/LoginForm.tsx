@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { FormEvent, useState } from "react";
 import Image from "next/image";
 import { useAuth } from "@/components/auth/AuthProvider";
-import { useRedirectIfAuthenticated } from "@/components/auth/useRedirectIfAuthenticated";
+import { useRedirectIfAuthenticated } from "@/components/auth/useRedirect";
 import { apiFetch } from "@/lib/api/client";
 import { authRedirectPath } from "@/lib/auth/routing";
 import type { StoredUser } from "@/lib/auth/session";

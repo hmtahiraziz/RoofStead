@@ -12,6 +12,7 @@ export type Conversation = {
   peerVerified?: boolean;
   lastMessagePreview: string;
   lastMessageAt?: string;
+  unreadCount?: number;
 };
 
 export type ChatMessage = {
@@ -19,6 +20,8 @@ export type ChatMessage = {
   body: string;
   isMine: boolean;
   createdAt?: string;
+  /** True when the recipient has read this message (own messages only) */
+  isRead?: boolean;
 };
 
 export type ListingContext = {
