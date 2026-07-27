@@ -22,6 +22,10 @@ import type {
   ListingContext,
   PeerContext,
 } from "@/lib/messages/messagesTypes";
+import { dedupeConversations } from "@/lib/messages/dedupeConversations";
+import { mergeChatMessages } from "@/lib/messages/mergeChatMessages";
+import { useMessagesRealtime } from "@/lib/messages/MessagesRealtimeProvider";
+import { formatUnreadBadge } from "@/lib/messages/formatUnreadBadge";
 import { userAvatarSrc } from "@/lib/stitch/userAvatar";
 
 const LISTING_THUMB_PLACEHOLDER =
@@ -90,6 +94,7 @@ function ConversationListItem({
 }) {
   const peerAvatar = userAvatarSrc(c.peerAvatarUrl, "small");
   const price = listingPriceLabel(c);
+  const unreadLabel = formatUnreadBadge(c.unreadCount ?? 0);
 
   return (
     <button
@@ -125,6 +130,11 @@ function ConversationListItem({
             <span className="text-[10px] text-on-surface-variant font-label-md shrink-0">
               {formatMessageTime(c.lastMessageAt)}
             </span>
+            {unreadLabel && (
+              <span className="shrink-0 min-w-[1.25rem] h-5 px-1.5 rounded-full bg-error text-white text-[10px] font-label-md flex items-center justify-center">
+                {unreadLabel}
+              </span>
+            )}
           </div>
           <p
             className={`text-body-md truncate ${active ? "text-on-surface font-medium" : "text-on-surface-variant"}`}
@@ -155,6 +165,7 @@ export function StitchMessages() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const conversationParam = searchParams.get("conversation");
+  const listingParam = searchParams.get("listing");
   const { token, loading: authLoading } = useAuth();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -164,56 +175,196 @@ export function StitchMessages() {
   const [draft, setDraft] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [threadLoading, setThreadLoading] = useState(false);
+  const [threadError, setThreadError] = useState<string | null>(null);
+  const [sendError, setSendError] = useState<string | null>(null);
+  const [sending, setSending] = useState(false);
   const [peerPanelOpen, setPeerPanelOpen] = useState(false);
   const [mobilePane, setMobilePane] = useState<"list" | "chat" | "profile">("list");
   const chatEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const { socket, badgeLabel: navUnreadLabel } = useMessagesRealtime();
 
   useEffect(() => {
     if (authLoading) return;
     if (!token) {
-      router.replace("/auth/login");
+      router.replace("/auth/login?returnTo=%2Fmessages");
       return;
     }
-    apiFetch<{ conversations: Conversation[] }>("/api/messages/conversations", { token })
-      .then((data) => {
-        setConversations(data.conversations);
-        const preferred =
-          conversationParam &&
-          (data.conversations.some((c) => c.id === conversationParam) || conversationParam.length > 0)
-            ? conversationParam
-            : data.conversations[0]?.id ?? null;
+
+    let cancelled = false;
+
+    async function initConversations() {
+      try {
+        const data = await apiFetch<{ conversations: Conversation[] }>("/api/messages/conversations", {
+          token: token!,
+        });
+        if (cancelled) return;
+        const list = dedupeConversations(data.conversations);
+        setConversations(list);
+
+        let preferred: string | null = null;
+
+        if (listingParam) {
+          try {
+            const lookup = await apiFetch<{ conversationId: string }>(
+              `/api/messages/conversations/by-listing/${listingParam}`,
+              { token: token! },
+            );
+            preferred =
+              list.find((c) => c.id === lookup.conversationId)?.id ?? lookup.conversationId;
+          } catch {
+            preferred = list[0]?.id ?? null;
+          }
+        } else if (conversationParam) {
+          const rawMatch = data.conversations.find((c) => c.id === conversationParam);
+          preferred =
+            list.find((c) => c.id === conversationParam)?.id ??
+            (rawMatch
+              ? list.find(
+                  (c) =>
+                    c.listingId === rawMatch.listingId &&
+                    c.peerName.toLowerCase() === rawMatch.peerName.toLowerCase(),
+                )?.id
+              : undefined) ??
+            conversationParam;
+        } else {
+          preferred = list[0]?.id ?? null;
+        }
+
         setActiveId(preferred);
         if (preferred) setMobilePane("chat");
-      })
-      .catch((e) => setError(e instanceof Error ? e.message : "Failed to load"));
-  }, [token, authLoading, router, conversationParam]);
+        setError(null);
+      } catch (e) {
+        if (cancelled) return;
+        setError(e instanceof Error ? e.message : "Failed to load conversations");
+      }
+    }
+
+    void initConversations();
+    return () => {
+      cancelled = true;
+    };
+  }, [token, authLoading, router, conversationParam, listingParam]);
 
   const loadThread = useCallback(
     async (conversationId: string) => {
       if (!token) return;
+      setThreadLoading(true);
+      setThreadError(null);
       try {
         const data = await apiFetch<{
+          conversation?: { id: string };
           listing: ListingContext | null;
           peer: PeerContext | null;
           messages: ChatMessage[];
         }>(`/api/messages/conversations/${conversationId}`, { token });
+
+        const canonicalId = data.conversation?.id ?? conversationId;
+        if (canonicalId !== conversationId) {
+          setActiveId(canonicalId);
+          router.replace(`/messages?conversation=${encodeURIComponent(canonicalId)}`, {
+            scroll: false,
+          });
+        }
+
         setActiveListing(data.listing);
         setActivePeer(data.peer);
         setMessages(data.messages);
-      } catch {
+
+        if (data.listing && data.peer) {
+          setConversations((prev) => {
+            const deduped = dedupeConversations(prev);
+            const existing = deduped.find((c) => c.id === canonicalId);
+            const lastBody = data.messages.at(-1)?.body ?? "";
+            const lastAt = data.messages.at(-1)?.createdAt;
+            const row: Conversation = {
+              id: canonicalId,
+              listingId: data.listing!.id,
+              listingTitle: data.listing!.title,
+              listingPrice: data.listing!.price,
+              listingCurrency: data.listing!.currency,
+              listingCity: data.listing!.city,
+              listingAddress: data.listing!.address,
+              listingImageUrl: data.listing!.imageUrl,
+              peerName: data.peer!.name,
+              peerAvatarUrl: data.peer!.avatarUrl,
+              peerVerified: data.peer!.verified,
+              lastMessagePreview: lastBody,
+              lastMessageAt: lastAt,
+              unreadCount: 0,
+            };
+            if (existing) {
+              return dedupeConversations(
+                deduped.map((c) => (c.id === canonicalId ? { ...c, ...row } : c)),
+              );
+            }
+            return dedupeConversations([row, ...deduped]);
+          });
+        }
+      } catch (e) {
+        setThreadError(e instanceof Error ? e.message : "Could not load conversation");
         setMessages([]);
         setActiveListing(null);
         setActivePeer(null);
+      } finally {
+        setThreadLoading(false);
       }
     },
-    [token],
+    [token, router],
   );
 
   useEffect(() => {
     if (!activeId) return;
     loadThread(activeId);
   }, [activeId, loadThread]);
+
+  useEffect(() => {
+    if (!socket || !activeId) return;
+
+    socket.emit("join_conversation", activeId);
+
+    const onMessage = (payload: { conversationId: string; message: ChatMessage }) => {
+      if (payload.conversationId !== activeId) return;
+      setMessages((prev) => mergeChatMessages([payload.message], prev));
+    };
+
+    const onRead = (payload: { conversationId: string; readAt?: string }) => {
+      if (payload.conversationId !== activeId) return;
+      setMessages((prev) =>
+        prev.map((m) => (m.isMine ? { ...m, isRead: true } : m)),
+      );
+    };
+
+    socket.on("message:new", onMessage);
+    socket.on("messages:read", onRead);
+
+    return () => {
+      socket.off("message:new", onMessage);
+      socket.off("messages:read", onRead);
+    };
+  }, [socket, activeId]);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const onUpsert = (payload: { conversation: Conversation }) => {
+      setConversations((prev) =>
+        dedupeConversations(
+          prev.some((c) => c.id === payload.conversation.id)
+            ? prev.map((c) =>
+                c.id === payload.conversation.id ? { ...c, ...payload.conversation } : c,
+              )
+            : [payload.conversation, ...prev],
+        ),
+      );
+    };
+
+    socket.on("conversation:upsert", onUpsert);
+    return () => {
+      socket.off("conversation:upsert", onUpsert);
+    };
+  }, [socket]);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -251,30 +402,47 @@ export function StitchMessages() {
         }
       : null);
   const peerName = activePeer?.name ?? activeConversation?.peerName ?? "Conversation";
-  const peerAvatar = userAvatarSrc(activePeer?.avatarUrl ?? activeConversation?.peerAvatarUrl, "small");
+  const peerAvatar =
+    activePeer?.avatarUrl ?? activeConversation?.peerAvatarUrl
+      ? userAvatarSrc(activePeer?.avatarUrl ?? activeConversation?.peerAvatarUrl, "small")
+      : null;
   const peerVerified = activePeer?.verified ?? activeConversation?.peerVerified;
+  const peerProfileReady = Boolean(activePeer || activeConversation?.peerName);
 
   async function sendMessage(e: FormEvent) {
     e.preventDefault();
-    if (!token || !activeId || !draft.trim()) return;
+    if (!token || !activeId || !draft.trim() || sending) return;
     const body = draft.trim();
+    setSendError(null);
     setDraft("");
     if (textareaRef.current) textareaRef.current.style.height = "auto";
 
-    const res = await apiFetch<{ message: ChatMessage }>(`/api/messages/conversations/${activeId}`, {
-      method: "POST",
-      token,
-      body: JSON.stringify({ body }),
-    });
-    const withTime = { ...res.message, createdAt: res.message.createdAt ?? new Date().toISOString() };
-    setMessages((prev) => [...prev, withTime]);
-    setConversations((prev) =>
-      prev.map((c) =>
-        c.id === activeId
-          ? { ...c, lastMessagePreview: body, lastMessageAt: withTime.createdAt }
-          : c,
-      ),
-    );
+    setSending(true);
+    try {
+      const res = await apiFetch<{ message: ChatMessage }>("/api/messages/send", {
+        method: "POST",
+        token,
+        body: JSON.stringify({ conversationId: activeId, body }),
+      });
+      const withTime = {
+        ...res.message,
+        createdAt: res.message.createdAt ?? new Date().toISOString(),
+        isRead: false,
+      };
+      setMessages((prev) => mergeChatMessages([withTime], prev));
+      setConversations((prev) =>
+        prev.map((c) =>
+          c.id === activeId
+            ? { ...c, lastMessagePreview: body, lastMessageAt: withTime.createdAt, unreadCount: 0 }
+            : c,
+        ),
+      );
+    } catch (err) {
+      setDraft(body);
+      setSendError(err instanceof Error ? err.message : "Could not send message");
+    } finally {
+      setSending(false);
+    }
   }
 
   function selectConversation(id: string) {
@@ -385,44 +553,60 @@ export function StitchMessages() {
                   >
                     arrow_back
                   </button>
-                  <button
-                    className="flex items-center gap-3 min-w-0 text-left rounded-lg hover:bg-surface-container-high/80 pr-2 py-1 transition-colors"
-                    type="button"
-                    onClick={openPeerPanel}
-                  >
-                    <div className="relative shrink-0">
-                      <Image
-                        alt=""
-                        className="w-10 h-10 rounded-full object-cover"
-                        height={40}
-                        src={peerAvatar}
-                        unoptimized={peerAvatar.includes("localhost")}
-                        width={40}
-                      />
-                      <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-primary border-2 border-surface rounded-full" />
-                    </div>
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-1.5 flex-wrap">
-                        <h3 className="font-title-lg text-body-lg text-primary truncate">{peerName}</h3>
-                        {peerVerified && (
-                          <span className="flex items-center gap-0.5 px-1.5 py-0.5 bg-primary-container/10 rounded-full border border-primary-container/20 shrink-0">
-                            <span
-                              className="material-symbols-outlined text-[12px] text-primary"
-                              style={{ fontVariationSettings: "'FILL' 1" }}
-                            >
-                              verified
-                            </span>
-                            <span className="font-label-md text-[10px] text-primary uppercase tracking-wider">
-                              Verified seller
-                            </span>
-                          </span>
-                        )}
+                  {threadLoading && !peerProfileReady ? (
+                    <div className="flex items-center gap-3 min-w-0 animate-pulse">
+                      <div className="w-10 h-10 rounded-full bg-surface-container-high shrink-0" />
+                      <div className="space-y-2 min-w-0">
+                        <div className="h-4 w-36 bg-surface-container-high rounded" />
+                        <div className="h-3 w-28 bg-surface-container-high rounded" />
                       </div>
-                      <p className="text-xs text-on-surface-variant font-label-md truncate">
-                        {activeConversation?.listingTitle ?? "Listing"} · Tap for profile
-                      </p>
                     </div>
-                  </button>
+                  ) : (
+                    <button
+                      className="flex items-center gap-3 min-w-0 text-left rounded-lg hover:bg-surface-container-high/80 pr-2 py-1 transition-colors"
+                      type="button"
+                      onClick={openPeerPanel}
+                    >
+                      <div className="relative shrink-0">
+                        {peerAvatar ? (
+                          <Image
+                            alt=""
+                            className="w-10 h-10 rounded-full object-cover"
+                            height={40}
+                            src={peerAvatar}
+                            unoptimized={peerAvatar.includes("localhost")}
+                            width={40}
+                          />
+                        ) : (
+                          <div className="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center">
+                            <span className="material-symbols-outlined text-on-surface-variant">person</span>
+                          </div>
+                        )}
+                        <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-primary border-2 border-surface rounded-full" />
+                      </div>
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <h3 className="font-title-lg text-body-lg text-primary truncate">{peerName}</h3>
+                          {peerVerified && (
+                            <span className="flex items-center gap-0.5 px-1.5 py-0.5 bg-primary-container/10 rounded-full border border-primary-container/20 shrink-0">
+                              <span
+                                className="material-symbols-outlined text-[12px] text-primary"
+                                style={{ fontVariationSettings: "'FILL' 1" }}
+                              >
+                                verified
+                              </span>
+                              <span className="font-label-md text-[10px] text-primary uppercase tracking-wider">
+                                Verified seller
+                              </span>
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs text-on-surface-variant font-label-md truncate">
+                          {activeConversation?.listingTitle ?? "Listing"} · Tap for profile
+                        </p>
+                      </div>
+                    </button>
+                  )}
                 </div>
                 <div className="hidden sm:flex items-center gap-2 shrink-0">
                   <button
@@ -456,7 +640,15 @@ export function StitchMessages() {
               </header>
 
               <div className="flex-1 p-6 overflow-y-auto flex flex-col gap-6 bg-surface-bright min-h-0">
-                {messages.length === 0 && (
+                {threadError && (
+                  <p className="text-center text-error text-body-md py-4">{threadError}</p>
+                )}
+                {threadLoading && messages.length === 0 && !threadError && (
+                  <div className="flex items-center justify-center py-12 text-on-surface-variant">
+                    Loading conversation…
+                  </div>
+                )}
+                {!threadLoading && messages.length === 0 && !threadError && (
                   <p className="text-center text-on-surface-variant text-body-md py-8">
                     No messages yet. Say hello to start the conversation.
                   </p>
@@ -488,24 +680,33 @@ export function StitchMessages() {
                                 {formatChatBubbleTime(m.createdAt)}
                               </span>
                               <span
-                                className="material-symbols-outlined text-[14px] text-primary"
+                                className={`material-symbols-outlined text-[14px] ${
+                                  m.isRead ? "text-green-600" : "text-on-surface-variant/60"
+                                }`}
                                 style={{ fontVariationSettings: "'FILL' 1" }}
+                                title={m.isRead ? "Read" : "Sent"}
                               >
-                                check_circle
+                                {m.isRead ? "done_all" : "check"}
                               </span>
                             </div>
                           </div>
                         </div>
                       ) : (
                         <div className="flex gap-3 max-w-[80%]">
-                          <Image
-                            alt=""
-                            className="w-8 h-8 rounded-full object-cover self-end shrink-0"
-                            height={32}
-                            src={peerAvatar}
-                            unoptimized
-                            width={32}
-                          />
+                          {peerAvatar ? (
+                            <Image
+                              alt=""
+                              className="w-8 h-8 rounded-full object-cover self-end shrink-0"
+                              height={32}
+                              src={peerAvatar}
+                              unoptimized
+                              width={32}
+                            />
+                          ) : (
+                            <div className="w-8 h-8 rounded-full bg-surface-container-high self-end shrink-0 flex items-center justify-center">
+                              <span className="material-symbols-outlined text-sm text-on-surface-variant">person</span>
+                            </div>
+                          )}
                           <div>
                             <div className="p-4 bg-surface-container-high text-on-surface rounded-2xl rounded-bl-none text-body-md leading-relaxed">
                               {m.body}
@@ -552,6 +753,7 @@ export function StitchMessages() {
               )}
 
               <footer className="p-4 bg-surface border-t border-outline-variant">
+                {sendError && <p className="text-error text-sm mb-2 px-1">{sendError}</p>}
                 <form onSubmit={sendMessage}>
                   <div className="flex items-end gap-3 bg-surface-container-low p-2 rounded-xl border border-outline-variant/30 focus-within:border-primary/30 transition-all">
                     <div className="flex gap-1 p-1">
@@ -585,10 +787,16 @@ export function StitchMessages() {
                       }}
                     />
                     <button
-                      className="flex items-center justify-center bg-primary-container text-on-primary-container h-10 w-10 rounded-lg hover:shadow-lg active:scale-90 transition-all shrink-0"
+                      className="flex items-center justify-center bg-primary-container text-on-primary-container h-10 w-10 rounded-lg hover:shadow-lg active:scale-90 transition-all shrink-0 disabled:opacity-60 disabled:pointer-events-none"
                       type="submit"
+                      disabled={sending || !draft.trim()}
+                      aria-label={sending ? "Sending message" : "Send message"}
                     >
-                      <span className="material-symbols-outlined">send</span>
+                      {sending ? (
+                        <span className="h-4 w-4 border-2 border-on-primary-container/30 border-t-on-primary-container rounded-full animate-spin" />
+                      ) : (
+                        <span className="material-symbols-outlined">send</span>
+                      )}
                     </button>
                   </div>
                 </form>
@@ -610,15 +818,14 @@ export function StitchMessages() {
             mobilePane === "profile" ? "flex flex-1 w-full" : "max-md:hidden"
           } ${peerPanelOpen ? "md:flex md:w-72 lg:w-80" : "md:hidden md:w-0"}`}
         >
-          {activeConversation && (peerPanelOpen || mobilePane === "profile") && (
+          {activeConversation && peerProfileReady && (peerPanelOpen || mobilePane === "profile") && (
             <div className="h-full bg-surface border border-outline-variant rounded-xl p-4 shadow-[0px_4px_20px_rgba(27,67,50,0.04)] overflow-y-auto">
               <ChatPeerProfilePane
                 active={activeConversation}
-                peerAvatar={peerAvatar}
+                peerAvatar={peerAvatar ?? userAvatarSrc(undefined, "large")}
                 peerName={peerName}
                 peerVerified={Boolean(peerVerified)}
                 onClose={closePeerPanel}
-                onOpenProfile={() => openPeerPanel()}
               />
             </div>
           )}
@@ -635,10 +842,15 @@ export function StitchMessages() {
           <span className="material-symbols-outlined">search</span>
           <span className="text-[10px] font-label-md">Explore</span>
         </Link>
-        <Link className="flex flex-col items-center gap-1 text-primary" href="/messages">
+        <Link className="relative flex flex-col items-center gap-1 text-primary" href="/messages">
           <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>
             chat_bubble
           </span>
+          {navUnreadLabel && (
+            <span className="absolute top-0 right-0 min-w-[1rem] h-4 px-1 rounded-full bg-error text-white text-[9px] font-label-md flex items-center justify-center">
+              {navUnreadLabel}
+            </span>
+          )}
           <span className="text-[10px] font-label-md">Messages</span>
         </Link>
         <Link className="flex flex-col items-center gap-1 text-on-surface-variant" href="/profile">
