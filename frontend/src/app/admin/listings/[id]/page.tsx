@@ -1,4 +1,4 @@
-import { StitchAdminListingDetail } from "@/components/admin/StitchAdminListingDetail";
+import { StitchAdminListingDetail } from "@/components/admin/AdminListingDetail";
 
 type Props = {
   params: Promise<{ id: string }>;

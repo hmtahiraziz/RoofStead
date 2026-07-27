@@ -9,7 +9,6 @@ type Props = {
   peerVerified: boolean;
   active: Conversation;
   onClose: () => void;
-  onOpenProfile: () => void;
 };
 
 export function ChatPeerProfilePane({
@@ -18,7 +17,6 @@ export function ChatPeerProfilePane({
   peerVerified,
   active,
   onClose,
-  onOpenProfile,
 }: Props) {
   return (
     <div className="flex flex-col gap-gutter h-full min-h-0">
@@ -56,13 +54,6 @@ export function ChatPeerProfilePane({
           {peerVerified ? "Verified seller on RoofStead" : "RoofStead member"}
         </p>
         <div className="flex gap-2 w-full">
-          <button
-            className="flex-1 py-2 px-3 border border-outline text-primary font-label-md rounded-lg hover:bg-surface-container-low transition-all"
-            type="button"
-            onClick={onOpenProfile}
-          >
-            Profile
-          </button>
           <a
             className="flex-1 py-2 px-3 bg-primary text-on-primary font-label-md rounded-lg hover:bg-primary-container transition-all text-center"
             href={`mailto:?subject=${encodeURIComponent(`RoofStead — ${active.listingTitle}`)}`}
