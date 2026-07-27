@@ -1,4 +1,4 @@
-import { StitchEditListing } from "@/components/seller/StitchEditListing";
+import { StitchEditListing } from "@/components/seller/EditListing";
 
 type Props = {
   params: Promise<{ id: string }>;
